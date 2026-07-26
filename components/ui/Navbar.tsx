@@ -40,7 +40,6 @@ export function Navbar() {
 
     // Dropdown states
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-    const [isLayer3CategoryOpen, setIsLayer3CategoryOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
     // Mobile state
@@ -371,45 +370,21 @@ export function Navbar() {
                         <nav className="flex items-center gap-1 sm:gap-2 md:gap-2.5 overflow-x-auto scrollbar-none py-0.5 w-full">
 
                             {/* All Categories Quick Button */}
-                            <div className="relative">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsLayer3CategoryOpen(!isLayer3CategoryOpen)}
-                                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none"
-                                >
-                                    <LayoutGrid className="w-3.5 h-3.5" />
-                                    <span>All Categories</span>
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${isLayer3CategoryOpen ? "rotate-180" : ""}`} />
-                                </button>
-
-                                {/* Layer 3 Dropdown Menu */}
-                                {isLayer3CategoryOpen && (
-                                    <>
-                                        <div
-                                            className="fixed inset-0 z-40"
-                                            onClick={() => setIsLayer3CategoryOpen(false)}
-                                        />
-                                        <div className="absolute left-0 top-full mt-2 w-56 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 py-2 z-50 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 scrollbar-thin">
-                                            {CATEGORIES.map((cat) => (
-                                                <button
-                                                    key={cat}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const slug = cat === "All Categories" ? undefined : cat.toLowerCase().replace(/\s+/g, "-");
-                                                        setActiveNavCategory(cat);
-                                                        setIsLayer3CategoryOpen(false);
-                                                        scrollToProducts(slug);
-                                                    }}
-                                                    className="w-full text-left px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-[#C6A16A] flex items-center justify-between transition-colors"
-                                                >
-                                                    <span>{cat}</span>
-                                                    <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setActiveNavCategory("All Categories");
+                                    scrollToProducts(undefined);
+                                }}
+                                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none ${
+                                    activeNavCategory === "All Categories" || activeNavCategory === null
+                                        ? "bg-[#C6A16A] text-zinc-950"
+                                        : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950"
+                                }`}
+                            >
+                                <LayoutGrid className="w-3.5 h-3.5" />
+                                <span>All Categories</span>
+                            </button>
 
                             <div className="h-4 w-px bg-zinc-300 dark:bg-zinc-800 mx-1 flex-shrink-0" />
 

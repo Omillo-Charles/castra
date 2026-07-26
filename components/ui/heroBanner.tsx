@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShoppingBag, MessageCircle } from "lucide-react";
+import { scrollToProducts } from "@/lib/scrollToProducts";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -14,7 +14,7 @@ const SLIDES = [
     alt: "Castra Households – Premium Home Essentials",
     title: "Castra Households",
     subtitle: "Premium household essentials delivered to your doorstep.",
-    productsHref: "/category/beddings",
+    categorySlug: undefined, // shows all products
     whatsappMsg: "Hi, I'd like to view your household products.",
   },
   {
@@ -23,10 +23,10 @@ const SLIDES = [
     alt: "Castra Kicks – Premium Footwear Collection",
     title: "Castra Kicks",
     subtitle: "Step into luxury with our curated footwear collection.",
-    productsHref: "/kicks",
+    categorySlug: undefined,
     whatsappMsg: "Hi, I'd like to view the Castra Kicks collection.",
   },
-];
+] as const;
 
 const DELAY = 6000; // 6 seconds
 
@@ -102,13 +102,14 @@ export function HeroBanner() {
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-3 flex-wrap justify-center">
-              <Link
-                href={slide.productsHref}
+              <button
+                type="button"
+                onClick={() => scrollToProducts(slide.categorySlug)}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-sm transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.03]"
               >
                 <ShoppingBag className="w-4 h-4" />
                 View Products
-              </Link>
+              </button>
 
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(slide.whatsappMsg)}`}

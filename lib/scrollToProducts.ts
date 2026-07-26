@@ -1,3 +1,11 @@
+/**
+ * Smoothly scrolls to the #products section, accounting for the sticky
+ * navbar height, and updates the URL with the selected category slug
+ * without triggering a Next.js navigation / re-render.
+ *
+ * Also dispatches a "categorychange" custom event so ProductGrid can
+ * react immediately — replaceState alone never fires popstate.
+ */
 export function scrollToProducts(slug?: string) {
     const el = document.getElementById("products");
     if (!el) return;
@@ -7,8 +15,9 @@ export function scrollToProducts(slug?: string) {
 
     window.scrollTo({ top, behavior: "smooth" });
 
-    // replaceState instead of pushState so Next.js doesn't treat this
-    // as a new navigation and re-render the page mid-scroll.
     const url = slug ? `/?category=${slug}` : "/";
     window.history.replaceState({ category: slug ?? null }, "", url);
+
+    // Notify ProductGrid — replaceState never fires popstate
+    window.dispatchEvent(new CustomEvent("categorychange", { detail: { slug } }));
 }

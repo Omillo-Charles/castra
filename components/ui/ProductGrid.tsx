@@ -10,31 +10,30 @@ export function ProductGrid() {
     const [currentPage, setCurrentPage]         = useState(1);
     const [sortBy, setSortBy]                   = useState<"default" | "price-asc" | "price-desc" | "rating">("default");
 
-    // Sync active category from URL param (set by navbar scroll helper)
+    // Sync active category from URL param on first mount
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const cat    = params.get("category");
         if (!cat) return;
-        // Match slug back to display name
         const match = CATEGORIES_LIST.find(
             (c) => c.toLowerCase().replace(/\s+/g, "-") === cat
         );
-        if (match) setActiveCategory(match);
+        if (match) { setActiveCategory(match); setCurrentPage(1); }
     }, []);
 
-    // Also react when the URL changes via navbar clicks (popstate / replaceState)
+    // React to navbar category clicks — listens for the custom event
+    // dispatched by scrollToProducts (replaceState never fires popstate)
     useEffect(() => {
-        const onUrlChange = () => {
-            const params = new URLSearchParams(window.location.search);
-            const cat    = params.get("category");
-            if (!cat) { setActiveCategory("All"); return; }
+        const onCategoryChange = (e: Event) => {
+            const slug = (e as CustomEvent<{ slug?: string }>).detail.slug;
+            if (!slug) { setActiveCategory("All"); setCurrentPage(1); return; }
             const match = CATEGORIES_LIST.find(
-                (c) => c.toLowerCase().replace(/\s+/g, "-") === cat
+                (c) => c.toLowerCase().replace(/\s+/g, "-") === slug
             );
             if (match) { setActiveCategory(match); setCurrentPage(1); }
         };
-        window.addEventListener("popstate", onUrlChange);
-        return () => window.removeEventListener("popstate", onUrlChange);
+        window.addEventListener("categorychange", onCategoryChange);
+        return () => window.removeEventListener("categorychange", onCategoryChange);
     }, []);
 
     const filtered = useMemo(() => {
