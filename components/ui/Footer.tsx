@@ -14,16 +14,17 @@ import {
   Headphones,
 } from "lucide-react";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/svgicons";
+import { scrollToProducts } from "@/lib/scrollToProducts";
 
 const FOOTER_CATEGORIES = [
-  { name: "Beddings", href: "/category/beddings" },
-  { name: "Home Appliances", href: "/category/home-appliances" },
-  { name: "Kitchenware", href: "/category/kitchenware" },
-  { name: "Organizers", href: "/category/organizers" },
-  { name: "Electronics", href: "/category/electronics" },
-  { name: "Decor", href: "/category/decor" },
-  { name: "Office Equipments", href: "/category/office-equipments" },
-  { name: "Furniture", href: "/category/furniture" },
+  { name: "Beddings", slug: "beddings" },
+  { name: "Home Appliances", slug: "home-appliances" },
+  { name: "Kitchenware", slug: "kitchenware" },
+  { name: "Organizers", slug: "organizers" },
+  { name: "Electronics", slug: "electronics" },
+  { name: "Decor", slug: "decor" },
+  { name: "Office Equipments", slug: "office-equipments" },
+  { name: "Furniture", slug: "furniture" },
 ];
 
 const CUSTOMER_CARE = [
@@ -203,12 +204,13 @@ export function Footer() {
             <ul className="space-y-2.5 text-xs">
               {FOOTER_CATEGORIES.map((cat) => (
                 <li key={cat.name}>
-                  <Link
-                    href={cat.href}
-                    className="text-zinc-400 hover:text-[#C6A16A] transition-colors hover:underline"
+                  <button
+                    type="button"
+                    onClick={() => scrollToProducts(cat.slug)}
+                    className="text-zinc-400 hover:text-[#C6A16A] transition-colors hover:underline cursor-pointer text-left"
                   >
                     {cat.name}
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

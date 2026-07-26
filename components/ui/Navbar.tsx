@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/svgicons";
+import { scrollToProducts } from "@/lib/scrollToProducts";
 
 const CATEGORIES = [
     "All Categories",
@@ -390,18 +391,20 @@ export function Navbar() {
                                         />
                                         <div className="absolute left-0 top-full mt-2 w-56 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 py-2 z-50 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 scrollbar-thin">
                                             {CATEGORIES.map((cat) => (
-                                                <Link
+                                                <button
                                                     key={cat}
-                                                    href={`/category/${cat.toLowerCase().replace(/\s+/g, "-")}`}
+                                                    type="button"
                                                     onClick={() => {
+                                                        const slug = cat === "All Categories" ? undefined : cat.toLowerCase().replace(/\s+/g, "-");
                                                         setActiveNavCategory(cat);
                                                         setIsLayer3CategoryOpen(false);
+                                                        scrollToProducts(slug);
                                                     }}
-                                                    className="w-full text-left px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-[#C6A16A] flex items-center justify-between transition-colors block"
+                                                    className="w-full text-left px-4 py-2.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-[#C6A16A] flex items-center justify-between transition-colors"
                                                 >
                                                     <span>{cat}</span>
                                                     <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-                                                </Link>
+                                                </button>
                                             ))}
                                         </div>
                                     </>
@@ -415,17 +418,20 @@ export function Navbar() {
                                 const slug = cat.toLowerCase().replace(/\s+/g, "-");
                                 const isActive = activeNavCategory === cat;
                                 return (
-                                    <Link
+                                    <button
                                         key={cat}
-                                        href={`/category/${slug}`}
-                                        onClick={() => setActiveNavCategory(cat)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 flex-shrink-0 flex items-center gap-1.5 select-none ${isActive
+                                        type="button"
+                                        onClick={() => {
+                                            setActiveNavCategory(cat);
+                                            scrollToProducts(slug);
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 flex-shrink-0 flex items-center gap-1.5 select-none cursor-pointer ${isActive
                                             ? "bg-[#C6A16A]/15 text-[#C6A16A] font-bold border border-[#C6A16A]/30"
                                             : "text-zinc-700 dark:text-zinc-300 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
                                             }`}
                                     >
                                         {cat}
-                                    </Link>
+                                    </button>
                                 );
                             })}
                         </nav>
@@ -491,15 +497,18 @@ export function Navbar() {
                             {PRODUCT_CATEGORIES.map((cat) => {
                                 const slug = cat.toLowerCase().replace(/\s+/g, "-");
                                 return (
-                                    <Link
+                                    <button
                                         key={cat}
-                                        href={`/category/${slug}`}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] transition-colors group"
+                                        type="button"
+                                        onClick={() => {
+                                            setIsMobileMenuOpen(false);
+                                            scrollToProducts(slug);
+                                        }}
+                                        className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] transition-colors group cursor-pointer"
                                     >
                                         <span>{cat}</span>
                                         <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-[#C6A16A] transition-colors" />
-                                    </Link>
+                                    </button>
                                 );
                             })}
                         </div>
