@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
 import type { Product } from "@/lib/dummyProducts";
+import { WhatsAppIcon } from "@/components/svgicons";
+
+const WHATSAPP_NUMBER = "254704147774";
 
 function formatKES(amount: number) {
     return `KSh ${amount.toLocaleString("en-KE")}`;
@@ -10,6 +13,11 @@ function formatKES(amount: number) {
 
 export function ProductCard({ product }: { product: Product }) {
     const [wishlisted, setWishlisted] = useState(false);
+
+    const waMessage = encodeURIComponent(
+        `Hi, I'd like to order *${product.name}* (${formatKES(product.price)}). Is it available?`
+    );
+    const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
 
     return (
         <article className="group relative flex flex-col bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C6A16A]/40 dark:hover:border-[#C6A16A]/30 transition-all duration-300">
@@ -71,29 +79,41 @@ export function ProductCard({ product }: { product: Product }) {
 
                 <div className="flex-1" />
 
-                {/* Price row */}
-                <div className="flex items-end justify-between gap-2 mt-1">
-                    <div className="flex flex-col">
-                        <span className="text-base font-bold text-zinc-900 dark:text-white">
-                            {formatKES(product.price)}
-                        </span>
-                        {product.originalPrice && (
-                            <span className="text-xs text-zinc-400 line-through">
-                                {formatKES(product.originalPrice)}
-                            </span>
-                        )}
-                    </div>
+                {/* Price */}
+                <div className="flex flex-col mt-1">
+                    <span className="text-base font-bold text-zinc-900 dark:text-white">
+                        {formatKES(product.price)}
+                    </span>
+                </div>
 
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 mt-1">
                     {/* Add to cart */}
                     <button
                         type="button"
                         disabled={!product.inStock}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md flex-shrink-0"
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
                         aria-label="Add to cart"
                     >
                         <ShoppingBag className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Add</span>
+                        <span>Add to Cart</span>
                     </button>
+
+                    {/* WhatsApp order */}
+                    <a
+                        href={product.inStock ? waHref : undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Order via WhatsApp"
+                        aria-disabled={!product.inStock}
+                        className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 shadow-sm flex-shrink-0 ${
+                            product.inStock
+                                ? "border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
+                                : "border-zinc-200 dark:border-zinc-800 opacity-30 cursor-not-allowed pointer-events-none"
+                        }`}
+                    >
+                        <WhatsAppIcon className="w-5 h-5" />
+                    </a>
                 </div>
             </div>
         </article>

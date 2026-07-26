@@ -86,7 +86,7 @@ export function HeroBanner() {
           {/* Slide content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10">
             {/* Title */}
-            <h1 className="font-glacial italic text-white drop-shadow-lg
+            <h1 className="font-mulish italic font-black text-white drop-shadow-lg
               text-4xl sm:text-5xl md:text-6xl lg:text-7xl
               tracking-wide leading-tight mb-3">
               {slide.title}
