@@ -11,7 +11,7 @@ import {
     ChevronDown,
     ChevronRight,
     LayoutGrid,
-    Flame,
+    Footprints,
     Truck,
     Menu,
     X,
@@ -59,14 +59,14 @@ export function Navbar() {
     return (
         <header className="w-full sticky top-0 z-50 bg-white dark:bg-[#0A0A0A] border-b border-zinc-200 dark:border-zinc-800 shadow-md transition-colors duration-200">
 
-            {/* ================= LAYER 1: TOP ANNOUNCEMENT & SOCIAL BAR (VISIBLE ON ALL SCREENS) ================= */}
+            {/*  LAYER 1: TOP ANNOUNCEMENT & SOCIAL BAR (VISIBLE ON ALL SCREENS)  */}
             <div className="w-full bg-zinc-950 text-zinc-300 dark:bg-black dark:text-zinc-400 border-b border-zinc-800/80 text-xs py-2">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 
                     {/* EXTREME LEFT: Delivery Notice */}
                     <div className="flex items-center gap-2">
                         <Truck className="w-3.5 h-3.5 text-[#C6A16A]" />
-                        <span className="font-medium tracking-wide text-zinc-200 text-[11px] sm:text-xs">
+                        <span className="font-chirp font-medium tracking-wide text-zinc-200 text-[11px] sm:text-xs">
                             We do delivery countrywide
                         </span>
                     </div>
@@ -108,7 +108,7 @@ export function Navbar() {
                 </div>
             </div>
 
-            {/* ================= LAYER 2: MAIN BRANDING & ACTIONS NAVBAR ================= */}
+            {/*  LAYER 2: MAIN BRANDING & ACTIONS NAVBAR  */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4 lg:gap-8">
 
@@ -337,7 +337,7 @@ export function Navbar() {
                 </div>
             </div>
 
-            {/* ================= MOBILE EXPANDABLE SEARCH BAR ================= */}
+            {/*  MOBILE EXPANDABLE SEARCH BAR  */}
             {isMobileSearchOpen && (
                 <div className="md:hidden px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-2 duration-150">
                     <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
@@ -361,7 +361,7 @@ export function Navbar() {
                 </div>
             )}
 
-            {/* ================= LAYER 3: CATEGORY NAVIGATION BAR (HIDDEN ON MOBILE, VISIBLE ON DESKTOP ONLY) ================= */}
+            {/*  LAYER 3: CATEGORY NAVIGATION BAR (HIDDEN ON MOBILE, VISIBLE ON DESKTOP ONLY)  */}
             <div className="hidden md:block w-full bg-zinc-50/90 dark:bg-zinc-950/90 border-t border-zinc-200/80 dark:border-zinc-800/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-4 py-2">
@@ -430,14 +430,14 @@ export function Navbar() {
                             })}
                         </nav>
 
-                        {/* Right Action Badge: Hot Deals */}
+                        {/* Right Action Badge: Castra Kicks */}
                         <div className="flex items-center gap-2 flex-shrink-0 pl-3 border-l border-zinc-200 dark:border-zinc-800">
                             <Link
-                                href="/deals"
+                                href="/kicks"
                                 className="flex items-center gap-1.5 text-xs font-bold text-[#C6A16A] hover:text-[#b59059] transition-colors py-1.5 px-3 rounded-full bg-[#C6A16A]/10 hover:bg-[#C6A16A]/20 whitespace-nowrap"
                             >
-                                <Flame className="w-3.5 h-3.5 fill-[#C6A16A]" />
-                                <span>Hot Deals</span>
+                                <Footprints className="w-3.5 h-3.5 text-[#C6A16A]" />
+                                <span>Castra Kicks</span>
                             </Link>
                         </div>
 
@@ -445,7 +445,7 @@ export function Navbar() {
                 </div>
             </div>
 
-            {/* ================= MOBILE HAMBURGER MENU DRAWER (OPENS ALL CATEGORIES) ================= */}
+            {/*  MOBILE HAMBURGER MENU DRAWER (OPENS ALL CATEGORIES)  */}
             {isMobileMenuOpen && (
                 <div className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
                     <div className="w-4/5 max-w-sm h-full bg-white dark:bg-[#0A0A0A] shadow-2xl flex flex-col justify-between border-l border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-right duration-250">
@@ -507,12 +507,12 @@ export function Navbar() {
                         {/* Drawer Footer - Actions */}
                         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 space-y-2">
                             <Link
-                                href="/deals"
+                                href="/kicks"
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#C6A16A] text-zinc-950 font-bold text-xs shadow-xs hover:bg-[#b59059] transition-colors"
                             >
-                                <Flame className="w-4 h-4 fill-zinc-950" />
-                                <span>Hot Deals & Offers</span>
+                                <Footprints className="w-4 h-4 text-zinc-950" />
+                                <span>Castra Kicks</span>
                             </Link>
                         </div>
 

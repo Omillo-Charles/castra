@@ -54,17 +54,54 @@
   --color-surface-dark-elevated: #121212;
   --color-surface-dark-card: #171717;
 
-  /* Font Utility Classes */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-chirp: var(--font-chirp);
-  --font-glacial: var(--font-glacial);
-  --font-glacial-indifference: var(--font-glacial);
-  --font-mulish: var(--font-mulish);
+  /*
+    Font family utilities.
+    Next.js injects CSS vars via the `variable` prop on the html element:
+      --font-chirp, --font-glacial, --font-mulish, --font-geist-sans, --font-geist-mono
+    We register these as Tailwind font-family tokens so that utilities like
+    `font-chirp`, `font-glacial`, `font-mulish` work in JSX classNames.
+  */
+  --font-sans: var(--font-mulish), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --font-chirp: var(--font-chirp), sans-serif;
+  --font-glacial: var(--font-glacial), sans-serif;
+  --font-mulish: var(--font-mulish), sans-serif;
+}
+
+/* ─── Global Base Styles ──────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Mulish is the default body / paragraph font */
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* ─── Heading defaults: Glacial Indifference ─────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-glacial), sans-serif;
+  line-height: 1.2;
+}
+
+/* ─── Code / mono ───────────────────────────────────────────────────────── */
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-geist-mono), monospace;
 }
