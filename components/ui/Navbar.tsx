@@ -19,6 +19,7 @@ import {
 
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/svgicons";
 import { scrollToProducts } from "@/lib/scrollToProducts";
+import { useAuth } from "@/context/AuthContext";
 
 const CATEGORIES = [
     "All Categories",
@@ -35,6 +36,7 @@ const CATEGORIES = [
 const PRODUCT_CATEGORIES = CATEGORIES.slice(1);
 
 export function Navbar() {
+    const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
     const [activeNavCategory, setActiveNavCategory] = useState<string | null>(null);
 
@@ -216,7 +218,7 @@ export function Navbar() {
 
                         {/* Profile Icon / User Account */}
                         <Link
-                            href="/account"
+                            href={user ? (user.role === "ADMIN" ? "/account/dashboard/admin" : "/account/dashboard") : "/account"}
                             className="flex items-center gap-2 p-2 rounded-full text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all duration-200 group"
                             title="Account"
                         >
@@ -224,9 +226,11 @@ export function Navbar() {
                                 <User className="w-5 h-5" />
                             </div>
                             <div className="hidden xl:flex flex-col text-left">
-                                <span className="text-[10px] text-zinc-400 leading-tight">Welcome</span>
+                                <span className="text-[10px] text-zinc-400 leading-tight">
+                                    {user ? "My Account" : "Welcome"}
+                                </span>
                                 <span className="text-xs font-semibold leading-tight text-zinc-800 dark:text-zinc-100 group-hover:text-[#C6A16A]">
-                                    Sign In / Account
+                                    {user ? `${user.firstName} ${user.lastName}` : "Sign In / Account"}
                                 </span>
                             </div>
                         </Link>
@@ -287,7 +291,7 @@ export function Navbar() {
 
                         {/* Mobile Profile Icon */}
                         <Link
-                            href="/account"
+                            href={user ? (user.role === "ADMIN" ? "/account/dashboard/admin" : "/account/dashboard") : "/account"}
                             className="p-2 text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             title="Account"
                         >

@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, AlertCircle, ShieldCheck, Truck, Star } from "lucide-react";
 import { GoogleIcon } from "@/components/svgicons";
+import { useAuth } from "@/context/AuthContext";
 
 type Tab = "login" | "signup";
 
-/* ─────────────────────────────────────────────────────────────────────────
-   Root shell — split screen
-───────────────────────────────────────────────────────────────────────── */
+/* Root shell — split screen */
 export function AccountForm() {
     const [tab, setTab] = useState<Tab>("login");
 
@@ -169,20 +169,36 @@ export function AccountForm() {
     );
 }
 
-/* ─── Login Form ─────────────────────────────────────────────────────────── */
+/* Login Form */
 function LoginForm() {
+    const { login } = useAuth();
+    const router = useRouter();
     const [show, setShow]         = useState(false);
     const [email, setEmail]       = useState("");
     const [password, setPassword] = useState("");
     const [error, setError]       = useState("");
     const [loading, setLoading]   = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         if (!email || !password) { setError("Please fill in all fields."); return; }
         setLoading(true);
-        setTimeout(() => { setLoading(false); setError("Backend not connected yet."); }, 800);
+        try {
+            await login(email, password);
+            // Read role from a fresh /me call — user state is set by login()
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, { credentials: "include" });
+            const data = await res.json();
+            if (data?.user?.role === "ADMIN") {
+                router.push("/account/dashboard/admin");
+            } else {
+                router.push("/account/dashboard");
+            }
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -210,8 +226,10 @@ function LoginForm() {
     );
 }
 
-/* ─── Sign Up Form ───────────────────────────────────────────────────────── */
+/* Sign Up Form */
 function SignupForm({ onSuccess }: { onSuccess: () => void }) {
+    const { register } = useAuth();
+    const router = useRouter();
     const [show, setShow]         = useState(false);
     const [name, setName]         = useState("");
     const [email, setEmail]       = useState("");
@@ -219,13 +237,25 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const [error, setError]       = useState("");
     const [loading, setLoading]   = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         if (!name || !email || !password) { setError("Please fill in all fields."); return; }
         if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
+
+        const parts     = name.trim().split(" ");
+        const firstName = parts[0] || "";
+        const lastName  = parts.slice(1).join(" ") || firstName;
+
         setLoading(true);
-        setTimeout(() => { setLoading(false); onSuccess(); }, 800);
+        try {
+            await register({ firstName, lastName, email, password });
+            router.push("/account/dashboard");
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -256,7 +286,7 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     );
 }
 
-/* ─── Shared primitives ──────────────────────────────────────────────────── */
+/* Shared primitives */
 function Field({ label, type, value, onChange, placeholder, icon, autoComplete, suffix }: {
     label: string; type: string; value: string; onChange: (v: string) => void;
     placeholder: string; icon: React.ReactNode; autoComplete?: string; suffix?: React.ReactNode;
