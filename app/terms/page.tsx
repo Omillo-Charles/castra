@@ -35,7 +35,7 @@ const SECTIONS = [
             },
             {
                 subtitle: "Intellectual property",
-                body: "All content on this website — including text, images, logos, graphics, and the Castra brand — is the property of Castra Households and is protected by applicable copyright and trademark laws. You may not reproduce, distribute, or create derivative works without our express written consent.",
+                body: "All content on this website - including text, images, logos, graphics, and the Castra brand - is the property of Castra Households and is protected by applicable copyright and trademark laws. You may not reproduce, distribute, or create derivative works without our express written consent.",
             },
         ],
     },
@@ -93,7 +93,7 @@ const SECTIONS = [
             },
             {
                 subtitle: "Exchanges on Castra Kicks",
-                body: "For Castra Kicks (footwear), we accept exchanges only — no refunds. If you receive a defective item or the wrong size was delivered due to our error, you may request an exchange within 48 hours of delivery. The item must be unworn, in its original packaging, and accompanied by proof of purchase. Exchange requests submitted after 48 hours will not be accepted.",
+                body: "For Castra Kicks (footwear), we accept exchanges only - no refunds. If you receive a defective item or the wrong size was delivered due to our error, you may request an exchange within 48 hours of delivery. The item must be unworn, in its original packaging, and accompanied by proof of purchase. Exchange requests submitted after 48 hours will not be accepted.",
             },
             {
                 subtitle: "Damaged or incorrect items",

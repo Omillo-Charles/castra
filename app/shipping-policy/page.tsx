@@ -8,23 +8,6 @@ export const metadata = {
     description: "Everything you need to know about how Castra Households delivers across Kenya.",
 };
 
-const NAIROBI_ZONES = [
-    { zone: "CBD & Westlands", time: "Same day – Next day", fee: "From KSh 150" },
-    { zone: "Kiambu Road, Thika Road", time: "1 – 2 business days", fee: "From KSh 200" },
-    { zone: "Ngong Road, Karen, Langata", time: "1 – 2 business days", fee: "From KSh 200" },
-    { zone: "Eastlands (Umoja, Kayole, Donholm)", time: "1 – 2 business days", fee: "From KSh 200" },
-    { zone: "Outer Nairobi (Ruiru, Athi River, Kitengela)", time: "2 – 3 business days", fee: "From KSh 300" },
-];
-
-const UPCOUNTRY_ZONES = [
-    { zone: "Mombasa", time: "3 – 5 business days", fee: "From KSh 500" },
-    { zone: "Kisumu", time: "3 – 5 business days", fee: "From KSh 500" },
-    { zone: "Nakuru", time: "2 – 4 business days", fee: "From KSh 400" },
-    { zone: "Eldoret", time: "3 – 5 business days", fee: "From KSh 500" },
-    { zone: "Nyeri, Meru, Embu", time: "3 – 5 business days", fee: "From KSh 450" },
-    { zone: "Other Counties", time: "4 – 7 business days", fee: "Quote on request" },
-];
-
 export default function ShippingPolicyPage() {
     return (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -63,7 +46,7 @@ export default function ShippingPolicyPage() {
                     <div className="grid sm:grid-cols-3 gap-4">
                         {[
                             { icon: <CreditCard className="w-5 h-5" />, step: "1. Place & Pay", desc: "Place your order via our website or WhatsApp and complete payment via M-Pesa or confirm Cash on Delivery." },
-                            { icon: <Clock className="w-5 h-5" />, step: "2. We Process", desc: "We confirm your order, prepare your items, and hand them over to our delivery partner — typically within 24 hours." },
+                            { icon: <Clock className="w-5 h-5" />, step: "2. We Process", desc: "We confirm your order, prepare your items, and hand them over to our delivery partner - typically within 24 hours." },
                             { icon: <Truck className="w-5 h-5" />, step: "3. We Deliver", desc: "Your order is dispatched and delivered to your provided address. You will receive a notification when it is on its way." },
                         ].map(({ icon, step, desc }) => (
                             <div key={step} className="flex flex-col gap-3 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
@@ -81,59 +64,51 @@ export default function ShippingPolicyPage() {
 
                 {/* Nairobi delivery */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-2 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-4 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         Nairobi Delivery
                     </h2>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-5">
-                        Estimated timelines and fees by Nairobi zone. All timelines are from the date of dispatch, not order placement.
-                    </p>
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                        <div className="grid grid-cols-3 bg-zinc-100 dark:bg-zinc-900 px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                            <span>Zone</span>
-                            <span>Est. Time</span>
-                            <span>Fee</span>
-                        </div>
-                        {NAIROBI_ZONES.map((row, i) => (
-                            <div key={row.zone} className={`grid grid-cols-3 px-5 py-3.5 text-xs gap-2 ${
-                                i !== NAIROBI_ZONES.length - 1 ? "border-b border-zinc-100 dark:border-zinc-800/60" : ""
-                            }`}>
-                                <span className="font-semibold text-zinc-800 dark:text-zinc-200">{row.zone}</span>
-                                <span className="text-zinc-500 dark:text-zinc-400">{row.time}</span>
-                                <span className="font-semibold text-[#C6A16A]">{row.fee}</span>
-                            </div>
-                        ))}
+                    <div className="space-y-4 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Since distances within Nairobi are relatively short, delivery fees are primarily driven by the
+                            <span className="font-semibold text-zinc-800 dark:text-zinc-200"> size and weight of your item</span> rather than the specific location.
+                            A small, lightweight item - like a decor piece or set of mugs - will attract a low fee, while a bulky item
+                            like a vacuum cleaner, large bedding set, or piece of furniture will cost more due to handling and transport requirements.
+                        </p>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            That said, areas further from the city centre - such as Ruiru, Athi River, or Kitengela - will attract a slightly
+                            higher fee compared to central zones like Westlands or the CBD, even for similar item sizes.
+                        </p>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            The exact fee will always be communicated to you <span className="font-semibold text-zinc-800 dark:text-zinc-200">before your order is confirmed</span> - you will never be surprised at checkout.
+                        </p>
                     </div>
                 </section>
 
                 {/* Upcountry delivery */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-2 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-4 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         Upcountry Delivery
                     </h2>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-5">
-                        We deliver to all 47 counties. Fees and timelines below are estimates — contact us for a precise quote.
-                    </p>
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                        <div className="grid grid-cols-3 bg-zinc-100 dark:bg-zinc-900 px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                            <span>Destination</span>
-                            <span>Est. Time</span>
-                            <span>Fee</span>
-                        </div>
-                        {UPCOUNTRY_ZONES.map((row, i) => (
-                            <div key={row.zone} className={`grid grid-cols-3 px-5 py-3.5 text-xs gap-2 ${
-                                i !== UPCOUNTRY_ZONES.length - 1 ? "border-b border-zinc-100 dark:border-zinc-800/60" : ""
-                            }`}>
-                                <span className="font-semibold text-zinc-800 dark:text-zinc-200">{row.zone}</span>
-                                <span className="text-zinc-500 dark:text-zinc-400">{row.time}</span>
-                                <span className="font-semibold text-[#C6A16A]">{row.fee}</span>
-                            </div>
-                        ))}
+                    <div className="space-y-4 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            For deliveries outside Nairobi, fees are calculated based on
+                            <span className="font-semibold text-zinc-800 dark:text-zinc-200"> both the distance to your county and the size or weight of your items</span>.
+                            A small item going to Nakuru will cost significantly less than a large appliance or piece of furniture going to Mombasa or Kisumu.
+                        </p>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Closer counties like Nakuru and Nyeri attract lower fees, while destinations further away - such as Mombasa, Kisumu, or Eldoret -
+                            will cost more, especially for heavier or bulkier items. Very remote areas or counties off major transit routes may require a custom quote.
+                        </p>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            In all cases, we will give you a <span className="font-semibold text-zinc-800 dark:text-zinc-200">clear delivery quote before dispatch</span>.
+                            If you are unsure of the fee for your location and item, reach out on WhatsApp and we will respond promptly.
+                        </p>
                     </div>
                     <p className="text-xs text-zinc-400 mt-3 flex items-start gap-2">
                         <MapPin className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0 mt-0.5" />
-                        Delivery fees are charged per order and are confirmed before dispatch. Bulky or heavy items may attract higher charges.
+                        We deliver to all 47 counties. Delivery timelines are typically 2–5 business days for most towns, and up to 7 days for remote areas.
                     </p>
                 </section>
 

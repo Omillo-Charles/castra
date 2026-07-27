@@ -17,7 +17,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We accept M-Pesa and Cash on Delivery (COD). For M-Pesa, you will receive the paybill or till number after your order is confirmed. COD is available for select areas — confirm with us before ordering.",
+                a: "We accept M-Pesa and Cash on Delivery (COD). For M-Pesa, you will receive the paybill or till number after your order is confirmed. COD is available for select areas - confirm with us before ordering.",
             },
             {
                 q: "Can I modify or cancel my order?",
@@ -35,7 +35,7 @@ const FAQ_GROUPS = [
         faqs: [
             {
                 q: "Do you deliver countrywide?",
-                a: "Yes, we deliver across Kenya — Nairobi, major towns, and remote areas. Delivery timelines and charges vary by location. Contact us for a quote to your specific area.",
+                a: "Yes, we deliver across Kenya - Nairobi, major towns, and remote areas. Delivery timelines and charges vary by location. Contact us for a quote to your specific area.",
             },
             {
                 q: "How long does delivery take?",
@@ -47,7 +47,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "What happens if no one is available to receive my order?",
-                a: "Our courier will attempt to contact you before delivery. If no one is available, we will arrange a re-delivery — additional charges may apply for a second delivery attempt. Ensure your phone number and delivery address are accurate when placing your order.",
+                a: "Our courier will attempt to contact you before delivery. If no one is available, we will arrange a re-delivery - additional charges may apply for a second delivery attempt. Ensure your phone number and delivery address are accurate when placing your order.",
             },
         ],
     },
@@ -57,11 +57,11 @@ const FAQ_GROUPS = [
         faqs: [
             {
                 q: "Can I return an item from Castra Collection?",
-                a: "No. All sales on Castra Collection — including household essentials, kitchenware, bedding, decor, electronics, furniture, and organizers — are final. We do not accept returns or issue refunds. We encourage you to ask any questions about a product before purchasing.",
+                a: "No. All sales on Castra Collection - including household essentials, kitchenware, bedding, decor, electronics, furniture, and organizers - are final. We do not accept returns or issue refunds. We encourage you to ask any questions about a product before purchasing.",
             },
             {
                 q: "Can I exchange footwear from Castra Kicks?",
-                a: "Yes. Castra Kicks (footwear) are eligible for exchanges only — no refunds. If you received a wrong size due to our error, or the item is defective, contact us within 48 hours of delivery with photos. The item must be unworn and in its original packaging.",
+                a: "Yes. Castra Kicks (footwear) are eligible for exchanges only - no refunds. If you received a wrong size due to our error, or the item is defective, contact us within 48 hours of delivery with photos. The item must be unworn and in its original packaging.",
             },
             {
                 q: "What if my order arrived damaged or incorrect?",
@@ -101,7 +101,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "How is my personal data used?",
-                a: "We use your data solely to process and deliver your orders, and — with your consent — to send you promotions. We never sell your personal data to third parties. Read our full Privacy Policy for details.",
+                a: "We use your data solely to process and deliver your orders, and - with your consent - to send you promotions. We never sell your personal data to third parties. Read our full Privacy Policy for details.",
             },
             {
                 q: "How do I delete my account?",
@@ -114,24 +114,21 @@ const FAQ_GROUPS = [
 function FaqItem({ q, a }: { q: string; a: string }) {
     const [open, setOpen] = useState(false);
     return (
-        <div className={`border rounded-xl overflow-hidden transition-all duration-200 ${
-            open
+        <div className={`border rounded-xl overflow-hidden transition-all duration-200 ${open
                 ? "border-[#C6A16A]/40 bg-[#C6A16A]/5 dark:bg-[#C6A16A]/5"
                 : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#171717] hover:border-zinc-300 dark:hover:border-zinc-700"
-        }`}>
+            }`}>
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer"
             >
-                <span className={`text-sm font-semibold leading-snug transition-colors ${
-                    open ? "text-[#C6A16A]" : "text-zinc-900 dark:text-zinc-100"
-                }`}>
+                <span className={`text-sm font-semibold leading-snug transition-colors ${open ? "text-[#C6A16A]" : "text-zinc-900 dark:text-zinc-100"
+                    }`}>
                     {q}
                 </span>
-                <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
-                    open ? "rotate-180 text-[#C6A16A]" : "text-zinc-400"
-                }`} />
+                <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180 text-[#C6A16A]" : "text-zinc-400"
+                    }`} />
             </button>
             {open && (
                 <div className="px-5 pb-5">
@@ -185,11 +182,10 @@ export default function FaqPage() {
                                 key={group.id}
                                 type="button"
                                 onClick={() => setActiveGroup(group.id)}
-                                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all duration-150 cursor-pointer ${
-                                    activeGroup === group.id
+                                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all duration-150 cursor-pointer ${activeGroup === group.id
                                         ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
                                         : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white"
-                                }`}
+                                    }`}
                             >
                                 {group.label}
                             </button>
