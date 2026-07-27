@@ -6,20 +6,16 @@ import { useRouter } from "next/navigation";
 import {
     User, MapPin, ShoppingBag, Heart, Settings,
     LogOut, ChevronRight, Package, Truck, CheckCircle2,
-    Edit2, Phone, Mail, Home, Plus,
+    Edit2, Phone, Mail, Home, Plus, X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { userApi } from "@/config/api";
+import { userApi, addressApi } from "@/config/api";
 
-/* ── Dummy data — to be replaced when order/address/wishlist endpoints are ready ── */
+/* ── Dummy data — to be replaced when order/wishlist endpoints are ready ── */
 const DUMMY_ORDERS = [
     { id: "CST-20250727-0041", date: "27 Jul 2025", items: 2, total: 6750,  status: "out-for-delivery" as const },
     { id: "CST-20250720-0033", date: "20 Jul 2025", items: 1, total: 4800,  status: "delivered"        as const },
     { id: "CST-20250710-0018", date: "10 Jul 2025", items: 3, total: 12300, status: "delivered"        as const },
-];
-
-const DUMMY_ADDRESSES = [
-    { id: "a1", label: "Home", street: "Westlands, Mpaka Road, Apt 4B", city: "Nairobi", county: "Nairobi County", default: true },
 ];
 
 const DUMMY_WISHLIST = [
@@ -150,7 +146,7 @@ export default function DashboardPage() {
     );
 }
 
-/* ══ OVERVIEW ══════════════════════════════════════════════════════════════ */
+/* ══ OVERVIEW ══ */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
     const recentOrder = DUMMY_ORDERS[0];
     const status = ORDER_STATUS[recentOrder.status];
@@ -161,7 +157,7 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                 {[
                     { label: "Total Orders",    value: DUMMY_ORDERS.length,    icon: <Package className="w-5 h-5" />,  onClick: () => setSection("orders") },
                     { label: "Wishlist Items",  value: DUMMY_WISHLIST.length,   icon: <Heart className="w-5 h-5" />,    onClick: () => setSection("wishlist") },
-                    { label: "Saved Addresses", value: DUMMY_ADDRESSES.length,  icon: <MapPin className="w-5 h-5" />,   onClick: () => setSection("addresses") },
+                    { label: "Saved Addresses", value: 0,  icon: <MapPin className="w-5 h-5" />,   onClick: () => setSection("addresses") },
                 ].map(({ label, value, icon, onClick }) => (
                     <button key={label} type="button" onClick={onClick}
                         className="flex flex-col gap-3 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-[#C6A16A]/40 transition-all text-left cursor-pointer group">
@@ -231,7 +227,7 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
     );
 }
 
-/* ══ ORDERS ════════════════════════════════════════════════════════════════ */
+/* ══ ORDERS ══ */
 function Orders() {
     return (
         <div className="space-y-4">
@@ -268,49 +264,231 @@ function Orders() {
     );
 }
 
-/* ══ ADDRESSES ═════════════════════════════════════════════════════════════ */
+/* ══ ADDRESSES ═*/
 function Addresses() {
-    const [addresses, setAddresses] = useState(DUMMY_ADDRESSES);
+    const [addresses, setAddresses] = useState<import("@/config/api").Address[]>([]);
+    const [loading,   setLoading]   = useState(true);
+    const [error,     setError]     = useState("");
+
+    // Add / Edit form state
+    const [showForm,   setShowForm]   = useState(false);
+    const [editId,     setEditId]     = useState<string | null>(null);
+    const [label,      setLabel]      = useState("");
+    const [street,     setStreet]     = useState("");
+    const [city,       setCity]       = useState("");
+    const [county,     setCounty]     = useState("");
+    const [isDefault,  setIsDefault]  = useState(false);
+    const [saving,     setSaving]     = useState(false);
+    const [formError,  setFormError]  = useState("");
+
+    // Fetch addresses on mount
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await addressApi.list();
+                setAddresses(res.addresses);
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "Failed to load addresses.");
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
+
+    const resetForm = () => {
+        setEditId(null); setLabel(""); setStreet("");
+        setCity(""); setCounty(""); setIsDefault(false);
+        setFormError(""); setShowForm(false);
+    };
+
+    const openAdd = () => {
+        resetForm();
+        setShowForm(true);
+    };
+
+    const openEdit = (addr: import("@/config/api").Address) => {
+        setEditId(addr.id);
+        setLabel(addr.label);
+        setStreet(addr.street);
+        setCity(addr.city);
+        setCounty(addr.county);
+        setIsDefault(addr.isDefault);
+        setFormError("");
+        setShowForm(true);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setFormError("");
+        if (!label || !street || !city || !county) {
+            setFormError("All fields are required.");
+            return;
+        }
+        setSaving(true);
+        try {
+            if (editId) {
+                const res = await addressApi.update(editId, { label, street, city, county, isDefault });
+                setAddresses(prev => prev.map(a => a.id === editId ? res.address : a));
+            } else {
+                const res = await addressApi.create({ label, street, city, county, isDefault });
+                setAddresses(prev => {
+                    // If new address is default, clear others
+                    const updated = isDefault ? prev.map(a => ({ ...a, isDefault: false })) : [...prev];
+                    return [...updated, res.address];
+                });
+            }
+            resetForm();
+        } catch (err: unknown) {
+            setFormError(err instanceof Error ? err.message : "Failed to save address.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSetDefault = async (id: string) => {
+        try {
+            await addressApi.setDefault(id);
+            setAddresses(prev => prev.map(a => ({ ...a, isDefault: a.id === id })));
+        } catch {
+            // silent — UI stays consistent
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            await addressApi.delete(id);
+            setAddresses(prev => {
+                const remaining = prev.filter(a => a.id !== id);
+                // If deleted was default and there are others, promote first
+                const wasDefault = prev.find(a => a.id === id)?.isDefault;
+                if (wasDefault && remaining.length > 0) {
+                    remaining[0] = { ...remaining[0], isDefault: true };
+                }
+                return remaining;
+            });
+        } catch {
+            // silent
+        }
+    };
+
+    if (loading) return (
+        <div className="flex items-center justify-center py-20">
+            <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+        </div>
+    );
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Saved Addresses</h2>
-                <button type="button" className="flex items-center gap-1.5 text-xs font-bold text-[#C6A16A] hover:underline">
+                <button type="button" onClick={openAdd}
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#C6A16A] hover:underline">
                     <Plus className="w-3.5 h-3.5" /> Add New
                 </button>
             </div>
+
+            {error && <p className="text-sm text-red-500 font-semibold">{error}</p>}
+
+            {/* Add / Edit form */}
+            {showForm && (
+                <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
+                        {editId ? "Edit Address" : "New Address"}
+                    </h3>
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                        <AddrField label="Label (e.g. Home, Office)" value={label} onChange={setLabel} placeholder="Home" />
+                        <AddrField label="Street / Estate / Building" value={street} onChange={setStreet} placeholder="Westlands, Mpaka Road, Apt 4B" />
+                        <div className="grid sm:grid-cols-2 gap-3">
+                            <AddrField label="Town / City" value={city}   onChange={setCity}   placeholder="Nairobi" />
+                            <AddrField label="County"      value={county} onChange={setCounty} placeholder="Nairobi County" />
+                        </div>
+                        <label className="flex items-center gap-2.5 cursor-pointer">
+                            <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)}
+                                className="w-4 h-4 accent-[#C6A16A]" />
+                            <span className="text-sm text-zinc-700 dark:text-zinc-300">Set as default address</span>
+                        </label>
+                        {formError && <p className="text-xs text-red-500 font-semibold">{formError}</p>}
+                        <div className="flex items-center gap-3 pt-1">
+                            <button type="submit" disabled={saving}
+                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
+                                {saving
+                                    ? <span className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" />
+                                    : editId ? "Save Changes" : "Add Address"}
+                            </button>
+                            <button type="button" onClick={resetForm}
+                                className="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Address list */}
             {addresses.map((addr) => (
-                <div key={addr.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-start gap-4">
+                <div key={addr.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-start gap-4 hover:border-[#C6A16A]/30 transition-all">
                     <div className="p-2.5 rounded-xl bg-[#C6A16A]/10 text-[#C6A16A] flex-shrink-0 mt-0.5">
                         <MapPin className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <p className="text-sm font-bold text-zinc-900 dark:text-white">{addr.label}</p>
-                            {addr.default && (
+                            {addr.isDefault && (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C6A16A]/15 text-[#C6A16A] border border-[#C6A16A]/25">Default</span>
                             )}
                         </div>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400">{addr.street}</p>
                         <p className="text-xs text-zinc-400 mt-0.5">{addr.city} · {addr.county}</p>
                     </div>
-                    <button type="button" className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-[#C6A16A] transition-colors flex-shrink-0">
-                        <Edit2 className="w-3.5 h-3.5" /> Edit
-                    </button>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {!addr.isDefault && (
+                            <button type="button" onClick={() => handleSetDefault(addr.id)}
+                                className="text-[10px] font-semibold text-zinc-400 hover:text-[#C6A16A] transition-colors px-2 py-1 rounded-lg hover:bg-[#C6A16A]/10">
+                                Set default
+                            </button>
+                        )}
+                        <button type="button" onClick={() => openEdit(addr)}
+                            className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-[#C6A16A] transition-colors p-1.5 rounded-lg hover:bg-[#C6A16A]/10">
+                            <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" onClick={() => handleDelete(addr.id)}
+                            className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
+                            <X className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
                 </div>
             ))}
-            {addresses.length === 0 && (
+
+            {addresses.length === 0 && !showForm && (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
                     <MapPin className="w-10 h-10 opacity-20" />
                     <p className="text-sm font-semibold">No saved addresses</p>
+                    <button type="button" onClick={openAdd}
+                        className="text-xs text-[#C6A16A] font-bold hover:underline flex items-center gap-1">
+                        <Plus className="w-3.5 h-3.5" /> Add your first address
+                    </button>
                 </div>
             )}
         </div>
     );
 }
 
-/* ══ WISHLIST ══════════════════════════════════════════════════════════════ */
+function AddrField({ label, value, onChange, placeholder }: {
+    label: string; value: string; onChange: (v: string) => void; placeholder: string;
+}) {
+    return (
+        <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">{label}</label>
+            <input
+                type="text" value={value} onChange={e => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all"
+            />
+        </div>
+    );
+}
+
+/* ══ WISHLIST ═ */
 function Wishlist() {
     const [items, setItems] = useState(DUMMY_WISHLIST);
 
@@ -347,7 +525,7 @@ function Wishlist() {
     );
 }
 
-/* ══ PROFILE ═══════════════════════════════════════════════════════════════ */
+/* ══ PROFILE ═══*/
 function Profile() {
     const { user, logout } = useAuth();
     const router = useRouter();

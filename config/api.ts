@@ -92,8 +92,19 @@ export const authApi = {
 
 // User API
 
+export type Address = {
+    id: string;
+    userId: string;
+    label: string;
+    street: string;
+    city: string;
+    county: string;
+    isDefault: boolean;
+    createdAt: string;
+    updatedAt: string;
+};
+
 export const userApi = {
-    /** Update profile fields (firstName, lastName, phone). */
     updateProfile: (body: { firstName?: string; lastName?: string; phone?: string }) =>
         request<{ success: boolean; user: AuthUser }>("/users/me", {
             method: "PATCH",
@@ -110,6 +121,41 @@ export const userApi = {
     /** Permanently delete the authenticated user's account. */
     deleteAccount: () =>
         request<{ success: boolean; message: string }>("/users/me", {
+            method: "DELETE",
+        }),
+};
+
+// Address API
+
+export const addressApi = {
+    /** Get all saved addresses for the current user. */
+    list: () =>
+        request<{ success: boolean; addresses: Address[] }>("/addresses"),
+
+    /** Create a new address. */
+    create: (body: { label: string; street: string; city: string; county: string; isDefault?: boolean }) =>
+        request<{ success: boolean; address: Address }>("/addresses", {
+            method: "POST",
+            body: JSON.stringify(body),
+        }),
+
+    /** Update an address by id. */
+    update: (id: string, body: Partial<{ label: string; street: string; city: string; county: string; isDefault: boolean }>) =>
+        request<{ success: boolean; address: Address }>(`/addresses/${id}`, {
+            method: "PATCH",
+            body: JSON.stringify(body),
+        }),
+
+    /** Set an address as the default. */
+    setDefault: (id: string) =>
+        request<{ success: boolean; address: Address }>(`/addresses/${id}/default`, {
+            method: "PATCH",
+            body: JSON.stringify({}),
+        }),
+
+    /** Delete an address by id. */
+    delete: (id: string) =>
+        request<{ success: boolean; message: string }>(`/addresses/${id}`, {
             method: "DELETE",
         }),
 };
