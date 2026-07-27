@@ -85,19 +85,19 @@ const SECTIONS = [
     },
     {
         id: "returns-refunds",
-        title: "Returns & Refunds",
+        title: "Returns & Exchanges Policy",
         content: [
             {
-                subtitle: "Return eligibility",
-                body: "You may return an item within 7 days of delivery if it is defective, damaged, or significantly different from what was described. Items must be unused, in their original packaging, and accompanied by proof of purchase.",
+                subtitle: "No returns on Castra Collection",
+                body: "All sales on Castra Collection (household essentials, kitchenware, bedding, decor, electronics, organizers, furniture, and office equipment) are final. We do not accept returns or issue refunds once an order has been delivered. We encourage you to review product details carefully before placing your order. If you have any questions about a product before purchasing, please reach out to us via WhatsApp or email.",
             },
             {
-                subtitle: "Non-returnable items",
-                body: "Certain items cannot be returned for hygiene or safety reasons, including opened bedding, personal care products, and perishable goods. This will be clearly indicated on the product listing.",
+                subtitle: "Exchanges on Castra Kicks",
+                body: "For Castra Kicks (footwear), we accept exchanges only — no refunds. If you receive a defective item or the wrong size was delivered due to our error, you may request an exchange within 48 hours of delivery. The item must be unworn, in its original packaging, and accompanied by proof of purchase. Exchange requests submitted after 48 hours will not be accepted.",
             },
             {
-                subtitle: "Refund process",
-                body: "Once we have received and inspected the returned item, we will notify you of the outcome. Approved refunds will be processed within 7–14 business days via the original payment method or an agreed alternative such as M-Pesa.",
+                subtitle: "Damaged or incorrect items",
+                body: "If your order arrives damaged or you receive a wrong item, please contact us immediately via WhatsApp on +254 704 147 774 with photographic evidence. We will assess each case individually and, where we are at fault, arrange a replacement or exchange at no additional cost to you.",
             },
         ],
     },
