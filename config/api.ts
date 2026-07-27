@@ -55,7 +55,7 @@ async function request<T>(
 
 export const authApi = {
 
-    // Register a new user account.
+// Register a new user account.
     register: (body: {
         firstName: string;
         lastName: string;
@@ -85,15 +85,15 @@ export const authApi = {
     me: () =>
         request<{ success: boolean; user: AuthUser }>("/auth/me"),
 
-    //Returns the URL to redirect the browser to for Google OAuth.
-    //This is a full-page redirect, not a fetch call.
+     //Returns the URL to redirect the browser to for Google OAuth.
+     //This is a full-page redirect, not a fetch call.
     googleLoginUrl: () => `${BASE_URL}/auth/google`,
 };
 
-// User API 
+// User API
 
 export const userApi = {
-    // Update profile fields (firstName, lastName, phone).
+    /** Update profile fields (firstName, lastName, phone). */
     updateProfile: (body: { firstName?: string; lastName?: string; phone?: string }) =>
         request<{ success: boolean; user: AuthUser }>("/users/me", {
             method: "PATCH",
