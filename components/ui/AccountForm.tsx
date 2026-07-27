@@ -7,12 +7,19 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, AlertCircle, ShieldCheck, Truck, Star } from "lucide-react";
 import { GoogleIcon } from "@/components/svgicons";
 import { useAuth } from "@/context/AuthContext";
+import { authApi } from "@/config/api";
 
 type Tab = "login" | "signup";
 
 /* Root shell — split screen */
 export function AccountForm() {
     const [tab, setTab] = useState<Tab>("login");
+
+    // Show error if redirected back from a failed Google OAuth attempt
+    const googleError =
+        typeof window !== "undefined"
+            ? new URLSearchParams(window.location.search).get("error")
+            : null;
 
     return (
         <div className="w-full max-w-5xl min-h-[600px] flex rounded-3xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
@@ -125,7 +132,10 @@ export function AccountForm() {
                 {/* Google */}
                 <button
                     type="button"
-                    onClick={() => alert("Google login coming soon")}
+                    onClick={() => {
+                        const base = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5500/api/v1").replace("/api/v1", "");
+                        window.location.href = `${base}/auth/google`;
+                    }}
                     className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm group"
                 >
                     <GoogleIcon className="w-5 h-5 flex-shrink-0" />
@@ -133,6 +143,13 @@ export function AccountForm() {
                         Continue with Google
                     </span>
                 </button>
+
+                {/* Google OAuth error */}
+                {googleError && (
+                    <div className="flex items-center gap-2.5 px-4 py-3 mb-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium">
+                        Google sign-in failed. Please try again or use email and password.
+                    </div>
+                )}
 
                 {/* Divider */}
                 <div className="flex items-center gap-3 mb-5">

@@ -9,6 +9,7 @@ import {
     Edit2, Phone, Mail, Home, Plus,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { userApi } from "@/config/api";
 
 /* ── Dummy data — to be replaced when order/address/wishlist endpoints are ready ── */
 const DUMMY_ORDERS = [
@@ -348,58 +349,165 @@ function Wishlist() {
 
 /* ══ PROFILE ═══════════════════════════════════════════════════════════════ */
 function Profile() {
-    const { user } = useAuth();
-    const [firstName, setFirstName] = useState(user?.firstName ?? "");
-    const [lastName,  setLastName]  = useState(user?.lastName  ?? "");
-    const [email,     setEmail]     = useState(user?.email     ?? "");
-    const [phone,     setPhone]     = useState(user?.phone     ?? "");
-    const [saved,     setSaved]     = useState(false);
+    const { user, logout } = useAuth();
+    const router = useRouter();
 
-    const handleSave = (e: React.FormEvent) => {
+    // Profile fields
+    const [firstName, setFirstName]   = useState(user?.firstName ?? "");
+    const [lastName,  setLastName]    = useState(user?.lastName  ?? "");
+    const [phone,     setPhone]       = useState(user?.phone     ?? "");
+    const [saving,    setSaving]      = useState(false);
+    const [saveMsg,   setSaveMsg]     = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+    // Change password
+    const [showPwd,     setShowPwd]   = useState(false);
+    const [currentPwd,  setCurrentPwd] = useState("");
+    const [newPwd,      setNewPwd]    = useState("");
+    const [pwdMsg,      setPwdMsg]    = useState<{ type: "ok" | "err"; text: string } | null>(null);
+    const [savingPwd,   setSavingPwd] = useState(false);
+
+    // Delete account
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [deleting,      setDeleting]      = useState(false);
+    const [deleteErr,     setDeleteErr]     = useState("");
+
+    const handleSaveProfile = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: call PATCH /api/v1/users/me
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2500);
+        setSaving(true);
+        setSaveMsg(null);
+        try {
+            await userApi.updateProfile({ firstName, lastName, phone: phone || undefined });
+            setSaveMsg({ type: "ok", text: "Profile updated successfully." });
+        } catch (err: unknown) {
+            setSaveMsg({ type: "err", text: err instanceof Error ? err.message : "Update failed." });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setPwdMsg(null);
+        setSavingPwd(true);
+        try {
+            await userApi.changePassword({ currentPassword: currentPwd, newPassword: newPwd });
+            setPwdMsg({ type: "ok", text: "Password updated successfully." });
+            setCurrentPwd(""); setNewPwd("");
+        } catch (err: unknown) {
+            setPwdMsg({ type: "err", text: err instanceof Error ? err.message : "Password change failed." });
+        } finally {
+            setSavingPwd(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setDeleting(true);
+        setDeleteErr("");
+        try {
+            await userApi.deleteAccount();
+            await logout();
+            router.push("/");
+        } catch (err: unknown) {
+            setDeleteErr(err instanceof Error ? err.message : "Deletion failed. Please try again.");
+            setDeleting(false);
+        }
     };
 
     return (
         <div className="space-y-5">
             <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Profile & Settings</h2>
 
-            <form onSubmit={handleSave} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
+            {/* Personal info */}
+            <form onSubmit={handleSaveProfile} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Personal Information</h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                     <ProfileField label="First name" value={firstName} onChange={setFirstName} icon={<User className="w-4 h-4" />} />
                     <ProfileField label="Last name"  value={lastName}  onChange={setLastName} />
                 </div>
-                <ProfileField label="Email address" type="email" value={email} onChange={setEmail} icon={<Mail className="w-4 h-4" />} />
-                <ProfileField label="Phone number"  type="tel"  value={phone}  onChange={setPhone} icon={<Phone className="w-4 h-4" />} />
+                {/* Email is read-only — changes require re-verification */}
+                <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">Email address</label>
+                    <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/60">
+                        <Mail className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                        <span className="text-sm text-zinc-500 dark:text-zinc-400">{user?.email}</span>
+                        <span className="ml-auto text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Read only</span>
+                    </div>
+                </div>
+                <ProfileField label="Phone number" type="tel" value={phone} onChange={setPhone} icon={<Phone className="w-4 h-4" />} />
                 <div className="flex items-center gap-3 pt-1">
-                    <button type="submit" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-sm transition-all shadow-sm">
-                        Save Changes
+                    <button type="submit" disabled={saving}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
+                        {saving
+                            ? <span className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" />
+                            : "Save Changes"}
                     </button>
-                    {saved && (
-                        <span className="flex items-center gap-1.5 text-xs text-emerald-500 font-semibold">
-                            <CheckCircle2 className="w-4 h-4" /> Saved
+                    {saveMsg && (
+                        <span className={`flex items-center gap-1.5 text-xs font-semibold ${saveMsg.type === "ok" ? "text-emerald-500" : "text-red-500"}`}>
+                            <CheckCircle2 className="w-4 h-4" /> {saveMsg.text}
                         </span>
                     )}
                 </div>
             </form>
 
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Password</p>
-                    <p className="text-xs text-zinc-400 mt-0.5">Change your account password</p>
+            {/* Change password */}
+            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                <div className="p-5 flex items-center justify-between">
+                    <div>
+                        <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Password</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">Change your account password</p>
+                    </div>
+                    <button type="button" onClick={() => { setShowPwd(v => !v); setPwdMsg(null); }}
+                        className="text-xs font-bold text-[#C6A16A] hover:underline">
+                        {showPwd ? "Cancel" : "Change"}
+                    </button>
                 </div>
-                <button type="button" className="text-xs font-bold text-[#C6A16A] hover:underline">Change</button>
+
+                {showPwd && (
+                    <form onSubmit={handleChangePassword} className="px-5 pb-5 space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                        <ProfileField label="Current password" type="password" value={currentPwd} onChange={setCurrentPwd} />
+                        <ProfileField label="New password (min. 8 characters)" type="password" value={newPwd} onChange={setNewPwd} />
+                        {pwdMsg && (
+                            <p className={`text-xs font-semibold ${pwdMsg.type === "ok" ? "text-emerald-500" : "text-red-500"}`}>
+                                {pwdMsg.text}
+                            </p>
+                        )}
+                        <button type="submit" disabled={savingPwd}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
+                            {savingPwd
+                                ? <span className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" />
+                                : "Update Password"}
+                        </button>
+                    </form>
+                )}
             </div>
 
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-red-200 dark:border-red-500/20 p-5 flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Delete Account</p>
-                    <p className="text-xs text-zinc-400 mt-0.5">Permanently delete your account and all data</p>
+            {/* Delete account */}
+            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-red-200 dark:border-red-500/20 overflow-hidden">
+                <div className="p-5 flex items-center justify-between">
+                    <div>
+                        <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Delete Account</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">Permanently delete your account and all data</p>
+                    </div>
+                    <button type="button" onClick={() => setConfirmDelete(v => !v)}
+                        className="text-xs font-bold text-red-500 hover:underline">
+                        {confirmDelete ? "Cancel" : "Delete"}
+                    </button>
                 </div>
-                <button type="button" className="text-xs font-bold text-red-500 hover:underline">Delete</button>
+
+                {confirmDelete && (
+                    <div className="px-5 pb-5 border-t border-red-100 dark:border-red-500/10 pt-4 space-y-3">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            This action is <span className="font-bold text-red-500">irreversible</span>. All your orders, addresses, and wishlist items will be permanently deleted.
+                        </p>
+                        {deleteErr && <p className="text-xs text-red-500 font-semibold">{deleteErr}</p>}
+                        <button type="button" onClick={handleDeleteAccount} disabled={deleting}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold text-sm transition-all shadow-sm">
+                            {deleting
+                                ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                : "Yes, delete my account"}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

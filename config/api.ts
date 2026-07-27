@@ -68,9 +68,7 @@ export const authApi = {
             body: JSON.stringify(body),
         }),
 
-    /**
-     * Sign in with email and password.
-     */
+    // Sign in with email and password.
     login: (body: { email: string; password: string }) =>
         request<AuthResponse>("/auth/login", {
             method: "POST",
@@ -86,4 +84,32 @@ export const authApi = {
     //Get the currently authenticated user's profile
     me: () =>
         request<{ success: boolean; user: AuthUser }>("/auth/me"),
+
+     //Returns the URL to redirect the browser to for Google OAuth.
+     //This is a full-page redirect, not a fetch call.
+    googleLoginUrl: () => `${BASE_URL}/auth/google`,
+};
+
+// ─── User API ─────────────────────────────────────────────────────────────────
+
+export const userApi = {
+    /** Update profile fields (firstName, lastName, phone). */
+    updateProfile: (body: { firstName?: string; lastName?: string; phone?: string }) =>
+        request<{ success: boolean; user: AuthUser }>("/users/me", {
+            method: "PATCH",
+            body: JSON.stringify(body),
+        }),
+
+    /** Change password — requires current password for verification. */
+    changePassword: (body: { currentPassword: string; newPassword: string }) =>
+        request<{ success: boolean; message: string }>("/users/me/password", {
+            method: "PATCH",
+            body: JSON.stringify(body),
+        }),
+
+    /** Permanently delete the authenticated user's account. */
+    deleteAccount: () =>
+        request<{ success: boolean; message: string }>("/users/me", {
+            method: "DELETE",
+        }),
 };
