@@ -1,31 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
     LayoutDashboard, ShoppingBag, Package, Users,
     ChevronRight, TrendingUp, Truck, CheckCircle2,
     Clock, AlertTriangle, Eye, Edit2, Trash2,
     Plus, Search, X, LogOut, Phone, Mail,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-/* DUMMY DATA */
+/* ── Dummy data — to be replaced when admin endpoints are ready ── */
 const DUMMY_ORDERS = [
-    { id: "CST-20250727-0041", customer: "Jane Wanjiku",    phone: "+254 712 345 678", items: 2, total: 6750,  status: "out-for-delivery" as const, date: "27 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250726-0039", customer: "Brian Otieno",    phone: "+254 723 456 789", items: 1, total: 8900,  status: "dispatched"       as const, date: "26 Jul 2025", payment: "M-Pesa STK" },
-    { id: "CST-20250725-0035", customer: "Amina Hassan",    phone: "+254 734 567 890", items: 3, total: 14200, status: "processing"       as const, date: "25 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250724-0031", customer: "Peter Kamau",     phone: "+254 745 678 901", items: 1, total: 4800,  status: "confirmed"        as const, date: "24 Jul 2025", payment: "COD" },
-    { id: "CST-20250720-0028", customer: "Grace Njoroge",   phone: "+254 756 789 012", items: 2, total: 9300,  status: "delivered"        as const, date: "20 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250718-0024", customer: "David Mwangi",    phone: "+254 767 890 123", items: 4, total: 22100, status: "delivered"        as const, date: "18 Jul 2025", payment: "M-Pesa" },
+    { id: "CST-20250727-0041", customer: "Jane Wanjiku",  phone: "+254 712 345 678", items: 2, total: 6750,  status: "out-for-delivery" as const, date: "27 Jul 2025", payment: "M-Pesa" },
+    { id: "CST-20250726-0039", customer: "Brian Otieno",  phone: "+254 723 456 789", items: 1, total: 8900,  status: "dispatched"       as const, date: "26 Jul 2025", payment: "M-Pesa STK" },
+    { id: "CST-20250725-0035", customer: "Amina Hassan",  phone: "+254 734 567 890", items: 3, total: 14200, status: "processing"       as const, date: "25 Jul 2025", payment: "M-Pesa" },
+    { id: "CST-20250724-0031", customer: "Peter Kamau",   phone: "+254 745 678 901", items: 1, total: 4800,  status: "confirmed"        as const, date: "24 Jul 2025", payment: "COD" },
+    { id: "CST-20250720-0028", customer: "Grace Njoroge", phone: "+254 756 789 012", items: 2, total: 9300,  status: "delivered"        as const, date: "20 Jul 2025", payment: "M-Pesa" },
+    { id: "CST-20250718-0024", customer: "David Mwangi",  phone: "+254 767 890 123", items: 4, total: 22100, status: "delivered"        as const, date: "18 Jul 2025", payment: "M-Pesa" },
 ];
 
 const DUMMY_PRODUCTS = [
-    { id: "1",  name: "Egyptian Cotton Duvet Set",  category: "Beddings",        price: 4800,  stock: 12, active: true  },
-    { id: "2",  name: "Air Fryer 5.5L",             category: "Home Appliances", price: 8900,  stock: 5,  active: true  },
-    { id: "3",  name: "Non-Stick Cookware Set 8pc", category: "Kitchenware",     price: 6400,  stock: 8,  active: true  },
-    { id: "4",  name: "Rattan Accent Chair",        category: "Furniture",       price: 22000, stock: 2,  active: true  },
-    { id: "5",  name: "Steam Iron Pro",             category: "Home Appliances", price: 2750,  stock: 0,  active: false },
-    { id: "6",  name: "LED Smart Desk Lamp",        category: "Electronics",     price: 2900,  stock: 14, active: true  },
+    { id: "1", name: "Egyptian Cotton Duvet Set",  category: "Beddings",        price: 4800,  stock: 12, active: true  },
+    { id: "2", name: "Air Fryer 5.5L",             category: "Home Appliances", price: 8900,  stock: 5,  active: true  },
+    { id: "3", name: "Non-Stick Cookware Set 8pc", category: "Kitchenware",     price: 6400,  stock: 8,  active: true  },
+    { id: "4", name: "Rattan Accent Chair",        category: "Furniture",       price: 22000, stock: 2,  active: true  },
+    { id: "5", name: "Steam Iron Pro",             category: "Home Appliances", price: 2750,  stock: 0,  active: false },
+    { id: "6", name: "LED Smart Desk Lamp",        category: "Electronics",     price: 2900,  stock: 14, active: true  },
 ];
 
 const DUMMY_CUSTOMERS = [
@@ -37,11 +39,11 @@ const DUMMY_CUSTOMERS = [
 ];
 
 const ORDER_STATUS = {
-    confirmed:          { label: "Confirmed",         color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-    processing:         { label: "Processing",         color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    dispatched:         { label: "Dispatched",         color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
-    "out-for-delivery": { label: "Out for Delivery",   color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
-    delivered:          { label: "Delivered",          color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    confirmed:          { label: "Confirmed",        color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+    processing:         { label: "Processing",        color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+    dispatched:         { label: "Dispatched",        color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+    "out-for-delivery": { label: "Out for Delivery",  color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
+    delivered:          { label: "Delivered",         color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
 };
 
 type OrderStatus = keyof typeof ORDER_STATUS;
@@ -56,9 +58,31 @@ const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
     { key: "customers", label: "Customers", icon: <Users className="w-4 h-4" />           },
 ];
 
-/* ROOT PAGE */
+/* ══ ROOT PAGE ══════════════════════════════════════════════════════════════ */
 export default function AdminPage() {
+    const { user, loading, logout } = useAuth();
+    const router = useRouter();
     const [section, setSection] = useState<Section>("overview");
+
+    // Route protection — must be logged in AND be ADMIN
+    useEffect(() => {
+        if (loading) return;
+        if (!user) { router.replace("/account"); return; }
+        if (user.role !== "ADMIN") { router.replace("/account/dashboard"); }
+    }, [user, loading, router]);
+
+    const handleLogout = async () => {
+        await logout();
+        router.push("/");
+    };
+
+    if (loading || !user || user.role !== "ADMIN") {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -81,9 +105,22 @@ export default function AdminPage() {
                 {/* Sidebar */}
                 <aside className="w-full lg:w-52 flex-shrink-0">
                     <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+
+                        {/* Admin identity */}
                         <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Navigation</p>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-[#C6A16A]/15 border border-[#C6A16A]/30 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-xs font-bold text-[#C6A16A]">
+                                        {user.firstName[0]}{user.lastName[0]}
+                                    </span>
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
+                                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#C6A16A]">Admin</p>
+                                </div>
+                            </div>
                         </div>
+
                         <nav className="py-2">
                             {NAV.map((item) => (
                                 <button
@@ -102,8 +139,13 @@ export default function AdminPage() {
                                 </button>
                             ))}
                         </nav>
+
                         <div className="px-3 pb-3 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                            <button type="button" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/8 transition-colors cursor-pointer">
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/8 transition-colors cursor-pointer"
+                            >
                                 <LogOut className="w-4 h-4" /> Sign Out
                             </button>
                         </div>
