@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
 import type { Product } from "@/config/api";
 import { WhatsAppIcon } from "@/components/svgicons";
+import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -12,13 +15,31 @@ function formatKES(amount: number) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-    const [wishlisted, setWishlisted] = useState(false);
+    const { user }                           = useAuth();
+    const { isWishlisted, toggle }           = useWishlist();
+    const { addItem }                        = useCart();
+
+    const [addingToCart, setAddingToCart]    = useState(false);
+    const [togglingWish, setTogglingWish]    = useState(false);
+
+    const wishlisted = user ? isWishlisted(product.id) : false;
+
+    const handleWishlist = async () => {
+        if (!user) return; // silently ignore — could redirect to /account
+        setTogglingWish(true);
+        try { await toggle(product.id); } finally { setTogglingWish(false); }
+    };
+
+    const handleAddToCart = async () => {
+        if (!product.inStock) return;
+        setAddingToCart(true);
+        try { await addItem(product.id, 1); } finally { setAddingToCart(false); }
+    };
 
     const waMessage = encodeURIComponent(
         `Hi, I'd like to order *${product.name}* (${formatKES(product.price)}). Is it available?`
     );
-    const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
-
+    const waHref  = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
     const imageUrl = product.images?.[0];
 
     return (
@@ -27,13 +48,9 @@ export function ProductCard({ product }: { product: Product }) {
             {/* Image area */}
             <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                 {imageUrl ? (
-                    <img
-                        src={imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    <img src={imageUrl} alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                    /* Placeholder */
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-300 dark:text-zinc-700">
                         <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
                             <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -46,7 +63,7 @@ export function ProductCard({ product }: { product: Product }) {
                     </div>
                 )}
 
-                {/* Subtle gold shimmer on hover */}
+                {/* Hover shimmer */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Out of stock overlay */}
@@ -61,35 +78,33 @@ export function ProductCard({ product }: { product: Product }) {
                 {/* Wishlist button */}
                 <button
                     type="button"
-                    onClick={() => setWishlisted((w) => !w)}
-                    className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-700 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[#C6A16A]/60 hover:scale-110"
-                    aria-label="Toggle wishlist"
+                    onClick={handleWishlist}
+                    disabled={togglingWish}
+                    className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-700 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[#C6A16A]/60 hover:scale-110 disabled:cursor-not-allowed"
+                    aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 >
-                    <Heart
-                        className={`w-4 h-4 transition-colors ${
-                            wishlisted
-                                ? "fill-[#C6A16A] text-[#C6A16A]"
-                                : "text-zinc-500 dark:text-zinc-400"
-                        }`}
-                    />
+                    {togglingWish ? (
+                        <span className="w-4 h-4 border-2 border-zinc-300/30 border-t-[#C6A16A] rounded-full animate-spin block" />
+                    ) : (
+                        <Heart className={`w-4 h-4 transition-colors ${
+                            wishlisted ? "fill-[#C6A16A] text-[#C6A16A]" : "text-zinc-500 dark:text-zinc-400"
+                        }`} />
+                    )}
                 </button>
             </div>
 
             {/* Info */}
             <div className="flex flex-col flex-1 p-4 gap-2">
-                {/* Category label */}
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-[#C6A16A]">
                     {product.category}
                 </span>
 
-                {/* Product name */}
                 <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug line-clamp-2 font-glacial">
                     {product.name}
                 </h3>
 
                 <div className="flex-1" />
 
-                {/* Price */}
                 <div className="flex flex-col mt-1">
                     <span className="text-base font-bold text-zinc-900 dark:text-white">
                         {formatKES(product.price)}
@@ -98,18 +113,21 @@ export function ProductCard({ product }: { product: Product }) {
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 mt-1">
-                    {/* Add to cart */}
                     <button
                         type="button"
-                        disabled={!product.inStock}
+                        disabled={!product.inStock || addingToCart}
+                        onClick={handleAddToCart}
                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
                         aria-label="Add to cart"
                     >
-                        <ShoppingBag className="w-3.5 h-3.5" />
+                        {addingToCart ? (
+                            <span className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                        ) : (
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                        )}
                         <span>Add to Cart</span>
                     </button>
 
-                    {/* WhatsApp order */}
                     <a
                         href={product.inStock ? waHref : undefined}
                         target="_blank"

@@ -21,6 +21,7 @@ import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/svgicons";
 import { scrollToProducts } from "@/lib/scrollToProducts";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const CATEGORIES = [
     "All Categories",
@@ -39,6 +40,7 @@ const PRODUCT_CATEGORIES = CATEGORIES.slice(1);
 export function Navbar() {
     const { user } = useAuth();
     const { itemCount, total } = useCart();
+    const { itemCount: wishlistCount } = useWishlist();
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
     const [activeNavCategory, setActiveNavCategory] = useState<string | null>(null);
 
@@ -240,6 +242,11 @@ export function Navbar() {
                         >
                             <div className="relative p-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] transition-colors">
                                 <Heart className="w-5 h-5" />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-[#C6A16A] text-zinc-950 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                                        {wishlistCount > 9 ? "9+" : wishlistCount}
+                                    </span>
+                                )}
                             </div>
                             <span className="hidden xl:inline text-xs font-semibold text-zinc-800 dark:text-zinc-100 group-hover:text-[#C6A16A]">
                                 Wishlist
@@ -299,6 +306,11 @@ export function Navbar() {
                             title="Wishlist"
                         >
                             <Heart className="w-5 h-5" />
+                            {wishlistCount > 0 && (
+                                <span className="absolute top-0.5 right-0.5 bg-[#C6A16A] text-zinc-950 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                                    {wishlistCount > 9 ? "9+" : wishlistCount}
+                                </span>
+                            )}
                         </Link>
 
                         {/* Mobile Cart Icon (Icon only + badge, NO text/price) */}

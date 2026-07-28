@@ -309,3 +309,42 @@ export const cartApi = {
             body:   JSON.stringify({ code }),
         }),
 };
+
+// Wishlist API
+
+export type WishlistItem = {
+    id: string;
+    wishlistId: string;
+    productId: string;
+    product: Product;
+    createdAt: string;
+};
+
+export type Wishlist = {
+    id: string;
+    userId: string;
+    items: WishlistItem[];
+};
+
+export const wishlistApi = {
+    /** Get the current user's full wishlist. */
+    get: () =>
+        request<{ success: boolean; wishlist: Wishlist }>("/wishlist"),
+
+    /** Add a product to the wishlist. Idempotent. */
+    add: (productId: string) =>
+        request<{ success: boolean; wishlist: Wishlist }>("/wishlist", {
+            method: "POST",
+            body:   JSON.stringify({ productId }),
+        }),
+
+    /** Remove a product from the wishlist. */
+    remove: (productId: string) =>
+        request<{ success: boolean; wishlist: Wishlist }>(`/wishlist/${productId}`, {
+            method: "DELETE",
+        }),
+
+    /** Check if a specific product is wishlisted. */
+    check: (productId: string) =>
+        request<{ success: boolean; wishlisted: boolean }>(`/wishlist/check/${productId}`),
+};

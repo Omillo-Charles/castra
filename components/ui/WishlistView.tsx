@@ -1,43 +1,70 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import { WhatsAppIcon } from "@/components/svgicons";
+import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
 
 const WHATSAPP_NUMBER = "254704147774";
-
-type WishItem = {
-    id: string;
-    name: string;
-    category: string;
-    price: number;
-    inStock: boolean;
-};
-
-const INITIAL_ITEMS: WishItem[] = [
-    {
-        id: "w1",
-        name: "Egyptian Cotton Duvet Set",
-        category: "Beddings",
-        price: 4800,
-        inStock: true,
-    },
-];
 
 function formatKES(n: number) {
     return `KSh ${n.toLocaleString("en-KE")}`;
 }
 
 export function WishlistView() {
-    const [items, setItems] = useState<WishItem[]>(INITIAL_ITEMS);
+    const { user }                     = useAuth();
+    const { wishlist, loading, remove } = useWishlist();
+    const { addItem }                  = useCart();
 
-    const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
+    const [addingId,   setAddingId]   = useState<string | null>(null);
+    const [removingId, setRemovingId] = useState<string | null>(null);
+
+    const items = wishlist?.items ?? [];
+
+    const handleAddToCart = async (productId: string) => {
+        setAddingId(productId);
+        try {
+            await addItem(productId, 1);
+        } finally {
+            setAddingId(null);
+        }
+    };
+
+    const handleRemove = async (productId: string) => {
+        setRemovingId(productId);
+        try {
+            await remove(productId);
+        } finally {
+            setRemovingId(null);
+        }
+    };
+
+    // Loading
+    if (loading) return (
+        <div className="flex items-center justify-center py-24">
+            <span className="w-7 h-7 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+        </div>
+    );
+
+    // Guest
+    if (!user) return (
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-zinc-400">
+            <Heart className="w-14 h-14 opacity-20" />
+            <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-300">Sign in to view your wishlist</p>
+            <Link href="/account"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors">
+                Sign In / Create Account <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+        </div>
+    );
 
     return (
         <div className="space-y-8">
 
-            {/* Page header */}
+            {/* Header */}
             <div className="flex items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">My Account</p>
@@ -49,10 +76,8 @@ export function WishlistView() {
                         {items.length} saved item{items.length !== 1 ? "s" : ""}
                     </p>
                 </div>
-                <Link
-                    href="/"
-                    className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-[#C6A16A] transition-colors"
-                >
+                <Link href="/"
+                    className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-[#C6A16A] transition-colors">
                     Continue shopping <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
             </div>
@@ -62,87 +87,99 @@ export function WishlistView() {
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-zinc-400">
                     <Heart className="w-14 h-14 opacity-20" />
                     <p className="text-sm font-semibold">Your wishlist is empty</p>
-                    <Link
-                        href="/"
-                        className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors"
-                    >
+                    <Link href="/"
+                        className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors">
                         Browse Products <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="flex items-center gap-5 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200"
-                        >
-                            {/* Image placeholder */}
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center border border-zinc-200 dark:border-zinc-800">
-                                <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                                    <circle cx="8.5" cy="8.5" r="1.5" />
-                                    <path d="M21 15l-5-5L5 21" />
-                                </svg>
+                    {items.map((item) => {
+                        const product  = item.product;
+                        const busy     = addingId === item.productId || removingId === item.productId;
+                        const waMsg    = encodeURIComponent(
+                            `Hi, I'd like to order *${product.name}* (${formatKES(product.price)}). Is it available?`
+                        );
+
+                        return (
+                            <div key={item.id}
+                                className={`flex items-center gap-5 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200 ${busy ? "opacity-60" : ""}`}>
+
+                                {/* Product image */}
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                                    {product.images[0] ? (
+                                        <img src={product.images[0]} alt={product.name}
+                                            className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                                <path d="M21 15l-5-5L5 21" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Info */}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A] mb-0.5">
+                                        {product.category}
+                                    </p>
+                                    <h3 className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-zinc-100 font-glacial leading-snug truncate">
+                                        {product.name}
+                                    </h3>
+                                    <p className="text-base font-bold text-zinc-900 dark:text-white mt-1">
+                                        {formatKES(product.price)}
+                                    </p>
+                                    <span className={`inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                                        product.inStock
+                                            ? "bg-emerald-500/10 text-emerald-500"
+                                            : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"
+                                    }`}>
+                                        {product.inStock ? "In Stock" : "Out of Stock"}
+                                    </span>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex flex-col sm:flex-row items-center gap-2 flex-shrink-0">
+                                    <button type="button"
+                                        disabled={!product.inStock || busy}
+                                        onClick={() => handleAddToCart(item.productId)}
+                                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap">
+                                        {addingId === item.productId
+                                            ? <span className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                                            : <ShoppingBag className="w-3.5 h-3.5" />
+                                        }
+                                        <span className="hidden sm:inline">Add to Cart</span>
+                                    </button>
+
+                                    <a href={product.inStock
+                                            ? `https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`
+                                            : undefined}
+                                        target="_blank" rel="noopener noreferrer"
+                                        aria-disabled={!product.inStock}
+                                        className={`flex items-center justify-center p-2.5 rounded-xl border transition-all duration-200 ${
+                                            product.inStock
+                                                ? "border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
+                                                : "border-zinc-200 dark:border-zinc-800 opacity-30 pointer-events-none"
+                                        }`}>
+                                        <WhatsAppIcon className="w-5 h-5" />
+                                    </a>
+
+                                    <button type="button" disabled={busy}
+                                        onClick={() => handleRemove(item.productId)}
+                                        className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all duration-200 disabled:cursor-not-allowed"
+                                        aria-label="Remove from wishlist">
+                                        {removingId === item.productId
+                                            ? <span className="w-4 h-4 border-2 border-zinc-400/30 border-t-zinc-400 rounded-full animate-spin block" />
+                                            : <Trash2 className="w-4 h-4" />
+                                        }
+                                    </button>
+                                </div>
                             </div>
-
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A] mb-0.5">
-                                    {item.category}
-                                </p>
-                                <h3 className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-zinc-100 font-glacial leading-snug truncate">
-                                    {item.name}
-                                </h3>
-                                <p className="text-base font-bold text-zinc-900 dark:text-white mt-1">
-                                    {formatKES(item.price)}
-                                </p>
-                                <span className={`inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                                    item.inStock
-                                        ? "bg-emerald-500/10 text-emerald-500"
-                                        : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"
-                                }`}>
-                                    {item.inStock ? "In Stock" : "Out of Stock"}
-                                </span>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex flex-col sm:flex-row items-center gap-2 flex-shrink-0">
-                                <button
-                                    type="button"
-                                    disabled={!item.inStock}
-                                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
-                                >
-                                    <ShoppingBag className="w-3.5 h-3.5" />
-                                    <span className="hidden sm:inline">Add to Cart</span>
-                                </button>
-
-                                <a
-                                    href={item.inStock
-                                        ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hi, I'd like to order *${item.name}* (${formatKES(item.price)}). Is it available?`)}`
-                                        : undefined}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-disabled={!item.inStock}
-                                    className={`flex items-center justify-center p-2.5 rounded-xl border transition-all duration-200 ${
-                                        item.inStock
-                                            ? "border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
-                                            : "border-zinc-200 dark:border-zinc-800 opacity-30 pointer-events-none"
-                                    }`}
-                                >
-                                    <WhatsAppIcon className="w-5 h-5" />
-                                </a>
-
-                                <button
-                                    type="button"
-                                    onClick={() => remove(item.id)}
-                                    className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all duration-200"
-                                    aria-label="Remove from wishlist"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
