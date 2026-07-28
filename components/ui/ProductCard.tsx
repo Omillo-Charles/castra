@@ -15,12 +15,12 @@ function formatKES(amount: number) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-    const { user }                           = useAuth();
-    const { isWishlisted, toggle }           = useWishlist();
-    const { addItem }                        = useCart();
+    const { user } = useAuth();
+    const { isWishlisted, toggle } = useWishlist();
+    const { addItem } = useCart();
 
-    const [addingToCart, setAddingToCart]    = useState(false);
-    const [togglingWish, setTogglingWish]    = useState(false);
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [togglingWish, setTogglingWish] = useState(false);
 
     const wishlisted = user ? isWishlisted(product.id) : false;
 
@@ -39,7 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
     const waMessage = encodeURIComponent(
         `Hi, I'd like to order *${product.name}* (${formatKES(product.price)}). Is it available?`
     );
-    const waHref  = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
+    const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
     const imageUrl = product.images?.[0];
 
     return (
@@ -86,9 +86,8 @@ export function ProductCard({ product }: { product: Product }) {
                     {togglingWish ? (
                         <span className="w-4 h-4 border-2 border-zinc-300/30 border-t-[#C6A16A] rounded-full animate-spin block" />
                     ) : (
-                        <Heart className={`w-4 h-4 transition-colors ${
-                            wishlisted ? "fill-[#C6A16A] text-[#C6A16A]" : "text-zinc-500 dark:text-zinc-400"
-                        }`} />
+                        <Heart className={`w-4 h-4 transition-colors ${wishlisted ? "fill-[#C6A16A] text-[#C6A16A]" : "text-zinc-500 dark:text-zinc-400"
+                            }`} />
                     )}
                 </button>
             </div>
@@ -111,8 +110,8 @@ export function ProductCard({ product }: { product: Product }) {
                     </span>
                 </div>
 
-                {/* Action buttons */}
-                <div className="flex items-center gap-2 mt-1">
+                {/* Action buttons — stacked on mobile, row on sm+ */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
                     <button
                         type="button"
                         disabled={!product.inStock || addingToCart}
@@ -134,13 +133,15 @@ export function ProductCard({ product }: { product: Product }) {
                         rel="noopener noreferrer"
                         aria-label="Order via WhatsApp"
                         aria-disabled={!product.inStock}
-                        className={`flex items-center justify-center p-2 rounded-xl border transition-all duration-200 shadow-sm flex-shrink-0 ${
-                            product.inStock
-                                ? "border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
+                        className={`flex items-center justify-center gap-1.5 rounded-xl border transition-all duration-200 shadow-sm
+                          w-full p-2 text-xs font-bold sm:w-auto sm:flex-shrink-0 sm:p-2 sm:text-transparent
+                          ${product.inStock
+                                ? "border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 sm:hover:scale-110"
                                 : "border-zinc-200 dark:border-zinc-800 opacity-30 cursor-not-allowed pointer-events-none"
-                        }`}
+                            }`}
                     >
-                        <WhatsAppIcon className="w-5 h-5" />
+                        <WhatsAppIcon className="w-5 h-5 flex-shrink-0" />
+                        <span className="sm:hidden text-emerald-600 dark:text-emerald-400">WhatsApp</span>
                     </a>
                 </div>
             </div>
