@@ -122,7 +122,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
     );
 }
 
-/* ══ Main checkout page ══════════════════════════════════════════════════════ */
+/*Main checkout page*/
 export default function CheckoutPage() {
     const { user }               = useAuth();
     const { cart, loading }      = useCart();
@@ -146,7 +146,7 @@ export default function CheckoutPage() {
     const [savedAddresses, setSavedAddresses] = useState<import("@/config/api").Address[]>([]);
 
     // Payment
-    const [payMethod, setPayMethod] = useState<"mpesa-paybill" | "mpesa-stk" | "cod">("mpesa-paybill");
+    const [payMethod, setPayMethod] = useState<"mpesa-paybill" | "mpesa-stk">("mpesa-paybill");
     const [mpesaRef,  setMpesaRef]  = useState("");
     const [stkPhone,  setStkPhone]  = useState("");
 
@@ -201,7 +201,7 @@ export default function CheckoutPage() {
         `Hi, I'd like to confirm my order:\n\n` +
         items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
         `\n\nTotal: ${formatKES(total)}\nDelivery to: ${address}, ${city}, ${county}` +
-        `\nPayment: ${payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : payMethod === "mpesa-stk" ? "M-Pesa STK Push" : "Cash on Delivery"}`
+        `\nPayment: ${payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : "M-Pesa STK Push"}`
     );
 
     // Loading spinner while cart loads
@@ -385,8 +385,7 @@ export default function CheckoutPage() {
                                     </div>
                                 </label>
 
-                                {/* STK Push */}
-                                <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${payMethod === "mpesa-stk" ? "border-[#C6A16A] bg-[#C6A16A]/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"}`}>
+                                {/* STK Push */}                                <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${payMethod === "mpesa-stk" ? "border-[#C6A16A] bg-[#C6A16A]/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"}`}>
                                     <input type="radio" name="payment" value="mpesa-stk" checked={payMethod === "mpesa-stk"} onChange={() => setPayMethod("mpesa-stk")} className="mt-1 accent-[#C6A16A]" />
                                     <div className="flex-1 space-y-3">
                                         <div>
@@ -408,14 +407,7 @@ export default function CheckoutPage() {
                                     </div>
                                 </label>
 
-                                {/* COD */}
-                                <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${payMethod === "cod" ? "border-[#C6A16A] bg-[#C6A16A]/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"}`}>
-                                    <input type="radio" name="payment" value="cod" checked={payMethod === "cod"} onChange={() => setPayMethod("cod")} className="mt-1 accent-[#C6A16A]" />
-                                    <div>
-                                        <p className="text-sm font-bold text-zinc-900 dark:text-white">Cash on Delivery</p>
-                                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Pay in cash when your order arrives. Available for select areas — our team will confirm eligibility.</p>
-                                    </div>
-                                </label>
+                                {/* COD removed */}
                             </div>
                             <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400">
                                 <Lock className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0" />
@@ -451,7 +443,7 @@ export default function CheckoutPage() {
                                     <button type="button" onClick={() => setStep("payment")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
                                 <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                                    {payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : payMethod === "mpesa-stk" ? "M-Pesa STK Push" : "Cash on Delivery"}
+                                {payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : "M-Pesa STK Push"}
                                 </p>
                                 {payMethod === "mpesa-paybill" && mpesaRef && <p className="text-xs text-zinc-400 mt-1">Ref: <span className="font-mono font-semibold">{mpesaRef}</span></p>}
                                 {payMethod === "mpesa-stk"     && stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}

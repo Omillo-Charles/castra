@@ -53,7 +53,7 @@ const SECTIONS = [
             },
             {
                 subtitle: "Payment methods",
-                body: "We currently accept M-Pesa and Cash on Delivery (COD). For M-Pesa payments, you will receive our payment details upon order confirmation. Payment must be completed before dispatch unless COD has been agreed upon.",
+                body: "We accept M-Pesa payments. You can pay via Paybill (Business No: 400200, Account: CASTRA) or use M-Pesa STK Push at checkout. Payment must be completed before your order is dispatched.",
             },
             {
                 subtitle: "Order cancellation",

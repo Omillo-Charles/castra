@@ -17,7 +17,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We accept M-Pesa and Cash on Delivery (COD). For M-Pesa, you will receive the paybill or till number after your order is confirmed. COD is available for select areas - confirm with us before ordering.",
+                a: "We accept M-Pesa payments. You can pay via Paybill or use M-Pesa STK Push — enter your number at checkout and you will receive a payment prompt on your phone.",
             },
             {
                 q: "Can I modify or cancel my order?",
