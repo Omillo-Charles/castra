@@ -249,3 +249,63 @@ export const productApi = {
             method: "DELETE",
         }),
 };
+
+// Cart API
+
+export type CartItem = {
+    id: string;
+    cartId: string;
+    productId: string;
+    qty: number;
+    product: Product;
+};
+
+export type Cart = {
+    id: string;
+    userId: string;
+    couponCode: string | null;
+    discount: number;
+    items: CartItem[];
+    subtotal: number;
+    deliveryFee: number;
+    total: number;
+};
+
+export const cartApi = {
+    /** Get the current user's cart with all items and computed totals. */
+    get: () =>
+        request<{ success: boolean; cart: Cart }>("/cart"),
+
+    /** Add a product to the cart. Increments qty if already present. */
+    addItem: (productId: string, qty = 1) =>
+        request<{ success: boolean; cart: Cart }>("/cart/items", {
+            method: "POST",
+            body:   JSON.stringify({ productId, qty }),
+        }),
+
+    /** Set exact qty for an item. Pass qty=0 to remove it. */
+    updateItem: (productId: string, qty: number) =>
+        request<{ success: boolean; cart: Cart }>(`/cart/items/${productId}`, {
+            method: "PUT",
+            body:   JSON.stringify({ qty }),
+        }),
+
+    /** Remove a specific item from the cart. */
+    removeItem: (productId: string) =>
+        request<{ success: boolean; cart: Cart }>(`/cart/items/${productId}`, {
+            method: "DELETE",
+        }),
+
+    /** Clear all items and reset the coupon. */
+    clear: () =>
+        request<{ success: boolean; message: string }>("/cart", {
+            method: "DELETE",
+        }),
+
+    /** Apply a coupon code. */
+    applyCoupon: (code: string) =>
+        request<{ success: boolean; message: string; discount?: number }>("/cart/coupon", {
+            method: "POST",
+            body:   JSON.stringify({ code }),
+        }),
+};
