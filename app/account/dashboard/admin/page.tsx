@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     LayoutDashboard, ShoppingBag, Package, Users,
-    ChevronRight, TrendingUp, Truck, CheckCircle2,
+    ChevronRight, ChevronLeft, TrendingUp, Truck, CheckCircle2,
     Clock, AlertTriangle, Eye, Edit2, Trash2,
     Plus, Search, X, LogOut, Phone, Mail,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { productApi } from "@/config/api";
+import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 
 /* ── Dummy data — to be replaced when admin endpoints are ready ── */
 const DUMMY_ORDERS = [
@@ -366,9 +367,12 @@ function Orders() {
 
 /* PRODUCTS */
 function Products() {
-    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
-    const [loading,  setLoading]  = useState(true);
-    const [search,   setSearch]   = useState("");
+    const [products,      setProducts]      = useState<import("@/config/api").Product[]>([]);
+    const [loading,       setLoading]       = useState(true);
+    const [search,        setSearch]        = useState("");
+    const [currentPage,   setCurrentPage]   = useState(1);
+    const [totalPages,    setTotalPages]    = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
 
     // Add / Edit form
     const [showForm,   setShowForm]   = useState(false);
@@ -383,17 +387,40 @@ function Products() {
     const [saving,     setSaving]     = useState(false);
     const [formErr,    setFormErr]    = useState("");
 
-    useEffect(() => {
-        productApi.list({ limit: 50 })
-            .then(res => setProducts(res.products))
-            .catch(() => {})
+    const loadProducts = (page = currentPage, query = search) => {
+        setLoading(true);
+        productApi.list({
+            page,
+            limit: PRODUCTS_PER_PAGE,
+            search: query || undefined,
+        })
+            .then((res) => {
+                setProducts(res.products || []);
+                setTotalPages(res.pagination?.totalPages || 1);
+                setTotalProducts(res.pagination?.total || 0);
+            })
+            .catch(() => {
+                setProducts([]);
+                setTotalPages(1);
+                setTotalProducts(0);
+            })
             .finally(() => setLoading(false));
-    }, []);
+    };
 
-    const filtered = products.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.category.toLowerCase().includes(search.toLowerCase())
-    );
+    useEffect(() => {
+        loadProducts(currentPage, search);
+    }, [currentPage, search]);
+
+    const adminCategories = CATEGORIES_LIST.filter((c) => c !== "All");
+
+    const handleCategorySelect = (cat: string) => {
+        setFormCat(cat);
+        if (cat) {
+            setFormSlug(cat.toLowerCase().replace(/\s+/g, "-"));
+        } else {
+            setFormSlug("");
+        }
+    };
 
     const resetForm = () => {
         setEditId(null); setFormName(""); setFormCat(""); setFormSlug("");
@@ -426,11 +453,12 @@ function Products() {
                 Array.from(formFiles).forEach(f => fd.append("images", f));
             }
             if (editId) {
-                const res = await productApi.update(editId, fd);
-                setProducts(prev => prev.map(p => p.id === editId ? res.product : p));
+                await productApi.update(editId, fd);
+                loadProducts(currentPage);
             } else {
-                const res = await productApi.create(fd);
-                setProducts(prev => [res.product, ...prev]);
+                await productApi.create(fd);
+                setCurrentPage(1);
+                loadProducts(1);
             }
             resetForm();
         } catch (err: unknown) {
@@ -442,8 +470,8 @@ function Products() {
 
     const handleToggle = async (id: string) => {
         try {
-            const res = await productApi.toggle(id);
-            setProducts(prev => prev.map(p => p.id === id ? res.product : p));
+            await productApi.toggle(id);
+            loadProducts(currentPage);
         } catch {}
     };
 
@@ -451,7 +479,7 @@ function Products() {
         if (!confirm("Delete this product? This cannot be undone.")) return;
         try {
             await productApi.delete(id);
-            setProducts(prev => prev.filter(p => p.id !== id));
+            loadProducts(currentPage);
         } catch {}
     };
 
@@ -480,10 +508,26 @@ function Products() {
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <div className="grid sm:grid-cols-2 gap-3">
                             <AdminField label="Product name"  value={formName}  onChange={setFormName}  placeholder="Egyptian Cotton Duvet Set" />
-                            <AdminField label="Category"      value={formCat}   onChange={setFormCat}   placeholder="Beddings" />
+                            <div className="space-y-1">
+                                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+                                    Category
+                                </label>
+                                <select
+                                    value={formCat}
+                                    onChange={(e) => handleCategorySelect(e.target.value)}
+                                    className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-medium text-zinc-900 dark:text-white focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
+                                >
+                                    <option value="">Select category...</option>
+                                    {adminCategories.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                         <div className="grid sm:grid-cols-3 gap-3">
-                            <AdminField label="Slug"  value={formSlug}  onChange={setFormSlug}  placeholder="beddings" />
+                            <AdminField label="Slug (auto-generated)" value={formSlug} onChange={setFormSlug} placeholder="beddings" />
                             <AdminField label="Price (KES)" value={formPrice} onChange={setFormPrice} placeholder="4800" type="number" />
                             <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10"   type="number" />
                         </div>
@@ -520,10 +564,10 @@ function Products() {
             {/* Search */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                     placeholder="Search products..."
                     className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none" />
-                {search && <button type="button" onClick={() => setSearch("")}><X className="w-4 h-4 text-zinc-400" /></button>}
+                {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
 
             {/* Table */}
@@ -536,7 +580,12 @@ function Products() {
                     <span className="col-span-2 text-center">Actions</span>
                 </div>
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {filtered.map((p) => (
+                    {loading ? (
+                        <div className="text-center py-12 text-zinc-400">
+                            <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
+                            <p className="text-xs font-semibold">Loading products...</p>
+                        </div>
+                    ) : products.map((p) => (
                         <div key={p.id} className={`grid grid-cols-12 px-5 py-3.5 items-center text-sm ${!p.active ? "opacity-50" : ""}`}>
                             <div className="col-span-5 flex items-center gap-3 min-w-0">
                                 {p.images[0] ? (
@@ -576,7 +625,7 @@ function Products() {
                             </div>
                         </div>
                     ))}
-                    {filtered.length === 0 && (
+                    {!loading && products.length === 0 && (
                         <div className="text-center py-12 text-zinc-400">
                             <Package className="w-10 h-10 opacity-20 mx-auto mb-3" />
                             <p className="text-sm font-semibold">No products found</p>
@@ -584,6 +633,55 @@ function Products() {
                     )}
                 </div>
             </div>
+
+            {/* Pagination Controls */}
+            {!loading && totalProducts > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <p className="text-xs text-zinc-400">
+                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * PRODUCTS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * PRODUCTS_PER_PAGE, totalProducts)}</span> of{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalProducts}</span> products
+                    </p>
+                    {totalPages > 1 && (
+                        <div className="flex items-center gap-1.5">
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                aria-label="Previous page"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <button
+                                    key={page}
+                                    type="button"
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                                        page === currentPage
+                                            ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
+                                            : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                aria-label="Next page"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
