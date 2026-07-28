@@ -33,13 +33,16 @@ async function request<T>(
 ): Promise<T> {
     const url = `${BASE_URL}${endpoint}`;
 
+    // Only set Content-Type to JSON when body is not FormData.
+    // For FormData, the browser sets the correct multipart/form-data boundary automatically.
+    const isFormData = options.body instanceof FormData;
+
     const res = await fetch(url, {
         ...options,
-        credentials: "include", // send/receive httpOnly cookies
-        headers: {
-            "Content-Type": "application/json",
-            ...options.headers,
-        },
+        credentials: "include",
+        headers: isFormData
+            ? { ...(options.headers ?? {}) }                              // no Content-Type — browser handles it
+            : { "Content-Type": "application/json", ...(options.headers ?? {}) },
     });
 
     const data = await res.json();
@@ -156,6 +159,93 @@ export const addressApi = {
     /** Delete an address by id. */
     delete: (id: string) =>
         request<{ success: boolean; message: string }>(`/addresses/${id}`, {
+            method: "DELETE",
+        }),
+};
+
+// Product API
+
+export type Product = {
+    id: string;
+    name: string;
+    category: string;
+    slug: string;
+    price: number;
+    originalPrice: number | null;
+    stock: number;
+    inStock: boolean;
+    active: boolean;
+    images: string[];
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type ProductsResponse = {
+    success: boolean;
+    products: Product[];
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
+};
+
+export const productApi = {
+    /** List products — public. Supports category, page, limit, sort, search. */
+    list: (params?: {
+        category?: string;
+        page?: number;
+        limit?: number;
+        sort?: "price-asc" | "price-desc";
+        search?: string;
+    }) => {
+        const qs = new URLSearchParams();
+        if (params?.category) qs.set("category", params.category);
+        if (params?.page)     qs.set("page",     String(params.page));
+        if (params?.limit)    qs.set("limit",    String(params.limit));
+        if (params?.sort)     qs.set("sort",     params.sort);
+        if (params?.search)   qs.set("search",   params.search);
+        const query = qs.toString();
+        return request<ProductsResponse>(`/products${query ? `?${query}` : ""}`);
+    },
+
+    /** Get a single product by id — public. */
+    get: (id: string) =>
+        request<{ success: boolean; product: Product }>(`/products/${id}`),
+
+    /**
+     * Create a product — admin only.
+     * Uses FormData because images are uploaded as files.
+     */
+    create: (data: FormData) =>
+        request<{ success: boolean; product: Product }>("/products", {
+            method:  "POST",
+            body:    data,
+            headers: {}, // let browser set Content-Type with boundary for FormData
+        }),
+
+    /**
+     * Update a product — admin only.
+     * Uses FormData so images can be included alongside text fields.
+     */
+    update: (id: string, data: FormData) =>
+        request<{ success: boolean; product: Product }>(`/products/${id}`, {
+            method:  "PATCH",
+            body:    data,
+            headers: {},
+        }),
+
+    /** Toggle product active/inactive — admin only. */
+    toggle: (id: string) =>
+        request<{ success: boolean; product: Product }>(`/products/${id}/toggle`, {
+            method: "PATCH",
+            body:   JSON.stringify({}),
+        }),
+
+    /** Delete a product and its images — admin only. */
+    delete: (id: string) =>
+        request<{ success: boolean; message: string }>(`/products/${id}`, {
             method: "DELETE",
         }),
 };

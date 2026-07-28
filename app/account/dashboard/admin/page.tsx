@@ -10,6 +10,7 @@ import {
     Plus, Search, X, LogOut, Phone, Mail,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { productApi } from "@/config/api";
 
 /* ── Dummy data — to be replaced when admin endpoints are ready ── */
 const DUMMY_ORDERS = [
@@ -19,15 +20,6 @@ const DUMMY_ORDERS = [
     { id: "CST-20250724-0031", customer: "Peter Kamau",   phone: "+254 745 678 901", items: 1, total: 4800,  status: "confirmed"        as const, date: "24 Jul 2025", payment: "COD" },
     { id: "CST-20250720-0028", customer: "Grace Njoroge", phone: "+254 756 789 012", items: 2, total: 9300,  status: "delivered"        as const, date: "20 Jul 2025", payment: "M-Pesa" },
     { id: "CST-20250718-0024", customer: "David Mwangi",  phone: "+254 767 890 123", items: 4, total: 22100, status: "delivered"        as const, date: "18 Jul 2025", payment: "M-Pesa" },
-];
-
-const DUMMY_PRODUCTS = [
-    { id: "1", name: "Egyptian Cotton Duvet Set",  category: "Beddings",        price: 4800,  stock: 12, active: true  },
-    { id: "2", name: "Air Fryer 5.5L",             category: "Home Appliances", price: 8900,  stock: 5,  active: true  },
-    { id: "3", name: "Non-Stick Cookware Set 8pc", category: "Kitchenware",     price: 6400,  stock: 8,  active: true  },
-    { id: "4", name: "Rattan Accent Chair",        category: "Furniture",       price: 22000, stock: 2,  active: true  },
-    { id: "5", name: "Steam Iron Pro",             category: "Home Appliances", price: 2750,  stock: 0,  active: false },
-    { id: "6", name: "LED Smart Desk Lamp",        category: "Electronics",     price: 2900,  stock: 14, active: true  },
 ];
 
 const DUMMY_CUSTOMERS = [
@@ -166,10 +158,19 @@ export default function AdminPage() {
 
 /* OVERVIEW */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
+    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
+
+    useEffect(() => {
+        productApi.list({ limit: 100 })
+            .then((res) => setProducts(res.products || []))
+            .catch(() => {});
+    }, []);
+
     const totalRevenue   = DUMMY_ORDERS.reduce((s, o) => s + o.total, 0);
     const pendingOrders  = DUMMY_ORDERS.filter((o) => o.status !== "delivered").length;
     const deliveredCount = DUMMY_ORDERS.filter((o) => o.status === "delivered").length;
-    const lowStock       = DUMMY_PRODUCTS.filter((p) => p.stock <= 2).length;
+    const lowStockItems  = products.filter((p) => p.stock <= 2);
+    const lowStock       = lowStockItems.length;
 
     const stats = [
         { label: "Total Revenue",    value: formatKES(totalRevenue), icon: <TrendingUp className="w-5 h-5" />,  color: "text-[#C6A16A] bg-[#C6A16A]/10" },
@@ -229,7 +230,7 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                         <button type="button" onClick={() => setSection("products")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Manage</button>
                     </div>
                     <div className="divide-y divide-red-100 dark:divide-red-500/10">
-                        {DUMMY_PRODUCTS.filter((p) => p.stock <= 2).map((p) => (
+                        {lowStockItems.map((p) => (
                             <div key={p.id} className="px-5 py-3 flex items-center justify-between text-sm">
                                 <span className="font-semibold text-zinc-800 dark:text-zinc-200">{p.name}</span>
                                 <span className={`font-bold ${p.stock === 0 ? "text-red-500" : "text-amber-500"}`}>
@@ -365,34 +366,163 @@ function Orders() {
 
 /* PRODUCTS */
 function Products() {
-    const [products, setProducts] = useState(DUMMY_PRODUCTS);
-    const [search, setSearch]     = useState("");
+    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
+    const [loading,  setLoading]  = useState(true);
+    const [search,   setSearch]   = useState("");
+
+    // Add / Edit form
+    const [showForm,   setShowForm]   = useState(false);
+    const [editId,     setEditId]     = useState<string | null>(null);
+    const [formName,   setFormName]   = useState("");
+    const [formCat,    setFormCat]    = useState("");
+    const [formSlug,   setFormSlug]   = useState("");
+    const [formPrice,  setFormPrice]  = useState("");
+    const [formStock,  setFormStock]  = useState("");
+    const [formFiles,  setFormFiles]  = useState<FileList | null>(null);
+    const [formActive, setFormActive] = useState(true);
+    const [saving,     setSaving]     = useState(false);
+    const [formErr,    setFormErr]    = useState("");
+
+    useEffect(() => {
+        productApi.list({ limit: 50 })
+            .then(res => setProducts(res.products))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
 
     const filtered = products.filter((p) =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.category.toLowerCase().includes(search.toLowerCase())
     );
 
-    const toggleActive = (id: string) =>
-        setProducts((prev) => prev.map((p) => p.id === id ? { ...p, active: !p.active } : p));
+    const resetForm = () => {
+        setEditId(null); setFormName(""); setFormCat(""); setFormSlug("");
+        setFormPrice(""); setFormStock(""); setFormFiles(null);
+        setFormActive(true); setFormErr(""); setShowForm(false);
+    };
+
+    const openEdit = (p: import("@/config/api").Product) => {
+        setEditId(p.id); setFormName(p.name); setFormCat(p.category);
+        setFormSlug(p.slug); setFormPrice(String(p.price));
+        setFormStock(String(p.stock)); setFormActive(p.active);
+        setFormErr(""); setShowForm(true);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formName || !formCat || !formSlug || !formPrice || !formStock) {
+            setFormErr("All fields except images are required."); return;
+        }
+        setSaving(true); setFormErr("");
+        try {
+            const fd = new FormData();
+            fd.append("name",     formName);
+            fd.append("category", formCat);
+            fd.append("slug",     formSlug);
+            fd.append("price",    formPrice);
+            fd.append("stock",    formStock);
+            fd.append("active",   String(formActive));
+            if (formFiles) {
+                Array.from(formFiles).forEach(f => fd.append("images", f));
+            }
+            if (editId) {
+                const res = await productApi.update(editId, fd);
+                setProducts(prev => prev.map(p => p.id === editId ? res.product : p));
+            } else {
+                const res = await productApi.create(fd);
+                setProducts(prev => [res.product, ...prev]);
+            }
+            resetForm();
+        } catch (err: unknown) {
+            setFormErr(err instanceof Error ? err.message : "Save failed.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleToggle = async (id: string) => {
+        try {
+            const res = await productApi.toggle(id);
+            setProducts(prev => prev.map(p => p.id === id ? res.product : p));
+        } catch {}
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Delete this product? This cannot be undone.")) return;
+        try {
+            await productApi.delete(id);
+            setProducts(prev => prev.filter(p => p.id !== id));
+        } catch {}
+    };
+
+    if (loading) return (
+        <div className="flex items-center justify-center py-20">
+            <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+        </div>
+    );
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Products</h2>
-                <button type="button" className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-xs transition-all shadow-sm">
+                <button type="button" onClick={() => { resetForm(); setShowForm(true); }}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-xs transition-all shadow-sm">
                     <Plus className="w-3.5 h-3.5" /> Add Product
                 </button>
             </div>
 
+            {/* Add / Edit form */}
+            {showForm && (
+                <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-glacial">
+                        {editId ? "Edit Product" : "New Product"}
+                    </h3>
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                        <div className="grid sm:grid-cols-2 gap-3">
+                            <AdminField label="Product name"  value={formName}  onChange={setFormName}  placeholder="Egyptian Cotton Duvet Set" />
+                            <AdminField label="Category"      value={formCat}   onChange={setFormCat}   placeholder="Beddings" />
+                        </div>
+                        <div className="grid sm:grid-cols-3 gap-3">
+                            <AdminField label="Slug"  value={formSlug}  onChange={setFormSlug}  placeholder="beddings" />
+                            <AdminField label="Price (KES)" value={formPrice} onChange={setFormPrice} placeholder="4800" type="number" />
+                            <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10"   type="number" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+                                Images (up to 5, JPEG/PNG/WebP)
+                            </label>
+                            <input type="file" accept="image/*" multiple
+                                onChange={e => setFormFiles(e.target.files)}
+                                className="w-full text-sm text-zinc-600 dark:text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#C6A16A]/15 file:text-[#C6A16A] hover:file:bg-[#C6A16A]/25 cursor-pointer" />
+                        </div>
+                        <label className="flex items-center gap-2.5 cursor-pointer">
+                            <input type="checkbox" checked={formActive} onChange={e => setFormActive(e.target.checked)}
+                                className="w-4 h-4 accent-[#C6A16A]" />
+                            <span className="text-sm text-zinc-700 dark:text-zinc-300">Active (visible to customers)</span>
+                        </label>
+                        {formErr && <p className="text-xs text-red-500 font-semibold">{formErr}</p>}
+                        <div className="flex items-center gap-3 pt-1">
+                            <button type="submit" disabled={saving}
+                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
+                                {saving
+                                    ? <span className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" />
+                                    : editId ? "Save Changes" : "Create Product"}
+                            </button>
+                            <button type="button" onClick={resetForm}
+                                className="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
             {/* Search */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                <input
-                    type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search products..."
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
-                />
+                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none" />
                 {search && <button type="button" onClick={() => setSearch("")}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
 
@@ -409,9 +539,14 @@ function Products() {
                     {filtered.map((p) => (
                         <div key={p.id} className={`grid grid-cols-12 px-5 py-3.5 items-center text-sm ${!p.active ? "opacity-50" : ""}`}>
                             <div className="col-span-5 flex items-center gap-3 min-w-0">
-                                <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center flex-shrink-0">
-                                    <Package className="w-3.5 h-3.5 text-zinc-400" />
-                                </div>
+                                {p.images[0] ? (
+                                    <img src={p.images[0]} alt={p.name}
+                                        className="w-8 h-8 rounded-lg object-cover border border-zinc-200 dark:border-zinc-800 flex-shrink-0" />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center flex-shrink-0">
+                                        <Package className="w-3.5 h-3.5 text-zinc-400" />
+                                    </div>
+                                )}
                                 <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">{p.name}</span>
                             </div>
                             <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
@@ -422,34 +557,45 @@ function Products() {
                                 {p.stock === 0 ? "Out" : p.stock}
                             </span>
                             <div className="col-span-2 flex items-center justify-center gap-1.5">
-                                <button type="button" className="p-1.5 rounded-lg text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors" title="View">
-                                    <Eye className="w-3.5 h-3.5" />
-                                </button>
-                                <button type="button" className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors" title="Edit">
+                                <button type="button" onClick={() => openEdit(p)}
+                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors" title="Edit">
                                     <Edit2 className="w-3.5 h-3.5" />
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() => toggleActive(p.id)}
+                                <button type="button" onClick={() => handleToggle(p.id)}
                                     className={`p-1.5 rounded-lg transition-colors ${
                                         p.active
-                                            ? "text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                                            ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10"
                                             : "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
-                                    }`}
-                                    title={p.active ? "Deactivate" : "Activate"}
-                                >
-                                    {p.active ? <Trash2 className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                                    }`} title={p.active ? "Deactivate" : "Activate"}>
+                                    {p.active ? <Eye className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                                </button>
+                                <button type="button" onClick={() => handleDelete(p.id)}
+                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" title="Delete">
+                                    <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         </div>
                     ))}
                     {filtered.length === 0 && (
                         <div className="text-center py-12 text-zinc-400">
+                            <Package className="w-10 h-10 opacity-20 mx-auto mb-3" />
                             <p className="text-sm font-semibold">No products found</p>
                         </div>
                     )}
                 </div>
             </div>
+        </div>
+    );
+}
+
+function AdminField({ label, value, onChange, placeholder, type = "text" }: {
+    label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string;
+}) {
+    return (
+        <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">{label}</label>
+            <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
         </div>
     );
 }

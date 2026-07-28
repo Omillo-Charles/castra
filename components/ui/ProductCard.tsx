@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
-import type { Product } from "@/lib/dummyProducts";
+import type { Product } from "@/config/api";
 import { WhatsAppIcon } from "@/components/svgicons";
 
 const WHATSAPP_NUMBER = "254704147774";
@@ -19,22 +19,32 @@ export function ProductCard({ product }: { product: Product }) {
     );
     const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}`;
 
+    const imageUrl = product.images?.[0];
+
     return (
         <article className="group relative flex flex-col bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C6A16A]/40 dark:hover:border-[#C6A16A]/30 transition-all duration-300">
 
             {/* Image area */}
             <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-                {/* Placeholder */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-300 dark:text-zinc-700">
-                    <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="M21 15l-5-5L5 21" />
-                    </svg>
-                    <span className="text-[10px] font-medium tracking-wide uppercase opacity-60">
-                        Image coming soon
-                    </span>
-                </div>
+                {imageUrl ? (
+                    <img
+                        src={imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                ) : (
+                    /* Placeholder */
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-300 dark:text-zinc-700">
+                        <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                        <span className="text-[10px] font-medium tracking-wide uppercase opacity-60">
+                            Image coming soon
+                        </span>
+                    </div>
+                )}
 
                 {/* Subtle gold shimmer on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

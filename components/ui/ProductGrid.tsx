@@ -1,14 +1,52 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal } from "lucide-react";
-import { DUMMY_PRODUCTS, CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/lib/dummyProducts";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
+import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { productApi, type Product } from "@/config/api";
 
 export function ProductGrid() {
+    const [products, setProducts]             = useState<Product[]>([]);
+    const [loading, setLoading]               = useState(true);
     const [activeCategory, setActiveCategory] = useState("All");
-    const [currentPage, setCurrentPage]         = useState(1);
-    const [sortBy, setSortBy]                   = useState<"default" | "price-asc" | "price-desc" | "rating">("default");
+    const [currentPage, setCurrentPage]       = useState(1);
+    const [totalPages, setTotalPages]         = useState(1);
+    const [totalProducts, setTotalProducts]   = useState(0);
+    const [sortBy, setSortBy]                 = useState<"default" | "price-asc" | "price-desc">("default");
+
+    // Fetch products whenever category, page, or sort changes
+    useEffect(() => {
+        let isMounted = true;
+        setLoading(true);
+
+        const category = activeCategory === "All" ? undefined : activeCategory;
+        const sort = sortBy === "default" ? undefined : sortBy;
+
+        productApi.list({
+            category,
+            page: currentPage,
+            limit: PRODUCTS_PER_PAGE,
+            sort,
+        })
+            .then((res) => {
+                if (!isMounted) return;
+                setProducts(res.products || []);
+                setTotalPages(res.pagination?.totalPages || 1);
+                setTotalProducts(res.pagination?.total || (res.products?.length ?? 0));
+            })
+            .catch((err) => {
+                console.error("Failed to load products:", err);
+                if (isMounted) setProducts([]);
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [activeCategory, currentPage, sortBy]);
 
     // Sync active category from URL param on first mount
     useEffect(() => {
@@ -21,8 +59,7 @@ export function ProductGrid() {
         if (match) { setActiveCategory(match); setCurrentPage(1); }
     }, []);
 
-    // React to navbar category clicks — listens for the custom event
-    // dispatched by scrollToProducts (replaceState never fires popstate)
+    // React to navbar category clicks — listens for custom event
     useEffect(() => {
         const onCategoryChange = (e: Event) => {
             const slug = (e as CustomEvent<{ slug?: string }>).detail.slug;
@@ -35,24 +72,6 @@ export function ProductGrid() {
         window.addEventListener("categorychange", onCategoryChange);
         return () => window.removeEventListener("categorychange", onCategoryChange);
     }, []);
-
-    const filtered = useMemo(() => {
-        let list = activeCategory === "All"
-            ? DUMMY_PRODUCTS
-            : DUMMY_PRODUCTS.filter((p) => p.category === activeCategory);
-
-        if (sortBy === "price-asc")  list = [...list].sort((a, b) => a.price - b.price);
-        if (sortBy === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
-        if (sortBy === "rating")     list = [...list].sort((a, b) => b.rating - a.rating);
-
-        return list;
-    }, [activeCategory, sortBy]);
-
-    const totalPages  = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
-    const paginated   = filtered.slice(
-        (currentPage - 1) * PRODUCTS_PER_PAGE,
-        currentPage * PRODUCTS_PER_PAGE
-    );
 
     const handleCategory = (cat: string) => {
         setActiveCategory(cat);
@@ -75,7 +94,7 @@ export function ProductGrid() {
                         {activeCategory === "All" ? "All Products" : activeCategory}
                     </h2>
                     <p className="text-xs text-zinc-400 mt-1">
-                        {filtered.length} item{filtered.length !== 1 ? "s" : ""} found
+                        {loading ? "Loading products..." : `${totalProducts} item${totalProducts !== 1 ? "s" : ""} found`}
                     </p>
                 </div>
 
@@ -90,7 +109,6 @@ export function ProductGrid() {
                         <option value="default">Default</option>
                         <option value="price-asc">Price: Low to High</option>
                         <option value="price-desc">Price: High to Low</option>
-                        <option value="rating">Top Rated</option>
                     </select>
                 </div>
             </div>
@@ -121,21 +139,26 @@ export function ProductGrid() {
             <div className="h-px bg-zinc-200 dark:bg-zinc-800" />
 
             {/* ── Product grid ── */}
-            {paginated.length === 0 ? (
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-24 text-zinc-400 gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#C6A16A]" />
+                    <p className="text-sm font-semibold">Fetching collection...</p>
+                </div>
+            ) : products.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-zinc-400">
                     <LayoutGrid className="w-12 h-12 mb-4 opacity-30" />
                     <p className="text-sm font-semibold">No products found</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-                    {paginated.map((product) => (
+                    {products.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             )}
 
             {/* ── Pagination ── */}
-            {totalPages > 1 && (
+            {!loading && totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 pt-4">
                     <button
                         type="button"
