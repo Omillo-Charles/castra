@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
     Search,
     User,
@@ -37,10 +38,15 @@ const CATEGORIES = [
 
 const PRODUCT_CATEGORIES = CATEGORIES.slice(1);
 
+function slugifyCategory(category: string) {
+    return category.toLowerCase().replace(/\s+/g, "-");
+}
+
 export function Navbar() {
     const { user } = useAuth();
     const { itemCount, total } = useCart();
     const { itemCount: wishlistCount } = useWishlist();
+    const router = useRouter();
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
     const [activeNavCategory, setActiveNavCategory] = useState<string | null>(null);
 
@@ -54,7 +60,23 @@ export function Navbar() {
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Searching for:", searchQuery, "in category:", selectedCategory);
+
+        const trimmedQuery = searchQuery.trim();
+        const params = new URLSearchParams();
+
+        if (trimmedQuery) {
+            params.set("search", trimmedQuery);
+        }
+
+        if (selectedCategory !== "All Categories") {
+            params.set("category", slugifyCategory(selectedCategory));
+        }
+
+        const queryString = params.toString();
+        const targetUrl = queryString ? `/?${queryString}` : "/";
+
+        scrollToProducts(selectedCategory !== "All Categories" ? slugifyCategory(selectedCategory) : undefined);
+        router.push(targetUrl);
     };
 
     return (
@@ -381,11 +403,10 @@ export function Navbar() {
                                     setActiveNavCategory("All Categories");
                                     scrollToProducts(undefined);
                                 }}
-                                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none ${
-                                    activeNavCategory === "All Categories" || activeNavCategory === null
+                                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none ${activeNavCategory === "All Categories" || activeNavCategory === null
                                         ? "bg-[#C6A16A] text-zinc-950"
                                         : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950"
-                                }`}
+                                    }`}
                             >
                                 <LayoutGrid className="w-3.5 h-3.5" />
                                 <span>All Categories</span>

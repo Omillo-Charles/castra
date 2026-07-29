@@ -1,33 +1,57 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { productApi, type Product } from "@/config/api";
 
+function resolveCategory(categoryParam?: string | null) {
+    if (!categoryParam) return "All";
+
+    const normalizedParam = categoryParam.toLowerCase().replace(/\s+/g, "-");
+    const match = CATEGORIES_LIST.find(
+        (category) => category.toLowerCase().replace(/\s+/g, "-") === normalizedParam
+    );
+
+    return match ?? "All";
+}
+
 export function ProductGrid() {
-    const [products, setProducts]             = useState<Product[]>([]);
-    const [loading, setLoading]               = useState(true);
-    const [activeCategory, setActiveCategory] = useState("All");
-    const [currentPage, setCurrentPage]       = useState(1);
-    const [totalPages, setTotalPages]         = useState(1);
-    const [totalProducts, setTotalProducts]   = useState(0);
-    const [sortBy, setSortBy]                 = useState<"default" | "price-asc" | "price-desc">("default");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+
+    const activeCategory = resolveCategory(searchParams.get("category"));
+    const searchQuery = searchParams.get("search")?.trim() ?? "";
+    const currentPage = Number.parseInt(searchParams.get("page") ?? "1", 10) || 1;
+    const sortBy = (() => {
+        const value = searchParams.get("sort");
+        return value === "price-asc" || value === "price-desc" ? value : "default";
+    })();
 
     // Fetch products whenever category, page, or sort changes
     useEffect(() => {
         let isMounted = true;
-        setLoading(true);
+
+        queueMicrotask(() => {
+            if (isMounted) setLoading(true);
+        });
 
         const category = activeCategory === "All" ? undefined : activeCategory;
         const sort = sortBy === "default" ? undefined : sortBy;
+        const trimmedQuery = searchQuery.trim();
 
         productApi.list({
             category,
             page: currentPage,
             limit: PRODUCTS_PER_PAGE,
             sort,
+            search: trimmedQuery || undefined,
         })
             .then((res) => {
                 if (!isMounted) return;
@@ -46,39 +70,70 @@ export function ProductGrid() {
         return () => {
             isMounted = false;
         };
-    }, [activeCategory, currentPage, sortBy]);
-
-    // Sync active category from URL param on first mount
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const cat    = params.get("category");
-        if (!cat) return;
-        const match = CATEGORIES_LIST.find(
-            (c) => c.toLowerCase().replace(/\s+/g, "-") === cat
-        );
-        if (match) { setActiveCategory(match); setCurrentPage(1); }
-    }, []);
+    }, [activeCategory, currentPage, sortBy, searchQuery]);
 
     // React to navbar category clicks — listens for custom event
     useEffect(() => {
         const onCategoryChange = (e: Event) => {
             const slug = (e as CustomEvent<{ slug?: string }>).detail.slug;
-            if (!slug) { setActiveCategory("All"); setCurrentPage(1); return; }
+            if (!slug) {
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete("category");
+                params.set("page", "1");
+                const queryString = params.toString();
+                router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
+                return;
+            }
+
             const match = CATEGORIES_LIST.find(
                 (c) => c.toLowerCase().replace(/\s+/g, "-") === slug
             );
-            if (match) { setActiveCategory(match); setCurrentPage(1); }
+            if (match) {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set("category", slug);
+                params.set("page", "1");
+                const queryString = params.toString();
+                router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
+            }
         };
+
         window.addEventListener("categorychange", onCategoryChange);
         return () => window.removeEventListener("categorychange", onCategoryChange);
-    }, []);
+    }, [router, searchParams]);
+
+    const updateQueryParams = (updates: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        setLoading(true);
+
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value === null || value === "") {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        });
+
+        const queryString = params.toString();
+        router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
+    };
 
     const handleCategory = (cat: string) => {
-        setActiveCategory(cat);
-        setCurrentPage(1);
-        const slug = cat === "All" ? undefined : cat.toLowerCase().replace(/\s+/g, "-");
-        const url  = slug ? `/?category=${slug}` : "/";
-        window.history.replaceState({ category: slug ?? null }, "", url);
+        const slug = cat === "All" ? null : cat.toLowerCase().replace(/\s+/g, "-");
+        updateQueryParams({
+            category: slug,
+            page: "1",
+        });
+    };
+
+    const handleSortChange = (value: "default" | "price-asc" | "price-desc") => {
+        updateQueryParams({
+            sort: value === "default" ? null : value,
+            page: "1",
+        });
+    };
+
+    const handlePageChange = (page: number) => {
+        updateQueryParams({ page: String(page) });
     };
 
     return (
@@ -94,7 +149,11 @@ export function ProductGrid() {
                         {activeCategory === "All" ? "All Products" : activeCategory}
                     </h2>
                     <p className="text-xs text-zinc-400 mt-1">
-                        {loading ? "Loading products..." : `${totalProducts} item${totalProducts !== 1 ? "s" : ""} found`}
+                        {loading
+                            ? "Loading products..."
+                            : searchQuery.trim()
+                                ? `${totalProducts} item${totalProducts !== 1 ? "s" : ""} found for “${searchQuery.trim()}”`
+                                : `${totalProducts} item${totalProducts !== 1 ? "s" : ""} found`}
                     </p>
                 </div>
 
@@ -103,7 +162,7 @@ export function ProductGrid() {
                     <SlidersHorizontal className="w-4 h-4 text-zinc-400" />
                     <select
                         value={sortBy}
-                        onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setCurrentPage(1); }}
+                        onChange={(e) => handleSortChange(e.target.value as typeof sortBy)}
                         className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
                     >
                         <option value="default">Default</option>
@@ -123,11 +182,10 @@ export function ProductGrid() {
                             key={cat}
                             type="button"
                             onClick={() => handleCategory(cat)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${
-                                isActive
+                            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${isActive
                                     ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
                                     : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800"
-                            }`}
+                                }`}
                         >
                             {cat}
                         </button>
@@ -162,7 +220,7 @@ export function ProductGrid() {
                 <div className="flex items-center justify-center gap-2 pt-4">
                     <button
                         type="button"
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
                         className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         aria-label="Previous page"
@@ -174,12 +232,11 @@ export function ProductGrid() {
                         <button
                             key={page}
                             type="button"
-                            onClick={() => setCurrentPage(page)}
-                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                                page === currentPage
+                            onClick={() => handlePageChange(page)}
+                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
                                     ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
                                     : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
-                            }`}
+                                }`}
                         >
                             {page}
                         </button>
@@ -187,7 +244,7 @@ export function ProductGrid() {
 
                     <button
                         type="button"
-                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
                         className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         aria-label="Next page"

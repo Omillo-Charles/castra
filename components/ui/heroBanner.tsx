@@ -86,8 +86,8 @@ export function HeroBanner() {
           {/* Slide content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10">
             {/* Title */}
-            <h1 className="font-mulish italic font-black text-white drop-shadow-lg
-              text-4xl sm:text-5xl md:text-6xl lg:text-7xl
+            <h1 className="font-mulish font-extrabold text-white drop-shadow-lg
+              text-3xl sm:text-4xl md:text-5xl lg:text-5xl
               tracking-wide leading-tight mb-3">
               {slide.title}
             </h1>
@@ -151,11 +151,10 @@ export function HeroBanner() {
             key={slide.id}
             type="button"
             onClick={() => goTo(index)}
-            className={`rounded-full transition-all duration-300 ${
-              index === current
+            className={`rounded-full transition-all duration-300 ${index === current
                 ? "w-7 h-2.5 bg-[#C6A16A]"
                 : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
-            }`}
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
