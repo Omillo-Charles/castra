@@ -170,8 +170,8 @@ export default function TermsPage() {
                         Please read these terms carefully before using the Castra Households website or placing any order with us.
                     </p>
                     <p className="text-xs text-zinc-400 mt-3">
-                        Effective date: <span className="font-semibold text-zinc-600 dark:text-zinc-300">1 January 2025</span>
-                        &nbsp;·&nbsp; Last updated: <span className="font-semibold text-zinc-600 dark:text-zinc-300">27 July 2025</span>
+                        Effective date: <span className="font-semibold text-zinc-600 dark:text-zinc-300">26 August 2026</span>
+                        &nbsp;·&nbsp; Last updated: <span className="font-semibold text-zinc-600 dark:text-zinc-300">27 July 2026</span>
                     </p>
                 </div>
             </div>

@@ -9,19 +9,11 @@ import {
     Edit2, Phone, Mail, Home, Plus, X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { userApi, addressApi } from "@/config/api";
+import { userApi, addressApi, orderApi, normaliseStatus, type Order } from "@/config/api";
 
-/* ── Dummy data — to be replaced when order/wishlist endpoints are ready ── */
-const DUMMY_ORDERS = [
-    { id: "CST-20250727-0041", date: "27 Jul 2025", items: 2, total: 6750,  status: "out-for-delivery" as const },
-    { id: "CST-20250720-0033", date: "20 Jul 2025", items: 1, total: 4800,  status: "delivered"        as const },
-    { id: "CST-20250710-0018", date: "10 Jul 2025", items: 3, total: 12300, status: "delivered"        as const },
-];
-
-const DUMMY_WISHLIST = [
-    { id: "w1", name: "Egyptian Cotton Duvet Set", category: "Beddings", price: 4800 },
-    { id: "w2", name: "Cast Iron Dutch Oven",       category: "Kitchenware", price: 5100 },
-];
+function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
+}
 
 type Section = "overview" | "orders" | "addresses" | "wishlist" | "profile";
 
@@ -148,16 +140,26 @@ export default function DashboardPage() {
 
 /* ══ OVERVIEW ══ */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
-    const recentOrder = DUMMY_ORDERS[0];
-    const status = ORDER_STATUS[recentOrder.status];
+    const [orders,  setOrders]  = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        orderApi.list({ limit: 50 })
+            .then(res => setOrders(res.orders || []))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
+    const recentOrder = orders[0];
+    const recentStatus = recentOrder ? ORDER_STATUS[normaliseStatus(recentOrder.status)] : null;
 
     return (
         <div className="space-y-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
-                    { label: "Total Orders",    value: DUMMY_ORDERS.length,    icon: <Package className="w-5 h-5" />,  onClick: () => setSection("orders") },
-                    { label: "Wishlist Items",  value: DUMMY_WISHLIST.length,   icon: <Heart className="w-5 h-5" />,    onClick: () => setSection("wishlist") },
-                    { label: "Saved Addresses", value: 0,  icon: <MapPin className="w-5 h-5" />,   onClick: () => setSection("addresses") },
+                    { label: "Total Orders",    value: loading ? "—" : orders.length, icon: <Package className="w-5 h-5" />, onClick: () => setSection("orders") },
+                    { label: "Wishlist Items",  value: "—",                           icon: <Heart className="w-5 h-5" />,   onClick: () => setSection("wishlist") },
+                    { label: "Saved Addresses", value: "—",                           icon: <MapPin className="w-5 h-5" />,  onClick: () => setSection("addresses") },
                 ].map(({ label, value, icon, onClick }) => (
                     <button key={label} type="button" onClick={onClick}
                         className="flex flex-col gap-3 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-[#C6A16A]/40 transition-all text-left cursor-pointer group">
@@ -176,19 +178,30 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                     <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Most Recent Order</h2>
                     <button type="button" onClick={() => setSection("orders")} className="text-xs text-[#C6A16A] font-semibold hover:underline">View all</button>
                 </div>
-                <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{recentOrder.id}</p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">{recentOrder.date} · {recentOrder.items} items</p>
+                {loading ? (
+                    <div className="flex items-center justify-center py-8">
+                        <span className="w-5 h-5 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>{status.label}</span>
-                        <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(recentOrder.total)}</span>
+                ) : recentOrder ? (
+                    <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{recentOrder.ref}</p>
+                            <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(recentOrder.createdAt)} · {recentOrder.items.length} item{recentOrder.items.length !== 1 ? "s" : ""}</p>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                            {recentStatus && <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${recentStatus.color}`}>{recentStatus.label}</span>}
+                            <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(recentOrder.total)}</span>
+                        </div>
+                        <Link href="/track-order" className="flex items-center gap-1.5 text-xs font-semibold text-[#C6A16A] hover:underline flex-shrink-0">
+                            <Truck className="w-3.5 h-3.5" /> Track
+                        </Link>
                     </div>
-                    <Link href="/track-order" className="flex items-center gap-1.5 text-xs font-semibold text-[#C6A16A] hover:underline flex-shrink-0">
-                        <Truck className="w-3.5 h-3.5" /> Track
-                    </Link>
-                </div>
+                ) : (
+                    <div className="px-5 py-8 text-center">
+                        <p className="text-sm text-zinc-400">No orders yet.</p>
+                        <Link href="/" className="text-xs text-[#C6A16A] font-semibold hover:underline mt-1 inline-block">Start shopping →</Link>
+                    </div>
+                )}
             </div>
 
             {/* Quick links */}
@@ -229,29 +242,49 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
 
 /* ══ ORDERS ══ */
 function Orders() {
+    const [orders,  setOrders]  = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error,   setError]   = useState("");
+
+    useEffect(() => {
+        orderApi.list({ limit: 50 })
+            .then(res => setOrders(res.orders || []))
+            .catch(err => setError(err instanceof Error ? err.message : "Failed to load orders."))
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) return (
+        <div className="flex items-center justify-center py-20">
+            <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+        </div>
+    );
+
     return (
         <div className="space-y-4">
             <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">My Orders</h2>
-            {DUMMY_ORDERS.map((order) => {
-                const status = ORDER_STATUS[order.status];
+            {error && <p className="text-sm text-red-500 font-semibold">{error}</p>}
+            {orders.map((order) => {
+                const uiKey = normaliseStatus(order.status);
+                const status = ORDER_STATUS[uiKey] ?? ORDER_STATUS["confirmed"];
+                const isDelivered = uiKey === "delivered";
                 return (
                     <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
                         <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
                             <Package className="w-5 h-5 text-zinc-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.id}</p>
-                            <p className="text-[11px] text-zinc-400 mt-0.5">{order.date} · {order.items} item{order.items !== 1 ? "s" : ""}</p>
+                            <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
+                            <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(order.createdAt)} · {order.items.length} item{order.items.length !== 1 ? "s" : ""}</p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
                             <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>{status.label}</span>
                             <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(order.total)}</span>
-                            {order.status !== "delivered" && (
+                            {!isDelivered && (
                                 <Link href="/track-order" className="flex items-center gap-1.5 text-xs font-semibold text-[#C6A16A] hover:underline">
                                     <Truck className="w-3.5 h-3.5" /> Track
                                 </Link>
                             )}
-                            {order.status === "delivered" && (
+                            {isDelivered && (
                                 <span className="flex items-center gap-1 text-xs text-emerald-500 font-semibold">
                                     <CheckCircle2 className="w-3.5 h-3.5" /> Delivered
                                 </span>
@@ -260,6 +293,13 @@ function Orders() {
                     </div>
                 );
             })}
+            {orders.length === 0 && !error && (
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
+                    <Package className="w-10 h-10 opacity-20" />
+                    <p className="text-sm font-semibold">No orders yet</p>
+                    <Link href="/" className="text-xs text-[#C6A16A] font-bold hover:underline">Start shopping →</Link>
+                </div>
+            )}
         </div>
     );
 }
@@ -490,37 +530,17 @@ function AddrField({ label, value, onChange, placeholder }: {
 
 /* ══ WISHLIST ═ */
 function Wishlist() {
-    const [items, setItems] = useState(DUMMY_WISHLIST);
-
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Wishlist</h2>
                 <Link href="/wishlist" className="text-xs font-bold text-[#C6A16A] hover:underline">View full wishlist</Link>
             </div>
-            {items.map((item) => (
-                <div key={item.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center flex-shrink-0">
-                        <Package className="w-5 h-5 text-zinc-300 dark:text-zinc-700" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A]">{item.category}</p>
-                        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">{item.name}</p>
-                        <p className="text-sm font-bold text-zinc-900 dark:text-white mt-0.5">{formatKES(item.price)}</p>
-                    </div>
-                    <button type="button" onClick={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}
-                        className="text-xs font-semibold text-zinc-400 hover:text-red-500 transition-colors flex-shrink-0">
-                        Remove
-                    </button>
-                </div>
-            ))}
-            {items.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
-                    <Heart className="w-10 h-10 opacity-20" />
-                    <p className="text-sm font-semibold">Your wishlist is empty</p>
-                    <Link href="/" className="text-xs text-[#C6A16A] font-bold hover:underline">Browse products</Link>
-                </div>
-            )}
+            <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
+                <Heart className="w-10 h-10 opacity-20" />
+                <p className="text-sm font-semibold">Your wishlist is empty</p>
+                <Link href="/" className="text-xs text-[#C6A16A] font-bold hover:underline">Browse products</Link>
+            </div>
         </div>
     );
 }

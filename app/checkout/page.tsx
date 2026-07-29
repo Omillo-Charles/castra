@@ -11,7 +11,7 @@ import {
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { addressApi } from "@/config/api";
+import { addressApi, orderApi, paymentApi } from "@/config/api";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -130,6 +130,14 @@ export default function CheckoutPage() {
 
     const [step, setStep]        = useState<Step>("details");
     const [placed, setPlaced]    = useState(false);
+    const [placing, setPlacing]  = useState(false);
+    const [placeErr, setPlaceErr] = useState("");
+
+    // Stored after a successful placeOrder call
+    const [placedOrderRef,  setPlacedOrderRef]  = useState("");
+    const [placedOrderId,   setPlacedOrderId]   = useState("");
+    const [stkRequestId,    setStkRequestId]    = useState<string | null>(null);
+    const [stkPayStatus,    setStkPayStatus]    = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
 
     // ── Contact — pre-fill from logged-in user ──
     const [firstName, setFirstName] = useState(user?.firstName ?? "");
@@ -195,7 +203,73 @@ export default function CheckoutPage() {
 
     const goNext = () => { const n = STEP_KEYS[currentIndex + 1]; if (n) setStep(n as Step); };
     const goBack = () => { const p = STEP_KEYS[currentIndex - 1]; if (p) setStep(p as Step); };
-    const placeOrder = () => setPlaced(true); // TODO: wire to orders API
+
+    const placeOrder = async () => {
+        setPlaceErr("");
+        setPlacing(true);
+        try {
+            const res = await orderApi.place({
+                contact:  { firstName, lastName, email: email || undefined, phone },
+                delivery: { street: address, city, county, notes: notes || undefined },
+                payment:  {
+                    method:   payMethod,
+                    mpesaRef: payMethod === "mpesa-paybill" && mpesaRef ? mpesaRef : undefined,
+                    stkPhone: payMethod === "mpesa-stk"     && stkPhone ? stkPhone : undefined,
+                },
+            });
+
+            setPlacedOrderRef(res.order.ref);
+            setPlacedOrderId(res.order.id);
+            setPlaced(true);
+
+            // ── STK Push: poll for payment confirmation ──
+            if (payMethod === "mpesa-stk" && res.stk?.checkoutRequestId) {
+                const reqId = res.stk.checkoutRequestId;
+                setStkRequestId(reqId);
+                setStkPayStatus("PENDING");
+
+                let attempts = 0;
+                const MAX_ATTEMPTS = 12; // 12 × 5 s = 60 s total
+
+                const poll = async () => {
+                    if (attempts >= MAX_ATTEMPTS) {
+                        setStkPayStatus("FAILED");
+                        return;
+                    }
+                    attempts++;
+                    try {
+                        const qRes = await paymentApi.stkQuery(reqId);
+                        if (qRes.status === "PAID") {
+                            setStkPayStatus("PAID");
+                            return;
+                        }
+                        if (qRes.status === "FAILED") {
+                            setStkPayStatus("FAILED");
+                            return;
+                        }
+                        // Still PENDING — retry
+                        setTimeout(poll, 5000);
+                    } catch {
+                        setTimeout(poll, 5000);
+                    }
+                };
+                setTimeout(poll, 5000);
+            }
+
+            // ── Paybill: submit reference if provided ──
+            if (payMethod === "mpesa-paybill" && mpesaRef) {
+                try {
+                    await paymentApi.submitManual({ orderId: res.order.id, mpesaRef });
+                } catch {
+                    // non-critical — user can provide it later via WhatsApp
+                }
+            }
+        } catch (err: unknown) {
+            setPlaceErr(err instanceof Error ? err.message : "Failed to place order. Please try again.");
+        } finally {
+            setPlacing(false);
+        }
+    };
 
     const waMsg = encodeURIComponent(
         `Hi, I'd like to confirm my order:\n\n` +
@@ -221,10 +295,35 @@ export default function CheckoutPage() {
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-2">Order Placed</p>
                     <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white mb-2">Thank you!</h1>
+                    {placedOrderRef && (
+                        <p className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400 mb-3 tracking-wider">
+                            Reference: <span className="text-zinc-800 dark:text-zinc-200">{placedOrderRef}</span>
+                        </p>
+                    )}
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm mx-auto">
                         Your order has been received. We will confirm availability and reach out via WhatsApp or phone shortly.
                     </p>
                 </div>
+
+                {/* STK Push payment status */}
+                {stkRequestId && (
+                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${
+                        stkPayStatus === "PAID"
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400"
+                            : stkPayStatus === "FAILED"
+                                ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/25 text-red-500"
+                                : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25 text-amber-600 dark:text-amber-400"
+                    }`}>
+                        {stkPayStatus === "PAID" ? (
+                            <><CheckCircle2 className="w-4 h-4" /> M-Pesa payment confirmed!</>
+                        ) : stkPayStatus === "FAILED" ? (
+                            <>Payment not completed. Please contact us on WhatsApp to retry.</>
+                        ) : (
+                            <><span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin flex-shrink-0" /> Waiting for M-Pesa confirmation…</>
+                        )}
+                    </div>
+                )}
+
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                     <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
                         className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-xs transition-all shadow-md">
@@ -471,10 +570,21 @@ export default function CheckoutPage() {
                                 Continue <ArrowRight className="w-4 h-4" />
                             </button>
                         ) : (
-                            <button type="button" onClick={placeOrder}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-sm transition-all shadow-md">
-                                <CheckCircle2 className="w-4 h-4" /> Place Order
-                            </button>
+                            <div className="flex flex-col items-end gap-2">
+                                {placeErr && (
+                                    <p className="text-xs text-red-500 font-semibold text-right max-w-xs">{placeErr}</p>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={placeOrder}
+                                    disabled={placing}
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-60 text-zinc-950 font-bold text-sm transition-all shadow-md"
+                                >
+                                    {placing
+                                        ? <><span className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" /> Placing…</>
+                                        : <><CheckCircle2 className="w-4 h-4" /> Place Order</>}
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

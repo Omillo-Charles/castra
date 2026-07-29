@@ -10,18 +10,12 @@ import {
     Plus, Search, X, LogOut, Phone, Mail,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { productApi } from "@/config/api";
+import { productApi, orderApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus } from "@/config/api";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 
-/* ── Dummy data — to be replaced when admin endpoints are ready ── */
-const DUMMY_ORDERS = [
-    { id: "CST-20250727-0041", customer: "Jane Wanjiku",  phone: "+254 712 345 678", items: 2, total: 6750,  status: "out-for-delivery" as const, date: "27 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250726-0039", customer: "Brian Otieno",  phone: "+254 723 456 789", items: 1, total: 8900,  status: "dispatched"       as const, date: "26 Jul 2025", payment: "M-Pesa STK" },
-    { id: "CST-20250725-0035", customer: "Amina Hassan",  phone: "+254 734 567 890", items: 3, total: 14200, status: "processing"       as const, date: "25 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250724-0031", customer: "Peter Kamau",   phone: "+254 745 678 901", items: 1, total: 4800,  status: "confirmed"        as const, date: "24 Jul 2025", payment: "COD" },
-    { id: "CST-20250720-0028", customer: "Grace Njoroge", phone: "+254 756 789 012", items: 2, total: 9300,  status: "delivered"        as const, date: "20 Jul 2025", payment: "M-Pesa" },
-    { id: "CST-20250718-0024", customer: "David Mwangi",  phone: "+254 767 890 123", items: 4, total: 22100, status: "delivered"        as const, date: "18 Jul 2025", payment: "M-Pesa" },
-];
+function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
+}
 
 const DUMMY_CUSTOMERS = [
     { id: "u1", name: "Jane Wanjiku",  email: "jane@example.com",   phone: "+254 712 345 678", orders: 3, total: 21850, joined: "Jan 2025" },
@@ -159,30 +153,37 @@ export default function AdminPage() {
 
 /* OVERVIEW */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
-    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
+    const [products,  setProducts]  = useState<import("@/config/api").Product[]>([]);
+    const [orders,    setOrders]    = useState<Order[]>([]);
+    const [ordersLoading, setOrdersLoading] = useState(true);
 
     useEffect(() => {
         productApi.list({ limit: 100 })
-            .then((res) => setProducts(res.products || []))
+            .then(res => setProducts(res.products || []))
             .catch(() => {});
+        orderApi.list({ limit: 100 })
+            .then(res => setOrders(res.orders || []))
+            .catch(() => {})
+            .finally(() => setOrdersLoading(false));
     }, []);
 
-    const totalRevenue   = DUMMY_ORDERS.reduce((s, o) => s + o.total, 0);
-    const pendingOrders  = DUMMY_ORDERS.filter((o) => o.status !== "delivered").length;
-    const deliveredCount = DUMMY_ORDERS.filter((o) => o.status === "delivered").length;
-    const lowStockItems  = products.filter((p) => p.stock <= 2);
+    const totalRevenue   = orders.reduce((s, o) => s + o.total, 0);
+    const pendingOrders  = orders.filter(o => o.status !== "DELIVERED").length;
+    const deliveredCount = orders.filter(o => o.status === "DELIVERED").length;
+    const lowStockItems  = products.filter(p => p.stock <= 2);
     const lowStock       = lowStockItems.length;
 
     const stats = [
-        { label: "Total Revenue",    value: formatKES(totalRevenue), icon: <TrendingUp className="w-5 h-5" />,  color: "text-[#C6A16A] bg-[#C6A16A]/10" },
-        { label: "Active Orders",    value: pendingOrders,            icon: <Clock className="w-5 h-5" />,       color: "text-blue-500 bg-blue-500/10" },
-        { label: "Delivered",        value: deliveredCount,           icon: <CheckCircle2 className="w-5 h-5" />,color: "text-emerald-500 bg-emerald-500/10" },
-        { label: "Low Stock Items",  value: lowStock,                 icon: <AlertTriangle className="w-5 h-5" />,color: "text-red-500 bg-red-500/10" },
+        { label: "Total Revenue",   value: ordersLoading ? "…" : formatKES(totalRevenue), icon: <TrendingUp className="w-5 h-5" />,   color: "text-[#C6A16A] bg-[#C6A16A]/10" },
+        { label: "Active Orders",   value: ordersLoading ? "…" : pendingOrders,           icon: <Clock className="w-5 h-5" />,        color: "text-blue-500 bg-blue-500/10" },
+        { label: "Delivered",       value: ordersLoading ? "…" : deliveredCount,          icon: <CheckCircle2 className="w-5 h-5" />, color: "text-emerald-500 bg-emerald-500/10" },
+        { label: "Low Stock Items", value: lowStock,                                       icon: <AlertTriangle className="w-5 h-5" />,color: "text-red-500 bg-red-500/10" },
     ];
+
+    const recentOrders = orders.slice(0, 4);
 
     return (
         <div className="space-y-6">
-
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stats.map(({ label, value, icon, color }) => (
@@ -203,13 +204,20 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                     <button type="button" onClick={() => setSection("orders")} className="text-xs text-[#C6A16A] font-semibold hover:underline">View all</button>
                 </div>
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {DUMMY_ORDERS.slice(0, 4).map((order) => {
-                        const s = ORDER_STATUS[order.status];
+                    {ordersLoading ? (
+                        <div className="flex items-center justify-center py-8">
+                            <span className="w-5 h-5 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+                        </div>
+                    ) : recentOrders.length === 0 ? (
+                        <p className="text-sm text-zinc-400 text-center py-8">No orders yet.</p>
+                    ) : recentOrders.map(order => {
+                        const uiKey = normaliseStatus(order.status) as OrderStatus;
+                        const s = ORDER_STATUS[uiKey] ?? ORDER_STATUS["confirmed"];
                         return (
                             <div key={order.id} className="px-5 py-3.5 flex items-center gap-4 flex-wrap">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.id}</p>
-                                    <p className="text-[11px] text-zinc-400 mt-0.5">{order.customer} · {order.date}</p>
+                                    <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
+                                    <p className="text-[11px] text-zinc-400 mt-0.5">{order.firstName} {order.lastName} · {formatDate(order.createdAt)}</p>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
                                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${s.color}`}>{s.label}</span>
@@ -231,7 +239,7 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                         <button type="button" onClick={() => setSection("products")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Manage</button>
                     </div>
                     <div className="divide-y divide-red-100 dark:divide-red-500/10">
-                        {lowStockItems.map((p) => (
+                        {lowStockItems.map(p => (
                             <div key={p.id} className="px-5 py-3 flex items-center justify-between text-sm">
                                 <span className="font-semibold text-zinc-800 dark:text-zinc-200">{p.name}</span>
                                 <span className={`font-bold ${p.stock === 0 ? "text-red-500" : "text-amber-500"}`}>
@@ -248,29 +256,75 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
 
 /* ORDERS */
 function Orders() {
-    const [orders, setOrders]     = useState(DUMMY_ORDERS);
-    const [search, setSearch]     = useState("");
-    const [filter, setFilter]     = useState<OrderStatus | "all">("all");
-    const [editing, setEditing]   = useState<string | null>(null);
-    const [newStatus, setNewStatus] = useState<OrderStatus>("confirmed");
+    const [orders,        setOrders]        = useState<Order[]>([]);
+    const [loading,       setLoading]       = useState(true);
+    const [search,        setSearch]        = useState("");
+    const [filter,        setFilter]        = useState<OrderStatus | "all">("all");
+    const [currentPage,   setCurrentPage]   = useState(1);
+    const [totalPages,    setTotalPages]    = useState(1);
+    const [totalOrders,   setTotalOrders]   = useState(0);
+    const [editing,       setEditing]       = useState<string | null>(null);
+    const [newStatus,     setNewStatus]     = useState<OrderStatus>("confirmed");
+    const [updating,      setUpdating]      = useState(false);
+    const [err,           setErr]           = useState("");
 
-    const filtered = orders.filter((o) => {
-        const matchSearch = o.id.toLowerCase().includes(search.toLowerCase()) ||
-                            o.customer.toLowerCase().includes(search.toLowerCase());
-        const matchFilter = filter === "all" || o.status === filter;
-        return matchSearch && matchFilter;
-    });
+    const ORDERS_PER_PAGE = 10;
 
-    const updateStatus = (id: string) => {
-        setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status: newStatus } : o));
-        setEditing(null);
+    const uiToApiStatus = (status: string): ApiOrderStatus => {
+        return status.toUpperCase().replace(/-/g, "_") as ApiOrderStatus;
+    };
+
+    const loadOrders = (page = currentPage, query = search, status = filter) => {
+        setLoading(true);
+        setErr("");
+        const apiStatus = status === "all" ? undefined : uiToApiStatus(status);
+        orderApi.list({
+            page,
+            limit:  ORDERS_PER_PAGE,
+            search: query || undefined,
+            status: apiStatus,
+        })
+            .then(res => {
+                setOrders(res.orders || []);
+                setTotalPages(res.pagination?.totalPages || 1);
+                setTotalOrders(res.pagination?.total || 0);
+            })
+            .catch(() => {
+                setOrders([]);
+                setTotalPages(1);
+                setTotalOrders(0);
+                setErr("Failed to load orders.");
+            })
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        loadOrders(currentPage, search, filter);
+    }, [currentPage, search, filter]);
+
+    const updateStatus = async (id: string) => {
+        setUpdating(true);
+        setErr("");
+        try {
+            await orderApi.updateStatus(id, uiToApiStatus(newStatus));
+            setEditing(null);
+            loadOrders(currentPage, search, filter);
+        } catch (e: unknown) {
+            setErr(e instanceof Error ? e.message : "Failed to update status.");
+        } finally {
+            setUpdating(false);
+        }
     };
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Orders</h2>
-                <span className="text-xs text-zinc-400">{filtered.length} of {orders.length}</span>
+                {!loading && (
+                    <span className="text-xs text-zinc-400">
+                        {totalOrders} order{totalOrders !== 1 ? "s" : ""} found
+                    </span>
+                )}
             </div>
 
             {/* Filters */}
@@ -278,15 +332,15 @@ function Orders() {
                 <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                     <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                     <input
-                        type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search by order ID or customer..."
+                        type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                        placeholder="Search by reference, customer name or phone..."
                         className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
                     />
-                    {search && <button type="button" onClick={() => setSearch("")}><X className="w-4 h-4 text-zinc-400" /></button>}
+                    {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
                 </div>
                 <select
                     value={filter}
-                    onChange={(e) => setFilter(e.target.value as OrderStatus | "all")}
+                    onChange={(e) => { setFilter(e.target.value as OrderStatus | "all"); setCurrentPage(1); }}
                     className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
                 >
                     <option value="all">All Statuses</option>
@@ -296,22 +350,35 @@ function Orders() {
                 </select>
             </div>
 
+            {err && <p className="text-xs text-red-500 font-semibold">{err}</p>}
+
             {/* Order list */}
             <div className="space-y-3">
-                {filtered.map((order) => {
-                    const s = ORDER_STATUS[order.status];
+                {loading ? (
+                    <div className="text-center py-16 text-zinc-400">
+                        <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
+                        <p className="text-xs font-semibold">Loading orders...</p>
+                    </div>
+                ) : orders.map((order) => {
+                    const uiKey = normaliseStatus(order.status) as OrderStatus;
+                    const s = ORDER_STATUS[uiKey] ?? ORDER_STATUS["confirmed"];
                     const isEditing = editing === order.id;
+                    const paymentMethodLabel = order.payment?.method === "MPESA_STK"
+                        ? "M-Pesa STK"
+                        : order.payment?.method === "MPESA_PAYBILL"
+                            ? "M-Pesa Paybill"
+                            : "No Payment Details";
                     return (
                         <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3 hover:border-[#C6A16A]/30 transition-all">
                             <div className="flex items-start gap-4 flex-wrap">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">{order.id}</p>
-                                    <p className="text-sm font-semibold text-zinc-900 dark:text-white mt-0.5">{order.customer}</p>
+                                    <p className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
+                                    <p className="text-sm font-semibold text-zinc-900 dark:text-white mt-0.5">{order.firstName} {order.lastName}</p>
                                     <div className="flex items-center gap-3 mt-1 flex-wrap text-xs text-zinc-400">
                                         <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{order.phone}</span>
-                                        <span>{order.date}</span>
-                                        <span>{order.items} item{order.items !== 1 ? "s" : ""}</span>
-                                        <span>{order.payment}</span>
+                                        <span>{formatDate(order.createdAt)}</span>
+                                        <span>{order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? "s" : ""}</span>
+                                        <span>{paymentMethodLabel}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
@@ -319,7 +386,10 @@ function Orders() {
                                     <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(order.total)}</span>
                                     <button
                                         type="button"
-                                        onClick={() => { setEditing(isEditing ? null : order.id); setNewStatus(order.status); }}
+                                        onClick={() => {
+                                            setEditing(isEditing ? null : order.id);
+                                            setNewStatus(normaliseStatus(order.status) as OrderStatus);
+                                        }}
                                         className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors"
                                         title="Update status"
                                     >
@@ -341,9 +411,9 @@ function Orders() {
                                             <option key={k} value={k}>{ORDER_STATUS[k].label}</option>
                                         ))}
                                     </select>
-                                    <button type="button" onClick={() => updateStatus(order.id)}
-                                        className="px-3 py-1.5 rounded-lg bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors">
-                                        Save
+                                    <button type="button" onClick={() => updateStatus(order.id)} disabled={updating}
+                                        className="px-3 py-1.5 rounded-lg bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] disabled:opacity-50 transition-colors">
+                                        {updating ? "Saving..." : "Save"}
                                     </button>
                                     <button type="button" onClick={() => setEditing(null)}
                                         className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 font-bold text-xs hover:border-zinc-400 transition-colors">
@@ -354,13 +424,47 @@ function Orders() {
                         </div>
                     );
                 })}
-                {filtered.length === 0 && (
+                {!loading && orders.length === 0 && (
                     <div className="text-center py-16 text-zinc-400">
                         <ShoppingBag className="w-10 h-10 opacity-20 mx-auto mb-3" />
                         <p className="text-sm font-semibold">No orders found</p>
                     </div>
                 )}
             </div>
+
+            {/* Pagination Controls */}
+            {!loading && totalOrders > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <p className="text-xs text-zinc-400">
+                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * ORDERS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * ORDERS_PER_PAGE, totalOrders)}</span> of{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalOrders}</span> orders
+                    </p>
+                    {totalPages > 1 && (
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 transition-all"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                type="button"
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 transition-all"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
