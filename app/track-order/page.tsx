@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -14,11 +14,11 @@ const WHATSAPP_NUMBER = "254704147774";
 type UiStatus = "confirmed" | "processing" | "dispatched" | "out-for-delivery" | "delivered";
 
 const STEPS: { key: UiStatus; label: string; desc: string; icon: React.ReactNode }[] = [
-    { key: "confirmed",        label: "Order Confirmed",   desc: "Payment received and order accepted.",            icon: <CheckCircle2 className="w-4 h-4" /> },
-    { key: "processing",       label: "Processing",        desc: "We are picking and packing your items.",          icon: <Package className="w-4 h-4" /> },
-    { key: "dispatched",       label: "Dispatched",        desc: "Your order has been handed to our courier.",      icon: <Truck className="w-4 h-4" /> },
-    { key: "out-for-delivery", label: "Out for Delivery",  desc: "Your order is on its way to you.",                icon: <MapPin className="w-4 h-4" /> },
-    { key: "delivered",        label: "Delivered",         desc: "Your order has been delivered successfully.",     icon: <CheckCircle2 className="w-4 h-4" /> },
+    { key: "confirmed", label: "Order Confirmed", desc: "Payment received and order accepted.", icon: <CheckCircle2 className="w-4 h-4" /> },
+    { key: "processing", label: "Processing", desc: "We are picking and packing your items.", icon: <Package className="w-4 h-4" /> },
+    { key: "dispatched", label: "Dispatched", desc: "Your order has been handed to our courier.", icon: <Truck className="w-4 h-4" /> },
+    { key: "out-for-delivery", label: "Out for Delivery", desc: "Your order is on its way to you.", icon: <MapPin className="w-4 h-4" /> },
+    { key: "delivered", label: "Delivered", desc: "Your order has been delivered successfully.", icon: <CheckCircle2 className="w-4 h-4" /> },
 ];
 
 const STATUS_INDEX: Record<UiStatus, number> = {
@@ -31,19 +31,19 @@ function toUiStatus(apiStatus: Order["status"]): UiStatus {
 
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
-export default function TrackOrderPage() {
-    const searchParams  = useSearchParams();
-    const [query,     setQuery]     = useState(searchParams.get("q") ?? "");
-    const [loading,   setLoading]   = useState(false);
-    const [searched,  setSearched]  = useState(false);
-    const [order,     setOrder]     = useState<Order | null>(null);
-    const [notFound,  setNotFound]  = useState(false);
+function TrackOrderContent() {
+    const searchParams = useSearchParams();
+    const [query, setQuery] = useState(searchParams.get("q") ?? "");
+    const [loading, setLoading] = useState(false);
+    const [searched, setSearched] = useState(false);
+    const [order, setOrder] = useState<Order | null>(null);
+    const [notFound, setNotFound] = useState(false);
 
     // Auto-search if ?q= param is present on load
     useEffect(() => {
         const q = searchParams.get("q");
         if (q) { setQuery(q); doSearch(q); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const doSearch = async (q: string) => {
@@ -67,10 +67,10 @@ export default function TrackOrderPage() {
         doSearch(query);
     };
 
-    const uiStatus   = order ? toUiStatus(order.status) : "confirmed";
-    const stepIndex  = STATUS_INDEX[uiStatus] ?? 0;
+    const uiStatus = order ? toUiStatus(order.status) : "confirmed";
+    const stepIndex = STATUS_INDEX[uiStatus] ?? 0;
     const orderTotal = order?.total ?? 0;
-    const waMsg      = encodeURIComponent(`Hi, I'd like to track my order ${order?.ref ?? ""}.`);
+    const waMsg = encodeURIComponent(`Hi, I'd like to track my order ${order?.ref ?? ""}.`);
 
     return (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -139,11 +139,10 @@ export default function TrackOrderPage() {
                 <div className="space-y-6">
 
                     {/* Status banner */}
-                    <div className={`flex items-center gap-4 px-6 py-4 rounded-2xl border ${
-                        uiStatus === "delivered"
-                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25"
-                            : "bg-[#C6A16A]/8 border-[#C6A16A]/25"
-                    }`}>
+                    <div className={`flex items-center gap-4 px-6 py-4 rounded-2xl border ${uiStatus === "delivered"
+                        ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25"
+                        : "bg-[#C6A16A]/8 border-[#C6A16A]/25"
+                        }`}>
                         <div className={`p-2.5 rounded-xl ${uiStatus === "delivered" ? "bg-emerald-500/15 text-emerald-500" : "bg-[#C6A16A]/15 text-[#C6A16A]"}`}>
                             {uiStatus === "delivered" ? <CheckCircle2 className="w-5 h-5" /> : <Truck className="w-5 h-5" />}
                         </div>
@@ -161,19 +160,18 @@ export default function TrackOrderPage() {
                         <div className="space-y-0">
                             {STEPS.map((step, i) => {
                                 const completed = i < stepIndex;
-                                const active    = i === stepIndex;
-                                const pending   = i > stepIndex;
+                                const active = i === stepIndex;
+                                const pending = i > stepIndex;
                                 return (
                                     <div key={step.key} className="flex items-stretch gap-4">
                                         <div className="flex flex-col items-center">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all duration-300 ${
-                                                completed ? "bg-[#C6A16A] border-[#C6A16A] text-zinc-950"
-                                                : active   ? "bg-white dark:bg-zinc-900 border-[#C6A16A] text-[#C6A16A] shadow-md shadow-[#C6A16A]/20"
-                                                :            "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-700"
-                                            }`}>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all duration-300 ${completed ? "bg-[#C6A16A] border-[#C6A16A] text-zinc-950"
+                                                : active ? "bg-white dark:bg-zinc-900 border-[#C6A16A] text-[#C6A16A] shadow-md shadow-[#C6A16A]/20"
+                                                    : "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-700"
+                                                }`}>
                                                 {completed ? <CheckCircle2 className="w-4 h-4" />
-                                                : active   ? <CircleDot className="w-4 h-4" />
-                                                :             step.icon}
+                                                    : active ? <CircleDot className="w-4 h-4" />
+                                                        : step.icon}
                                             </div>
                                             {i < STEPS.length - 1 && (
                                                 <div className={`w-0.5 flex-1 my-1 min-h-[24px] rounded-full transition-colors duration-300 ${completed ? "bg-[#C6A16A]" : "bg-zinc-200 dark:bg-zinc-800"}`} />
@@ -287,5 +285,13 @@ export default function TrackOrderPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function TrackOrderPage() {
+    return (
+        <Suspense>
+            <TrackOrderContent />
+        </Suspense>
     );
 }

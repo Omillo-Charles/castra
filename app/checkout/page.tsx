@@ -18,10 +18,10 @@ const WHATSAPP_NUMBER = "254704147774";
 type Step = "details" | "delivery" | "payment" | "review";
 
 const STEPS: { key: Step; label: string; icon: React.ReactNode }[] = [
-    { key: "details",  label: "Your Details", icon: <User className="w-4 h-4" /> },
-    { key: "delivery", label: "Delivery",      icon: <Truck className="w-4 h-4" /> },
-    { key: "payment",  label: "Payment",       icon: <CreditCard className="w-4 h-4" /> },
-    { key: "review",   label: "Review",        icon: <CheckCircle2 className="w-4 h-4" /> },
+    { key: "details", label: "Your Details", icon: <User className="w-4 h-4" /> },
+    { key: "delivery", label: "Delivery", icon: <Truck className="w-4 h-4" /> },
+    { key: "payment", label: "Payment", icon: <CreditCard className="w-4 h-4" /> },
+    { key: "review", label: "Review", icon: <CheckCircle2 className="w-4 h-4" /> },
 ];
 const STEP_KEYS = STEPS.map((s) => s.key);
 
@@ -51,11 +51,11 @@ function Field({ label, type = "text", value, onChange, placeholder, icon, requi
 function OrderSummary({ compact = false }: { compact?: boolean }) {
     const [open, setOpen] = useState(!compact);
     const { cart } = useCart();
-    const items      = cart?.items      ?? [];
-    const subtotal   = cart?.subtotal   ?? 0;
-    const deliveryFee= cart?.deliveryFee ?? 0;
-    const discount   = cart?.discount   ?? 0;
-    const total      = cart?.total      ?? 0;
+    const items = cart?.items ?? [];
+    const subtotal = cart?.subtotal ?? 0;
+    const deliveryFee = cart?.deliveryFee ?? 0;
+    const discount = cart?.discount ?? 0;
+    const total = cart?.total ?? 0;
 
     return (
         <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
@@ -124,45 +124,44 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
 
 /*Main checkout page*/
 export default function CheckoutPage() {
-    const { user }               = useAuth();
-    const { cart, loading }      = useCart();
-    const router                 = useRouter();
+    const { user } = useAuth();
+    const { cart, loading } = useCart();
+    const router = useRouter();
 
-    const [step, setStep]        = useState<Step>("details");
-    const [placed, setPlaced]    = useState(false);
-    const [placing, setPlacing]  = useState(false);
+    const [step, setStep] = useState<Step>("details");
+    const [placed, setPlaced] = useState(false);
+    const [placing, setPlacing] = useState(false);
     const [placeErr, setPlaceErr] = useState("");
 
     // Stored after a successful placeOrder call
-    const [placedOrderRef,  setPlacedOrderRef]  = useState("");
-    const [placedOrderId,   setPlacedOrderId]   = useState("");
-    const [stkRequestId,    setStkRequestId]    = useState<string | null>(null);
-    const [stkPayStatus,    setStkPayStatus]    = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
+    const [placedOrderRef, setPlacedOrderRef] = useState("");
+    const [placedOrderId, setPlacedOrderId] = useState("");
+    const [stkRequestId, setStkRequestId] = useState<string | null>(null);
+    const [stkPayStatus, setStkPayStatus] = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
 
     // ── Contact — pre-fill from logged-in user ──
     const [firstName, setFirstName] = useState(user?.firstName ?? "");
-    const [lastName,  setLastName]  = useState(user?.lastName  ?? "");
-    const [email,     setEmail]     = useState(user?.email     ?? "");
-    const [phone,     setPhone]     = useState(user?.phone     ?? "");
+    const [lastName, setLastName] = useState(user?.lastName ?? "");
+    const [email, setEmail] = useState(user?.email ?? "");
+    const [phone, setPhone] = useState(user?.phone ?? "");
 
     // ── Delivery — pre-fill from default saved address ──
-    const [address,  setAddress]  = useState("");
-    const [city,     setCity]     = useState("");
-    const [county,   setCounty]   = useState("");
-    const [notes,    setNotes]    = useState("");
+    const [address, setAddress] = useState("");
+    const [city, setCity] = useState("");
+    const [county, setCounty] = useState("");
+    const [notes, setNotes] = useState("");
     const [addressLoading, setAddressLoading] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState<import("@/config/api").Address[]>([]);
 
     // Payment
-    const [payMethod, setPayMethod] = useState<"mpesa-paybill" | "mpesa-stk">("mpesa-paybill");
-    const [mpesaRef,  setMpesaRef]  = useState("");
-    const [stkPhone,  setStkPhone]  = useState("");
+    const [payMethod] = useState<"mpesa-stk">("mpesa-stk");
+    const [stkPhone, setStkPhone] = useState("");
 
-    const items       = cart?.items       ?? [];
-    const subtotal    = cart?.subtotal    ?? 0;
+    const items = cart?.items ?? [];
+    const subtotal = cart?.subtotal ?? 0;
     const deliveryFee = cart?.deliveryFee ?? 0;
-    const discount    = cart?.discount    ?? 0;
-    const total       = cart?.total       ?? 0;
+    const discount = cart?.discount ?? 0;
+    const total = cart?.total ?? 0;
 
     const currentIndex = STEP_KEYS.indexOf(step);
 
@@ -170,11 +169,11 @@ export default function CheckoutPage() {
     useEffect(() => {
         if (user) {
             if (!firstName) setFirstName(user.firstName);
-            if (!lastName)  setLastName(user.lastName);
-            if (!email)     setEmail(user.email);
+            if (!lastName) setLastName(user.lastName);
+            if (!email) setEmail(user.email);
             if (user.phone && !phone) setPhone(user.phone);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     // Load saved addresses and pre-fill default when landing on delivery step
@@ -190,8 +189,8 @@ export default function CheckoutPage() {
                 setCity(def.city);
                 setCounty(def.county);
             }
-        }).catch(() => {}).finally(() => setAddressLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        }).catch(() => { }).finally(() => setAddressLoading(false));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, user]);
 
     // Redirect to cart if cart is empty and not yet placed
@@ -209,12 +208,11 @@ export default function CheckoutPage() {
         setPlacing(true);
         try {
             const res = await orderApi.place({
-                contact:  { firstName, lastName, email: email || undefined, phone },
+                contact: { firstName, lastName, email: email || undefined, phone },
                 delivery: { street: address, city, county, notes: notes || undefined },
-                payment:  {
-                    method:   payMethod,
-                    mpesaRef: payMethod === "mpesa-paybill" && mpesaRef ? mpesaRef : undefined,
-                    stkPhone: payMethod === "mpesa-stk"     && stkPhone ? stkPhone : undefined,
+                payment: {
+                    method: payMethod,
+                    stkPhone: stkPhone ? stkPhone : undefined,
                 },
             });
 
@@ -223,7 +221,7 @@ export default function CheckoutPage() {
             setPlaced(true);
 
             // ── STK Push: poll for payment confirmation ──
-            if (payMethod === "mpesa-stk" && res.stk?.checkoutRequestId) {
+            if (res.stk?.checkoutRequestId) {
                 const reqId = res.stk.checkoutRequestId;
                 setStkRequestId(reqId);
                 setStkPayStatus("PENDING");
@@ -256,14 +254,6 @@ export default function CheckoutPage() {
                 setTimeout(poll, 5000);
             }
 
-            // ── Paybill: submit reference if provided ──
-            if (payMethod === "mpesa-paybill" && mpesaRef) {
-                try {
-                    await paymentApi.submitManual({ orderId: res.order.id, mpesaRef });
-                } catch {
-                    // non-critical — user can provide it later via WhatsApp
-                }
-            }
         } catch (err: unknown) {
             setPlaceErr(err instanceof Error ? err.message : "Failed to place order. Please try again.");
         } finally {
@@ -275,7 +265,7 @@ export default function CheckoutPage() {
         `Hi, I'd like to confirm my order:\n\n` +
         items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
         `\n\nTotal: ${formatKES(total)}\nDelivery to: ${address}, ${city}, ${county}` +
-        `\nPayment: ${payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : "M-Pesa STK Push"}`
+        `\nPayment: M-Pesa STK Push`
     );
 
     // Loading spinner while cart loads
@@ -307,13 +297,12 @@ export default function CheckoutPage() {
 
                 {/* STK Push payment status */}
                 {stkRequestId && (
-                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${
-                        stkPayStatus === "PAID"
-                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400"
-                            : stkPayStatus === "FAILED"
-                                ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/25 text-red-500"
-                                : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25 text-amber-600 dark:text-amber-400"
-                    }`}>
+                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${stkPayStatus === "PAID"
+                        ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400"
+                        : stkPayStatus === "FAILED"
+                            ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/25 text-red-500"
+                            : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25 text-amber-600 dark:text-amber-400"
+                        }`}>
                         {stkPayStatus === "PAID" ? (
                             <><CheckCircle2 className="w-4 h-4" /> M-Pesa payment confirmed!</>
                         ) : stkPayStatus === "FAILED" ? (
@@ -359,15 +348,14 @@ export default function CheckoutPage() {
             {/* Step indicator */}
             <div className="flex items-center mb-10 overflow-x-auto scrollbar-none">
                 {STEPS.map((s, i) => {
-                    const done   = i < currentIndex;
+                    const done = i < currentIndex;
                     const active = s.key === step;
                     return (
                         <div key={s.key} className="flex items-center flex-shrink-0">
-                            <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold transition-all ${
-                                active ? "bg-[#C6A16A] text-zinc-950 shadow-md"
+                            <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold transition-all ${active ? "bg-[#C6A16A] text-zinc-950 shadow-md"
                                 : done ? "bg-[#C6A16A]/15 text-[#C6A16A]"
-                                :        "bg-zinc-100 dark:bg-zinc-900 text-zinc-400"
-                            }`}>
+                                    : "bg-zinc-100 dark:bg-zinc-900 text-zinc-400"
+                                }`}>
                                 <span>{s.icon}</span>
                                 <span className="hidden sm:inline">{s.label}</span>
                             </div>
@@ -390,7 +378,7 @@ export default function CheckoutPage() {
                             </h2>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <Field label="First name" value={firstName} onChange={setFirstName} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" />
-                                <Field label="Last name"  value={lastName}  onChange={setLastName}  placeholder="Wanjiku" autoComplete="family-name" />
+                                <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Wanjiku" autoComplete="family-name" />
                             </div>
                             <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" required={false} />
                             <Field label="Phone number" type="tel" value={phone} onChange={setPhone} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
@@ -412,11 +400,10 @@ export default function CheckoutPage() {
                                         {savedAddresses.map((a) => (
                                             <button key={a.id} type="button"
                                                 onClick={() => { setAddress(a.street); setCity(a.city); setCounty(a.county); }}
-                                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                                                    address === a.street && city === a.city
-                                                        ? "border-[#C6A16A] bg-[#C6A16A]/10 text-[#C6A16A]"
-                                                        : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-[#C6A16A]/50"
-                                                }`}>
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${address === a.street && city === a.city
+                                                    ? "border-[#C6A16A] bg-[#C6A16A]/10 text-[#C6A16A]"
+                                                    : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-[#C6A16A]/50"
+                                                    }`}>
                                                 {a.label}{a.isDefault ? " (Default)" : ""}
                                             </button>
                                         ))}
@@ -435,8 +422,8 @@ export default function CheckoutPage() {
                             <Field label="Street / Estate / Building" value={address} onChange={setAddress}
                                 placeholder="e.g. Westlands, Mpaka Road, Apt 4B" icon={<Building2 className="w-4 h-4" />} autoComplete="address-line1" />
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <Field label="Town / City" value={city}   onChange={setCity}   placeholder="Nairobi" icon={<MapPin className="w-4 h-4" />} autoComplete="address-level2" />
-                                <Field label="County"      value={county} onChange={setCounty} placeholder="Nairobi County" autoComplete="address-level1" />
+                                <Field label="Town / City" value={city} onChange={setCity} placeholder="Nairobi" icon={<MapPin className="w-4 h-4" />} autoComplete="address-level2" />
+                                <Field label="County" value={county} onChange={setCounty} placeholder="Nairobi County" autoComplete="address-level1" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
@@ -457,56 +444,24 @@ export default function CheckoutPage() {
                                 <CreditCard className="w-4 h-4 text-[#C6A16A]" /> Payment Method
                             </h2>
                             <div className="space-y-3">
-                                {/* M-Pesa Paybill */}
-                                <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${payMethod === "mpesa-paybill" ? "border-[#C6A16A] bg-[#C6A16A]/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"}`}>
-                                    <input type="radio" name="payment" value="mpesa-paybill" checked={payMethod === "mpesa-paybill"} onChange={() => setPayMethod("mpesa-paybill")} className="mt-1 accent-[#C6A16A]" />
-                                    <div className="flex-1 space-y-3">
-                                        <div>
-                                            <p className="text-sm font-bold text-zinc-900 dark:text-white">M-Pesa Paybill</p>
-                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Pay manually via M-Pesa, then enter your transaction reference below.</p>
-                                        </div>
-                                        {payMethod === "mpesa-paybill" && (
-                                            <div className="space-y-4">
-                                                <div className="rounded-xl bg-zinc-950 border border-zinc-800 p-4 space-y-3">
-                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A]">Payment Instructions</p>
-                                                    <div className="flex items-center gap-3 pt-1 border-t border-zinc-800">
-                                                        <div className="flex-1"><p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">Business No</p><p className="text-base font-bold font-mono text-[#C6A16A]">400200</p></div>
-                                                        <div className="w-px h-8 bg-zinc-800" />
-                                                        <div className="flex-1"><p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">Account No</p><p className="text-base font-bold font-mono text-[#C6A16A]">CASTRA</p></div>
-                                                        <div className="w-px h-8 bg-zinc-800" />
-                                                        <div className="flex-1"><p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">Amount</p><p className="text-base font-bold text-white">{formatKES(total)}</p></div>
-                                                    </div>
-                                                </div>
-                                                <Field label="M-Pesa transaction reference" value={mpesaRef} onChange={setMpesaRef} placeholder="e.g. QGH3X7YZ89" icon={<Phone className="w-4 h-4" />} required={false} />
-                                                <p className="text-[11px] text-zinc-400 leading-relaxed">Enter the reference from your M-Pesa confirmation SMS, or provide it later via WhatsApp.</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </label>
-
-                                {/* STK Push */}                                <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${payMethod === "mpesa-stk" ? "border-[#C6A16A] bg-[#C6A16A]/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"}`}>
-                                    <input type="radio" name="payment" value="mpesa-stk" checked={payMethod === "mpesa-stk"} onChange={() => setPayMethod("mpesa-stk")} className="mt-1 accent-[#C6A16A]" />
+                                {/* STK Push only */}
+                                <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 transition-all">
                                     <div className="flex-1 space-y-3">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-bold text-zinc-900 dark:text-white">M-Pesa STK Push</p>
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/25">Recommended</span>
                                             </div>
                                             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt — just enter your PIN.</p>
                                         </div>
-                                        {payMethod === "mpesa-stk" && (
-                                            <div className="space-y-3">
-                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
-                                                <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-600 dark:text-zinc-400">
-                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                                                    <span>After placing your order, an M-Pesa prompt for <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatKES(total)}</span> will be sent to your phone.</span>
-                                                </div>
+                                        <div className="space-y-3">
+                                            <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
+                                            <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-600 dark:text-zinc-400">
+                                                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                                <span>After placing your order, an M-Pesa prompt for <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatKES(total)}</span> will be sent to your phone.</span>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </label>
-
-                                {/* COD removed */}
+                                </div>
                             </div>
                             <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400">
                                 <Lock className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0" />
@@ -542,11 +497,9 @@ export default function CheckoutPage() {
                                     <button type="button" onClick={() => setStep("payment")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
                                 <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                                {payMethod === "mpesa-paybill" ? "M-Pesa Paybill" : "M-Pesa STK Push"}
+                                    M-Pesa STK Push
                                 </p>
-                                {payMethod === "mpesa-paybill" && mpesaRef && <p className="text-xs text-zinc-400 mt-1">Ref: <span className="font-mono font-semibold">{mpesaRef}</span></p>}
-                                {payMethod === "mpesa-stk"     && stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
-                                {payMethod === "mpesa-paybill" && !mpesaRef && <p className="text-xs text-zinc-400 mt-1">Paybill: 400200 · Account: CASTRA</p>}
+                                {stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
                             </div>
                         </div>
                     )}

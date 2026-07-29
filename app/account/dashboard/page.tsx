@@ -267,14 +267,34 @@ function Orders() {
                 const uiKey = normaliseStatus(order.status);
                 const status = ORDER_STATUS[uiKey] ?? ORDER_STATUS["confirmed"];
                 const isDelivered = uiKey === "delivered";
+                const hasItemImage = order.items.some((item) => item.imageUrl);
                 return (
                     <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
-                        <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
-                            <Package className="w-5 h-5 text-zinc-400" />
-                        </div>
+                        {!hasItemImage && (
+                            <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
+                                <Package className="w-5 h-5 text-zinc-400" />
+                            </div>
+                        )}
                         <div className="flex-1 min-w-0">
                             <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
                             <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(order.createdAt)} · {order.items.length} item{order.items.length !== 1 ? "s" : ""}</p>
+                            <div className="mt-3 space-y-2">
+                                {order.items.map((item) => (
+                                    <div key={item.id} className="flex items-center gap-2 min-w-0">
+                                        <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                            {item.imageUrl ? (
+                                                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Package className="w-4 h-4 text-zinc-400" />
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{item.name}</p>
+                                            <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
                             <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>{status.label}</span>

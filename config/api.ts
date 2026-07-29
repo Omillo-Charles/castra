@@ -358,7 +358,7 @@ export type OrderStatus =
     | "OUT_FOR_DELIVERY"
     | "DELIVERED";
 
-export type PaymentMethod = "MPESA_STK" | "MPESA_PAYBILL";
+export type PaymentMethod = "MPESA_STK";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 
 export type OrderItem = {
@@ -366,20 +366,21 @@ export type OrderItem = {
     name: string;
     price: number;
     qty: number;
-    productId: string;
+    productId: string | null;
+    imageUrl: string | null;
 };
 
-export type OrderPayment = {
+export interface Payment {
     id: string;
+    orderId: string;
     method: PaymentMethod;
     status: PaymentStatus;
     amount: number;
-    mpesaRef: string | null;
-    mpesaReceiptNumber: string | null;
     stkPhone: string | null;
     checkoutRequestId: string | null;
+    mpesaReceiptNumber: string | null;
     createdAt: string;
-};
+}
 
 export type Order = {
     id: string;
@@ -400,12 +401,33 @@ export type Order = {
     createdAt: string;
     updatedAt: string;
     items: OrderItem[];
-    payment: OrderPayment | null;
+    payment: Payment | null;
 };
 
 export type OrdersResponse = {
     success: boolean;
     orders: Order[];
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
+};
+
+export type OrderCustomer = {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string;
+    orders: number;
+    total: number;
+    lastOrderAt: string;
+};
+
+export type OrderCustomersResponse = {
+    success: boolean;
+    customers: OrderCustomer[];
     pagination: {
         total: number;
         page: number;
@@ -428,8 +450,7 @@ export type PlaceOrderBody = {
         notes?: string;
     };
     payment: {
-        method: "mpesa-paybill" | "mpesa-stk";
-        mpesaRef?: string;
+        method: "mpesa-stk";
         stkPhone?: string;
     };
 };
@@ -504,59 +525,31 @@ export const orderApi = {
             method: "PATCH",
             body: JSON.stringify({ status }),
         }),
+
+    /** Admin only — customers derived from placed orders. */
+    customers: (params?: { search?: string; page?: number; limit?: number }) => {
+        const qs = new URLSearchParams();
+        if (params?.search) qs.set("search", params.search);
+        if (params?.page) qs.set("page", String(params.page));
+        if (params?.limit) qs.set("limit", String(params.limit));
+        const query = qs.toString();
+        return request<OrderCustomersResponse>(`/orders/customers${query ? `?${query}` : ""}`);
+    },
 };
 
 // Payment API
 
 export const paymentApi = {
-    /**
-     * Initiate an M-Pesa STK push for a given order.
-     * Use this to retry a push if the first one failed or timed out.
-     */
-    stkPush: (body: { orderId: string; phone: string }) =>
-        request<{
-            success: boolean;
-            message: string;
-            checkoutRequestId: string;
-            merchantRequestId: string;
-        }>("/payments/stk-push", {
-            method: "POST",
-            body: JSON.stringify(body),
-        }),
-
-    /**
-     * Poll payment status for a pending STK push.
-     * Returns { success, status: "PAID" | "PENDING" | "FAILED", message }.
-     */
+    // Poll STK Push status
     stkQuery: (checkoutRequestId: string) =>
-        request<{ success: boolean; status: PaymentStatus; message: string }>(
-            "/payments/stk-query",
-            {
-                method: "POST",
-                body: JSON.stringify({ checkoutRequestId }),
-            }
-        ),
+        request<{ success: boolean; payment: Payment }>(`/payments/status/${checkoutRequestId}`, {
+            method: "GET",
+        }).then((res) => res.payment),
 
-    /**
-     * Submit an M-Pesa Paybill transaction reference after the customer has
-     * paid manually. Stays PENDING until admin / C2B callback confirms.
-     */
-    submitManual: (body: { orderId: string; mpesaRef: string }) =>
-        request<{
-            success: boolean;
-            message: string;
-            payment: { id: string; status: PaymentStatus; mpesaRef: string };
-        }>("/payments/manual", {
-            method: "POST",
+    // Admin only — manually update payment status after confirming payment.
+    updateStatus: (id: string, body: { status: PaymentStatus; mpesaReceiptNumber?: string }) =>
+        request<{ success: boolean; payment: Payment }>(`/payments/${id}/status`, {
+            method: "PATCH",
             body: JSON.stringify(body),
         }),
-
-    /** Get the current payment status for a given order. */
-    getStatus: (orderId: string) =>
-        request<{
-            success: boolean;
-            status: PaymentStatus | "NO_PAYMENT";
-            method?: PaymentMethod;
-            ref?: string | null;
-        }>(`/payments/status/${orderId}`),
 };

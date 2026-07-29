@@ -10,20 +10,13 @@ import {
     Plus, Search, X, LogOut, Phone, Mail,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { productApi, orderApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus } from "@/config/api";
+import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+import { WhatsAppIcon } from "@/components/svgicons";
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
 }
-
-const DUMMY_CUSTOMERS = [
-    { id: "u1", name: "Jane Wanjiku",  email: "jane@example.com",   phone: "+254 712 345 678", orders: 3, total: 21850, joined: "Jan 2025" },
-    { id: "u2", name: "Brian Otieno",  email: "brian@example.com",  phone: "+254 723 456 789", orders: 1, total: 8900,  joined: "Mar 2025" },
-    { id: "u3", name: "Amina Hassan",  email: "amina@example.com",  phone: "+254 734 567 890", orders: 2, total: 17600, joined: "May 2025" },
-    { id: "u4", name: "Peter Kamau",   email: "peter@example.com",  phone: "+254 745 678 901", orders: 1, total: 4800,  joined: "Jun 2025" },
-    { id: "u5", name: "Grace Njoroge", email: "grace@example.com",  phone: "+254 756 789 012", orders: 2, total: 9300,  joined: "Jul 2025" },
-];
 
 const ORDER_STATUS = {
     confirmed:          { label: "Confirmed",        color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
@@ -31,6 +24,12 @@ const ORDER_STATUS = {
     dispatched:         { label: "Dispatched",        color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
     "out-for-delivery": { label: "Out for Delivery",  color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
     delivered:          { label: "Delivered",         color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+};
+
+const PAYMENT_STATUS: Record<PaymentStatus, { label: string; color: string }> = {
+    PENDING: { label: "Payment Pending", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+    PAID:    { label: "Paid",            color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    FAILED:  { label: "Payment Failed",  color: "text-red-500 bg-red-500/10 border-red-500/20" },
 };
 
 type OrderStatus = keyof typeof ORDER_STATUS;
@@ -265,6 +264,8 @@ function Orders() {
     const [totalOrders,   setTotalOrders]   = useState(0);
     const [editing,       setEditing]       = useState<string | null>(null);
     const [newStatus,     setNewStatus]     = useState<OrderStatus>("confirmed");
+    const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("PENDING");
+    const [paymentRef,    setPaymentRef]    = useState("");
     const [updating,      setUpdating]      = useState(false);
     const [err,           setErr]           = useState("");
 
@@ -307,6 +308,13 @@ function Orders() {
         setErr("");
         try {
             await orderApi.updateStatus(id, uiToApiStatus(newStatus));
+            const order = orders.find((item) => item.id === id);
+            if (order?.payment) {
+                await paymentApi.updateStatus(order.payment.id, {
+                    status: paymentStatus,
+                    mpesaReceiptNumber: paymentRef || undefined,
+                });
+            }
             setEditing(null);
             loadOrders(currentPage, search, filter);
         } catch (e: unknown) {
@@ -365,9 +373,8 @@ function Orders() {
                     const isEditing = editing === order.id;
                     const paymentMethodLabel = order.payment?.method === "MPESA_STK"
                         ? "M-Pesa STK"
-                        : order.payment?.method === "MPESA_PAYBILL"
-                            ? "M-Pesa Paybill"
-                            : "No Payment Details";
+                        : "No Payment Details";
+                    const paymentStatusMeta = order.payment ? PAYMENT_STATUS[order.payment.status] : null;
                     return (
                         <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3 hover:border-[#C6A16A]/30 transition-all">
                             <div className="flex items-start gap-4 flex-wrap">
@@ -379,6 +386,11 @@ function Orders() {
                                         <span>{formatDate(order.createdAt)}</span>
                                         <span>{order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? "s" : ""}</span>
                                         <span>{paymentMethodLabel}</span>
+                                        {paymentStatusMeta && (
+                                            <span className={`font-bold ${paymentStatusMeta.color.split(" ")[0]}`}>
+                                                {paymentStatusMeta.label}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
@@ -389,6 +401,8 @@ function Orders() {
                                         onClick={() => {
                                             setEditing(isEditing ? null : order.id);
                                             setNewStatus(normaliseStatus(order.status) as OrderStatus);
+                                            setPaymentStatus(order.payment?.status ?? "PENDING");
+                                            setPaymentRef(order.payment?.mpesaReceiptNumber ?? "");
                                         }}
                                         className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors"
                                         title="Update status"
@@ -398,10 +412,33 @@ function Orders() {
                                 </div>
                             </div>
 
+                            <div className="grid gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 sm:grid-cols-2">
+                                {order.items.map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 px-3 py-2">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="w-10 h-10 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                                {item.imageUrl ? (
+                                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Package className="w-4 h-4 text-zinc-400" />
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{item.name}</p>
+                                                <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
+                                            </div>
+                                        </div>
+                                        <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex-shrink-0">
+                                            {formatKES(item.price * item.qty)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
                             {/* Inline status update */}
                             {isEditing && (
                                 <div className="flex items-center gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex-wrap">
-                                    <span className="text-xs font-semibold text-zinc-500">Update status:</span>
+                                    <span className="text-xs font-semibold text-zinc-500">Order:</span>
                                     <select
                                         value={newStatus}
                                         onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
@@ -411,6 +448,27 @@ function Orders() {
                                             <option key={k} value={k}>{ORDER_STATUS[k].label}</option>
                                         ))}
                                     </select>
+                                    {order.payment && (
+                                        <>
+                                            <span className="text-xs font-semibold text-zinc-500">Payment:</span>
+                                            <select
+                                                value={paymentStatus}
+                                                onChange={(e) => setPaymentStatus(e.target.value as PaymentStatus)}
+                                                className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A] cursor-pointer"
+                                            >
+                                                {(Object.keys(PAYMENT_STATUS) as PaymentStatus[]).map((k) => (
+                                                    <option key={k} value={k}>{PAYMENT_STATUS[k].label}</option>
+                                                ))}
+                                            </select>
+                                            <input
+                                                type="text"
+                                                value={paymentRef}
+                                                onChange={(e) => setPaymentRef(e.target.value)}
+                                                placeholder="M-Pesa ref"
+                                                className="w-32 text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A]"
+                                            />
+                                        </>
+                                    )}
                                     <button type="button" onClick={() => updateStatus(order.id)} disabled={updating}
                                         className="px-3 py-1.5 rounded-lg bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] disabled:opacity-50 transition-colors">
                                         {updating ? "Saving..." : "Save"}
@@ -805,34 +863,80 @@ function AdminField({ label, value, onChange, placeholder, type = "text" }: {
 /* CUSTOMERS */
 function Customers() {
     const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [customers, setCustomers] = useState<import("@/config/api").OrderCustomer[]>([]);
+    const [totalCustomers, setTotalCustomers] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [err, setErr] = useState("");
+    const CUSTOMERS_PER_PAGE = 8;
 
-    const filtered = DUMMY_CUSTOMERS.filter((c) =>
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.email.toLowerCase().includes(search.toLowerCase()) ||
-        c.phone.includes(search)
-    );
+    const normaliseWhatsappPhone = (phone: string) => {
+        const digits = phone.replace(/\D/g, "");
+        if (digits.startsWith("254")) return digits;
+        if (digits.startsWith("0")) return `254${digits.slice(1)}`;
+        if (digits.startsWith("7") || digits.startsWith("1")) return `254${digits}`;
+        return digits;
+    };
+
+    const loadCustomers = (page: number, query: string) => {
+        setLoading(true);
+        setErr("");
+        orderApi.customers({
+            page,
+            limit: CUSTOMERS_PER_PAGE,
+            search: query || undefined,
+        })
+            .then((res) => {
+                setCustomers(res.customers || []);
+                setTotalCustomers(res.pagination?.total || 0);
+                setTotalPages(res.pagination?.totalPages || 1);
+            })
+            .catch((error: unknown) => {
+                setCustomers([]);
+                setTotalCustomers(0);
+                setTotalPages(1);
+                setErr(error instanceof Error ? error.message : "Failed to load customers.");
+            })
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        loadCustomers(currentPage, search);
+    }, [currentPage, search]);
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Customers</h2>
-                <span className="text-xs text-zinc-400">{DUMMY_CUSTOMERS.length} registered</span>
+                {!loading && (
+                    <span className="text-xs text-zinc-400">
+                        {totalCustomers} customer{totalCustomers !== 1 ? "s" : ""} with orders
+                    </span>
+                )}
             </div>
 
             {/* Search */}
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 <input
-                    type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                    type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                     placeholder="Search by name, email or phone..."
                     className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
                 />
-                {search && <button type="button" onClick={() => setSearch("")}><X className="w-4 h-4 text-zinc-400" /></button>}
+                {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
+
+            {err && <p className="text-xs text-red-500 font-semibold">{err}</p>}
 
             {/* Customer list */}
             <div className="space-y-3">
-                {filtered.map((c) => (
+                {loading ? (
+                    <div className="text-center py-16 text-zinc-400">
+                        <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
+                        <p className="text-xs font-semibold">Loading customers...</p>
+                    </div>
+                ) : customers.map((c) => (
                     <div key={c.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
                         {/* Avatar */}
                         <div className="w-10 h-10 rounded-full bg-[#C6A16A]/15 border border-[#C6A16A]/30 flex items-center justify-center flex-shrink-0">
@@ -844,7 +948,7 @@ function Customers() {
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-zinc-900 dark:text-white">{c.name}</p>
                             <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                                <span className="flex items-center gap-1 text-xs text-zinc-400"><Mail className="w-3 h-3" />{c.email}</span>
+                                {c.email && <span className="flex items-center gap-1 text-xs text-zinc-400"><Mail className="w-3 h-3" />{c.email}</span>}
                                 <span className="flex items-center gap-1 text-xs text-zinc-400"><Phone className="w-3 h-3" />{c.phone}</span>
                             </div>
                         </div>
@@ -858,20 +962,60 @@ function Customers() {
                                 <p className="text-sm font-bold text-[#C6A16A]">{formatKES(c.total)}</p>
                                 <p className="text-[10px] text-zinc-400">Spent</p>
                             </div>
-                            <div>
-                                <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">{c.joined}</p>
-                                <p className="text-[10px] text-zinc-400">Joined</p>
-                            </div>
+                            <a
+                                href={`https://wa.me/${normaliseWhatsappPhone(c.phone)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/15 transition-colors"
+                            >
+                                <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
+                                WhatsApp
+                            </a>
                         </div>
                     </div>
                 ))}
-                {filtered.length === 0 && (
+                {!loading && customers.length === 0 && (
                     <div className="text-center py-16 text-zinc-400">
                         <Users className="w-10 h-10 opacity-20 mx-auto mb-3" />
                         <p className="text-sm font-semibold">No customers found</p>
                     </div>
                 )}
             </div>
+
+            {!loading && totalCustomers > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <p className="text-xs text-zinc-400">
+                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * CUSTOMERS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * CUSTOMERS_PER_PAGE, totalCustomers)}</span> of{" "}
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalCustomers}</span> customers
+                    </p>
+                    {totalPages > 1 && (
+                        <div className="flex items-center gap-1.5">
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                aria-label="Previous page"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                aria-label="Next page"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
