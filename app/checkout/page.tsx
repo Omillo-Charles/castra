@@ -92,7 +92,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                                     <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
                                 </div>
                                 <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex-shrink-0">
-                                    {formatKES(((item.product.price + (item.product.deliveryFee ?? 0)) * item.qty))}
+                                    {formatKES(item.product.price * item.qty)}
                                 </span>
                             </div>
                         ))}
@@ -107,9 +107,14 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                                 <span>Discount</span><span>−{formatKES(discount)}</span>
                             </div>
                         )}
-                        <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
-                            <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Delivery included</span>
-                            <span>{formatKES(deliveryFee)}</span>
+                        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
+                            <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                                <span className="flex items-center gap-1.5 font-medium"><Truck className="w-3.5 h-3.5 text-[#C6A16A]" /> Delivery Fee:</span>
+                                <span className="font-semibold text-amber-600 dark:text-amber-400">Excluded</span>
+                            </div>
+                            <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500 italic">
+                                Delivery charges are excluded and will be communicated directly via email or WhatsApp.
+                            </p>
                         </div>
                         <div className="flex justify-between text-base font-bold text-zinc-900 dark:text-white pt-2 border-t border-zinc-100 dark:border-zinc-800">
                             <span>Total</span>
@@ -263,8 +268,8 @@ export default function CheckoutPage() {
 
     const waMsg = encodeURIComponent(
         `Hi, I'd like to confirm my order:\n\n` +
-        items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(((i.product.price + (i.product.deliveryFee ?? 0)) * i.qty))}`).join("\n") +
-        `\n\nTotal: ${formatKES(total)}\nDelivery to: ${address}, ${city}, ${county}` +
+        items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
+        `\n\nTotal: ${formatKES(total)} (Delivery fee excluded)\nDelivery to: ${address}, ${city}, ${county}` +
         `\nPayment: M-Pesa STK Push`
     );
 

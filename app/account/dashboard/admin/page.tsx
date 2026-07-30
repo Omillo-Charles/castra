@@ -542,7 +542,6 @@ function Products() {
     const [formCat, setFormCat] = useState("");
     const [formSlug, setFormSlug] = useState("");
     const [formPrice, setFormPrice] = useState("");
-    const [formDeliveryFee, setFormDeliveryFee] = useState("");
     const [formStock, setFormStock] = useState("");
     const [formFiles, setFormFiles] = useState<FileList | null>(null);
     const [formActive, setFormActive] = useState(true);
@@ -586,20 +585,20 @@ function Products() {
 
     const resetForm = () => {
         setEditId(null); setFormName(""); setFormCat(""); setFormSlug("");
-        setFormPrice(""); setFormDeliveryFee(""); setFormStock(""); setFormFiles(null);
+        setFormPrice(""); setFormStock(""); setFormFiles(null);
         setFormActive(true); setFormErr(""); setShowForm(false);
     };
 
     const openEdit = (p: import("@/config/api").Product) => {
         setEditId(p.id); setFormName(p.name); setFormCat(p.category);
         setFormSlug(p.slug); setFormPrice(String(p.price));
-        setFormDeliveryFee(String(p.deliveryFee ?? 0)); setFormStock(String(p.stock)); setFormActive(p.active);
+        setFormStock(String(p.stock)); setFormActive(p.active);
         setFormErr(""); setShowForm(true);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formName || !formCat || !formSlug || !formPrice || !formStock || formDeliveryFee === "") {
+        if (!formName || !formCat || !formSlug || !formPrice || !formStock) {
             setFormErr("All fields except images are required."); return;
         }
         setSaving(true); setFormErr("");
@@ -609,7 +608,6 @@ function Products() {
             fd.append("category", formCat);
             fd.append("slug", formSlug);
             fd.append("price", formPrice);
-            fd.append("deliveryFee", formDeliveryFee);
             fd.append("stock", formStock);
             fd.append("active", String(formActive));
             if (formFiles) {
@@ -689,10 +687,9 @@ function Products() {
                                 </select>
                             </div>
                         </div>
-                        <div className="grid sm:grid-cols-4 gap-3">
+                        <div className="grid sm:grid-cols-3 gap-3">
                             <AdminField label="Slug (auto-generated)" value={formSlug} onChange={setFormSlug} placeholder="beddings" />
                             <AdminField label="Price (KES)" value={formPrice} onChange={setFormPrice} placeholder="4800" type="number" />
-                            <AdminField label="Delivery Fee (KES)" value={formDeliveryFee} onChange={setFormDeliveryFee} placeholder="1000" type="number" />
                             <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10" type="number" />
                         </div>
                         <div className="space-y-1.5">
