@@ -19,17 +19,17 @@ function formatDate(iso: string) {
 }
 
 const ORDER_STATUS = {
-    confirmed:          { label: "Confirmed",        color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-    processing:         { label: "Processing",        color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    dispatched:         { label: "Dispatched",        color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
-    "out-for-delivery": { label: "Out for Delivery",  color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
-    delivered:          { label: "Delivered",         color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    confirmed: { label: "Confirmed", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+    processing: { label: "Processing", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+    dispatched: { label: "Dispatched", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+    "out-for-delivery": { label: "Out for Delivery", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
+    delivered: { label: "Delivered", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
 };
 
 const PAYMENT_STATUS: Record<PaymentStatus, { label: string; color: string }> = {
     PENDING: { label: "Payment Pending", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    PAID:    { label: "Paid",            color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
-    FAILED:  { label: "Payment Failed",  color: "text-red-500 bg-red-500/10 border-red-500/20" },
+    PAID: { label: "Paid", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    FAILED: { label: "Payment Failed", color: "text-red-500 bg-red-500/10 border-red-500/20" },
 };
 
 type OrderStatus = keyof typeof ORDER_STATUS;
@@ -38,10 +38,10 @@ type Section = "overview" | "orders" | "products" | "customers";
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
 const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
-    { key: "overview",  label: "Overview",  icon: <LayoutDashboard className="w-4 h-4" /> },
-    { key: "orders",    label: "Orders",    icon: <ShoppingBag className="w-4 h-4" />     },
-    { key: "products",  label: "Products",  icon: <Package className="w-4 h-4" />         },
-    { key: "customers", label: "Customers", icon: <Users className="w-4 h-4" />           },
+    { key: "overview", label: "Overview", icon: <LayoutDashboard className="w-4 h-4" /> },
+    { key: "orders", label: "Orders", icon: <ShoppingBag className="w-4 h-4" /> },
+    { key: "products", label: "Products", icon: <Package className="w-4 h-4" /> },
+    { key: "customers", label: "Customers", icon: <Users className="w-4 h-4" /> },
 ];
 
 /* ══ ROOT PAGE ══════════════════════════════════════════════════════════════ */
@@ -113,11 +113,10 @@ export default function AdminPage() {
                                     key={item.key}
                                     type="button"
                                     onClick={() => setSection(item.key)}
-                                    className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold transition-all cursor-pointer text-left ${
-                                        section === item.key
+                                    className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold transition-all cursor-pointer text-left ${section === item.key
                                             ? "text-[#C6A16A] bg-[#C6A16A]/8"
                                             : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                                    }`}
+                                        }`}
                                 >
                                     <span className={section === item.key ? "text-[#C6A16A]" : "text-zinc-400"}>{item.icon}</span>
                                     {item.label}
@@ -140,9 +139,9 @@ export default function AdminPage() {
 
                 {/* Content */}
                 <div className="flex-1 w-full min-w-0">
-                    {section === "overview"  && <Overview  setSection={setSection} />}
-                    {section === "orders"    && <Orders />}
-                    {section === "products"  && <Products />}
+                    {section === "overview" && <Overview setSection={setSection} />}
+                    {section === "orders" && <Orders />}
+                    {section === "products" && <Products />}
                     {section === "customers" && <Customers />}
                 </div>
             </div>
@@ -152,31 +151,31 @@ export default function AdminPage() {
 
 /* OVERVIEW */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
-    const [products,  setProducts]  = useState<import("@/config/api").Product[]>([]);
-    const [orders,    setOrders]    = useState<Order[]>([]);
+    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
 
     useEffect(() => {
         productApi.list({ limit: 100 })
             .then(res => setProducts(res.products || []))
-            .catch(() => {});
+            .catch(() => { });
         orderApi.list({ limit: 100 })
             .then(res => setOrders(res.orders || []))
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setOrdersLoading(false));
     }, []);
 
-    const totalRevenue   = orders.reduce((s, o) => s + o.total, 0);
-    const pendingOrders  = orders.filter(o => o.status !== "DELIVERED").length;
+    const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
+    const pendingOrders = orders.filter(o => o.status !== "DELIVERED").length;
     const deliveredCount = orders.filter(o => o.status === "DELIVERED").length;
-    const lowStockItems  = products.filter(p => p.stock <= 2);
-    const lowStock       = lowStockItems.length;
+    const lowStockItems = products.filter(p => p.stock <= 2);
+    const lowStock = lowStockItems.length;
 
     const stats = [
-        { label: "Total Revenue",   value: ordersLoading ? "…" : formatKES(totalRevenue), icon: <TrendingUp className="w-5 h-5" />,   color: "text-[#C6A16A] bg-[#C6A16A]/10" },
-        { label: "Active Orders",   value: ordersLoading ? "…" : pendingOrders,           icon: <Clock className="w-5 h-5" />,        color: "text-blue-500 bg-blue-500/10" },
-        { label: "Delivered",       value: ordersLoading ? "…" : deliveredCount,          icon: <CheckCircle2 className="w-5 h-5" />, color: "text-emerald-500 bg-emerald-500/10" },
-        { label: "Low Stock Items", value: lowStock,                                       icon: <AlertTriangle className="w-5 h-5" />,color: "text-red-500 bg-red-500/10" },
+        { label: "Total Revenue", value: ordersLoading ? "…" : formatKES(totalRevenue), icon: <TrendingUp className="w-5 h-5" />, color: "text-[#C6A16A] bg-[#C6A16A]/10" },
+        { label: "Active Orders", value: ordersLoading ? "…" : pendingOrders, icon: <Clock className="w-5 h-5" />, color: "text-blue-500 bg-blue-500/10" },
+        { label: "Delivered", value: ordersLoading ? "…" : deliveredCount, icon: <CheckCircle2 className="w-5 h-5" />, color: "text-emerald-500 bg-emerald-500/10" },
+        { label: "Low Stock Items", value: lowStock, icon: <AlertTriangle className="w-5 h-5" />, color: "text-red-500 bg-red-500/10" },
     ];
 
     const recentOrders = orders.slice(0, 4);
@@ -255,19 +254,19 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
 
 /* ORDERS */
 function Orders() {
-    const [orders,        setOrders]        = useState<Order[]>([]);
-    const [loading,       setLoading]       = useState(true);
-    const [search,        setSearch]        = useState("");
-    const [filter,        setFilter]        = useState<OrderStatus | "all">("all");
-    const [currentPage,   setCurrentPage]   = useState(1);
-    const [totalPages,    setTotalPages]    = useState(1);
-    const [totalOrders,   setTotalOrders]   = useState(0);
-    const [editing,       setEditing]       = useState<string | null>(null);
-    const [newStatus,     setNewStatus]     = useState<OrderStatus>("confirmed");
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const [filter, setFilter] = useState<OrderStatus | "all">("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalOrders, setTotalOrders] = useState(0);
+    const [editing, setEditing] = useState<string | null>(null);
+    const [newStatus, setNewStatus] = useState<OrderStatus>("confirmed");
     const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("PENDING");
-    const [paymentRef,    setPaymentRef]    = useState("");
-    const [updating,      setUpdating]      = useState(false);
-    const [err,           setErr]           = useState("");
+    const [paymentRef, setPaymentRef] = useState("");
+    const [updating, setUpdating] = useState(false);
+    const [err, setErr] = useState("");
 
     const ORDERS_PER_PAGE = 10;
 
@@ -281,7 +280,7 @@ function Orders() {
         const apiStatus = status === "all" ? undefined : uiToApiStatus(status);
         orderApi.list({
             page,
-            limit:  ORDERS_PER_PAGE,
+            limit: ORDERS_PER_PAGE,
             search: query || undefined,
             status: apiStatus,
         })
@@ -529,25 +528,26 @@ function Orders() {
 
 /* PRODUCTS */
 function Products() {
-    const [products,      setProducts]      = useState<import("@/config/api").Product[]>([]);
-    const [loading,       setLoading]       = useState(true);
-    const [search,        setSearch]        = useState("");
-    const [currentPage,   setCurrentPage]   = useState(1);
-    const [totalPages,    setTotalPages]    = useState(1);
+    const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
 
     // Add / Edit form
-    const [showForm,   setShowForm]   = useState(false);
-    const [editId,     setEditId]     = useState<string | null>(null);
-    const [formName,   setFormName]   = useState("");
-    const [formCat,    setFormCat]    = useState("");
-    const [formSlug,   setFormSlug]   = useState("");
-    const [formPrice,  setFormPrice]  = useState("");
-    const [formStock,  setFormStock]  = useState("");
-    const [formFiles,  setFormFiles]  = useState<FileList | null>(null);
+    const [showForm, setShowForm] = useState(false);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [formName, setFormName] = useState("");
+    const [formCat, setFormCat] = useState("");
+    const [formSlug, setFormSlug] = useState("");
+    const [formPrice, setFormPrice] = useState("");
+    const [formDeliveryFee, setFormDeliveryFee] = useState("");
+    const [formStock, setFormStock] = useState("");
+    const [formFiles, setFormFiles] = useState<FileList | null>(null);
     const [formActive, setFormActive] = useState(true);
-    const [saving,     setSaving]     = useState(false);
-    const [formErr,    setFormErr]    = useState("");
+    const [saving, setSaving] = useState(false);
+    const [formErr, setFormErr] = useState("");
 
     const loadProducts = (page = currentPage, query = search) => {
         setLoading(true);
@@ -586,31 +586,32 @@ function Products() {
 
     const resetForm = () => {
         setEditId(null); setFormName(""); setFormCat(""); setFormSlug("");
-        setFormPrice(""); setFormStock(""); setFormFiles(null);
+        setFormPrice(""); setFormDeliveryFee(""); setFormStock(""); setFormFiles(null);
         setFormActive(true); setFormErr(""); setShowForm(false);
     };
 
     const openEdit = (p: import("@/config/api").Product) => {
         setEditId(p.id); setFormName(p.name); setFormCat(p.category);
         setFormSlug(p.slug); setFormPrice(String(p.price));
-        setFormStock(String(p.stock)); setFormActive(p.active);
+        setFormDeliveryFee(String(p.deliveryFee ?? 0)); setFormStock(String(p.stock)); setFormActive(p.active);
         setFormErr(""); setShowForm(true);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formName || !formCat || !formSlug || !formPrice || !formStock) {
+        if (!formName || !formCat || !formSlug || !formPrice || !formStock || formDeliveryFee === "") {
             setFormErr("All fields except images are required."); return;
         }
         setSaving(true); setFormErr("");
         try {
             const fd = new FormData();
-            fd.append("name",     formName);
+            fd.append("name", formName);
             fd.append("category", formCat);
-            fd.append("slug",     formSlug);
-            fd.append("price",    formPrice);
-            fd.append("stock",    formStock);
-            fd.append("active",   String(formActive));
+            fd.append("slug", formSlug);
+            fd.append("price", formPrice);
+            fd.append("deliveryFee", formDeliveryFee);
+            fd.append("stock", formStock);
+            fd.append("active", String(formActive));
             if (formFiles) {
                 Array.from(formFiles).forEach(f => fd.append("images", f));
             }
@@ -634,7 +635,7 @@ function Products() {
         try {
             await productApi.toggle(id);
             loadProducts(currentPage);
-        } catch {}
+        } catch { }
     };
 
     const handleDelete = async (id: string) => {
@@ -642,7 +643,7 @@ function Products() {
         try {
             await productApi.delete(id);
             loadProducts(currentPage);
-        } catch {}
+        } catch { }
     };
 
     if (loading) return (
@@ -669,7 +670,7 @@ function Products() {
                     </h3>
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <div className="grid sm:grid-cols-2 gap-3">
-                            <AdminField label="Product name"  value={formName}  onChange={setFormName}  placeholder="Egyptian Cotton Duvet Set" />
+                            <AdminField label="Product name" value={formName} onChange={setFormName} placeholder="Egyptian Cotton Duvet Set" />
                             <div className="space-y-1">
                                 <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
                                     Category
@@ -688,10 +689,11 @@ function Products() {
                                 </select>
                             </div>
                         </div>
-                        <div className="grid sm:grid-cols-3 gap-3">
+                        <div className="grid sm:grid-cols-4 gap-3">
                             <AdminField label="Slug (auto-generated)" value={formSlug} onChange={setFormSlug} placeholder="beddings" />
                             <AdminField label="Price (KES)" value={formPrice} onChange={setFormPrice} placeholder="4800" type="number" />
-                            <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10"   type="number" />
+                            <AdminField label="Delivery Fee (KES)" value={formDeliveryFee} onChange={setFormDeliveryFee} placeholder="1000" type="number" />
+                            <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10" type="number" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
@@ -762,9 +764,8 @@ function Products() {
                             </div>
                             <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
                             <span className="col-span-2 text-right font-semibold text-zinc-800 dark:text-zinc-200">{formatKES(p.price)}</span>
-                            <span className={`col-span-1 text-center text-xs font-bold ${
-                                p.stock === 0 ? "text-red-500" : p.stock <= 2 ? "text-amber-500" : "text-emerald-500"
-                            }`}>
+                            <span className={`col-span-1 text-center text-xs font-bold ${p.stock === 0 ? "text-red-500" : p.stock <= 2 ? "text-amber-500" : "text-emerald-500"
+                                }`}>
                                 {p.stock === 0 ? "Out" : p.stock}
                             </span>
                             <div className="col-span-2 flex items-center justify-center gap-1.5">
@@ -773,11 +774,10 @@ function Products() {
                                     <Edit2 className="w-3.5 h-3.5" />
                                 </button>
                                 <button type="button" onClick={() => handleToggle(p.id)}
-                                    className={`p-1.5 rounded-lg transition-colors ${
-                                        p.active
+                                    className={`p-1.5 rounded-lg transition-colors ${p.active
                                             ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10"
                                             : "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
-                                    }`} title={p.active ? "Deactivate" : "Activate"}>
+                                        }`} title={p.active ? "Deactivate" : "Activate"}>
                                     {p.active ? <Eye className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                 </button>
                                 <button type="button" onClick={() => handleDelete(p.id)}
@@ -821,11 +821,10 @@ function Products() {
                                     key={page}
                                     type="button"
                                     onClick={() => setCurrentPage(page)}
-                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                                        page === currentPage
+                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
                                             ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
                                             : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
-                                    }`}
+                                        }`}
                                 >
                                     {page}
                                 </button>

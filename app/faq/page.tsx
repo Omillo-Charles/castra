@@ -17,7 +17,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We accept M-Pesa payments. You can pay via Paybill or use M-Pesa STK Push — enter your number at checkout and you will receive a payment prompt on your phone.",
+                a: "We currently accept M-Pesa STK Push. At checkout, enter your phone number and you will receive a payment prompt on your phone to complete the payment.",
             },
             {
                 q: "Can I modify or cancel my order?",
@@ -115,8 +115,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     const [open, setOpen] = useState(false);
     return (
         <div className={`border rounded-xl overflow-hidden transition-all duration-200 ${open
-                ? "border-[#C6A16A]/40 bg-[#C6A16A]/5 dark:bg-[#C6A16A]/5"
-                : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#171717] hover:border-zinc-300 dark:hover:border-zinc-700"
+            ? "border-[#C6A16A]/40 bg-[#C6A16A]/5 dark:bg-[#C6A16A]/5"
+            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#171717] hover:border-zinc-300 dark:hover:border-zinc-700"
             }`}>
             <button
                 type="button"
@@ -183,8 +183,8 @@ export default function FaqPage() {
                                 type="button"
                                 onClick={() => setActiveGroup(group.id)}
                                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all duration-150 cursor-pointer ${activeGroup === group.id
-                                        ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                        : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white"
+                                    ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
+                                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white"
                                     }`}
                             >
                                 {group.label}

@@ -92,7 +92,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                                     <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
                                 </div>
                                 <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex-shrink-0">
-                                    {formatKES(item.product.price * item.qty)}
+                                    {formatKES(((item.product.price + (item.product.deliveryFee ?? 0)) * item.qty))}
                                 </span>
                             </div>
                         ))}
@@ -108,7 +108,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                             </div>
                         )}
                         <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
-                            <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Delivery</span>
+                            <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Delivery included</span>
                             <span>{formatKES(deliveryFee)}</span>
                         </div>
                         <div className="flex justify-between text-base font-bold text-zinc-900 dark:text-white pt-2 border-t border-zinc-100 dark:border-zinc-800">
@@ -263,7 +263,7 @@ export default function CheckoutPage() {
 
     const waMsg = encodeURIComponent(
         `Hi, I'd like to confirm my order:\n\n` +
-        items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
+        items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(((i.product.price + (i.product.deliveryFee ?? 0)) * i.qty))}`).join("\n") +
         `\n\nTotal: ${formatKES(total)}\nDelivery to: ${address}, ${city}, ${county}` +
         `\nPayment: M-Pesa STK Push`
     );

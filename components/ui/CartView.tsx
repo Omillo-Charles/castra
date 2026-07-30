@@ -15,20 +15,20 @@ function formatKES(n: number) {
 }
 
 export function CartView() {
-    const { user }  = useAuth();
+    const { user } = useAuth();
     const { cart, loading, updateItem, removeItem, applyCoupon } = useCart();
-    const router    = useRouter();
+    const router = useRouter();
 
-    const [coupon,     setCoupon]     = useState("");
-    const [couponMsg,  setCouponMsg]  = useState<{ type: "ok" | "err"; text: string } | null>(null);
+    const [coupon, setCoupon] = useState("");
+    const [couponMsg, setCouponMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
     const [applyingCoupon, setApplyingCoupon] = useState(false);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    const items      = cart?.items      ?? [];
-    const subtotal   = cart?.subtotal   ?? 0;
-    const deliveryFee= cart?.deliveryFee ?? 0;
-    const discount   = cart?.discount   ?? 0;
-    const total      = cart?.total      ?? 0;
+    const items = cart?.items ?? [];
+    const subtotal = cart?.subtotal ?? 0;
+    const deliveryFee = cart?.deliveryFee ?? 0;
+    const discount = cart?.discount ?? 0;
+    const total = cart?.total ?? 0;
 
     const handleQtyChange = async (productId: string, delta: number, currentQty: number) => {
         const newQty = currentQty + delta;
@@ -59,7 +59,7 @@ export function CartView() {
     };
 
     const waOrderSummary = items
-        .map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`)
+        .map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(((i.product.price + (i.product.deliveryFee ?? 0)) * i.qty))}`)
         .join("\n");
     const waMsg = encodeURIComponent(
         `Hi, I'd like to place an order:\n\n${waOrderSummary}\n\nSubtotal: ${formatKES(subtotal)}\nDelivery: ${formatKES(deliveryFee)}\n*Total: ${formatKES(total)}*\n\nPlease confirm availability.`
@@ -152,7 +152,7 @@ export function CartView() {
                                         </h3>
                                         <p className="text-sm text-zinc-400 mt-0.5">{formatKES(item.product.price)} each</p>
                                         <p className="text-base font-bold text-zinc-900 dark:text-white mt-1">
-                                            {formatKES(item.product.price * item.qty)}
+                                            {formatKES(((item.product.price + (item.product.deliveryFee ?? 0)) * item.qty))}
                                         </p>
                                     </div>
 
@@ -230,7 +230,7 @@ export function CartView() {
                                     )}
                                     <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
                                         <span className="flex items-center gap-1.5">
-                                            <Truck className="w-3.5 h-3.5" /> Delivery
+                                            <Truck className="w-3.5 h-3.5" /> Delivery included
                                         </span>
                                         <span>{formatKES(deliveryFee)}</span>
                                     </div>

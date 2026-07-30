@@ -13,7 +13,7 @@ const SECTIONS = [
         content: [
             {
                 subtitle: "Information you provide to us",
-                body: "When you create an account, place an order, or contact us, we collect information such as your full name, email address, phone number, and delivery address. We may also collect payment-related information (M-Pesa transaction references or cash-on-delivery confirmations), though we do not store full card numbers.",
+                body: "When you create an account, place an order, or contact us, we collect information such as your full name, email address, phone number, and delivery address. We may also collect payment-related information such as M-Pesa transaction references for completed STK Push payments, though we do not store full card numbers.",
             },
             {
                 subtitle: "Information collected automatically",

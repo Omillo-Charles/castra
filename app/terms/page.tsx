@@ -53,7 +53,7 @@ const SECTIONS = [
             },
             {
                 subtitle: "Payment methods",
-                body: "We accept M-Pesa payments. You can pay via Paybill (Business No: 400200, Account: CASTRA) or use M-Pesa STK Push at checkout. Payment must be completed before your order is dispatched.",
+                body: "We currently accept M-Pesa STK Push at checkout. Payment must be completed before your order is dispatched.",
             },
             {
                 subtitle: "Order cancellation",

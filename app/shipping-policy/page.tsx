@@ -45,7 +45,7 @@ export default function ShippingPolicyPage() {
                     </h2>
                     <div className="grid sm:grid-cols-3 gap-4">
                         {[
-                            { icon: <CreditCard className="w-5 h-5" />, step: "1. Place & Pay", desc: "Place your order via our website or WhatsApp and complete payment via M-Pesa or confirm Cash on Delivery." },
+                            { icon: <CreditCard className="w-5 h-5" />, step: "1. Place & Pay", desc: "Place your order via our website or WhatsApp and complete payment through M-Pesa STK Push." },
                             { icon: <Clock className="w-5 h-5" />, step: "2. We Process", desc: "We confirm your order, prepare your items, and hand them over to our delivery partner - typically within 24 hours." },
                             { icon: <Truck className="w-5 h-5" />, step: "3. We Deliver", desc: "Your order is dispatched and delivered to your provided address. You will receive a notification when it is on its way." },
                         ].map(({ icon, step, desc }) => (

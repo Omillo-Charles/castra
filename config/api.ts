@@ -171,6 +171,7 @@ export type Product = {
     category: string;
     slug: string;
     price: number;
+    deliveryFee: number;
     originalPrice: number | null;
     stock: number;
     inStock: boolean;

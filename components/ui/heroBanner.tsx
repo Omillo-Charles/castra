@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ShoppingBag, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { scrollToProducts } from "@/lib/scrollToProducts";
+import { WhatsAppIcon } from "@/components/svgicons";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -117,7 +118,7 @@ export function HeroBanner() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-sm border border-white/30 hover:border-[#C6A16A]/60 transition-all duration-200 shadow-lg hover:scale-[1.03] backdrop-blur-sm"
               >
-                <MessageCircle className="w-4 h-4" />
+                <WhatsAppIcon className="w-4 h-4" />
                 WhatsApp
               </a>
             </div>
@@ -152,8 +153,8 @@ export function HeroBanner() {
             type="button"
             onClick={() => goTo(index)}
             className={`rounded-full transition-all duration-300 ${index === current
-                ? "w-7 h-2.5 bg-[#C6A16A]"
-                : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
+              ? "w-7 h-2.5 bg-[#C6A16A]"
+              : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
               }`}
             aria-label={`Go to slide ${index + 1}`}
           />

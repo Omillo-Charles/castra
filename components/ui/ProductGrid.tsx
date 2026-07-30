@@ -183,8 +183,8 @@ export function ProductGrid() {
                             type="button"
                             onClick={() => handleCategory(cat)}
                             className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${isActive
-                                    ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                    : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800"
+                                ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
+                                : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800"
                                 }`}
                         >
                             {cat}
@@ -234,8 +234,8 @@ export function ProductGrid() {
                             type="button"
                             onClick={() => handlePageChange(page)}
                             className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
-                                    ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                    : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
+                                ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
+                                : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
                                 }`}
                         >
                             {page}

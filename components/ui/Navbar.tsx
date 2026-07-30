@@ -404,8 +404,8 @@ export function Navbar() {
                                     scrollToProducts(undefined);
                                 }}
                                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none ${activeNavCategory === "All Categories" || activeNavCategory === null
-                                        ? "bg-[#C6A16A] text-zinc-950"
-                                        : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950"
+                                    ? "bg-[#C6A16A] text-zinc-950"
+                                    : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950"
                                     }`}
                             >
                                 <LayoutGrid className="w-3.5 h-3.5" />
