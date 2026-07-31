@@ -6,6 +6,7 @@ import { Footer } from "@/components/ui/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { ToastProvider } from "@/context/ToastContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,17 +35,19 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${chirp.variable} ${glacial.variable} ${mulish.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-mulish bg-white dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100">
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );

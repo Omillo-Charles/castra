@@ -130,7 +130,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
 /*Main checkout page*/
 export default function CheckoutPage() {
     const { user } = useAuth();
-    const { cart, loading } = useCart();
+    const { cart, loading, refresh: refreshCart } = useCart();
     const router = useRouter();
 
     const [step, setStep] = useState<Step>("details");
@@ -226,6 +226,10 @@ export default function CheckoutPage() {
             setPlacedOrderRef(res.order.ref);
             setPlacedOrderId(res.order.id);
             setPlaced(true);
+
+            // Sync the frontend cart state — the server already cleared it
+            // during the transaction, so this brings the client in line.
+            refreshCart();
 
             // ── STK Push: poll for payment confirmation ──
             if (res.stk?.checkoutRequestId) {

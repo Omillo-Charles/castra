@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { userApi, addressApi, orderApi, normaliseStatus, type Order } from "@/config/api";
+import { useToast } from "@/context/ToastContext";
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
@@ -142,12 +143,14 @@ export default function DashboardPage() {
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
     const [orders,  setOrders]  = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const { error } = useToast();
 
     useEffect(() => {
         orderApi.list({ limit: 50 })
             .then(res => setOrders(res.orders || []))
-            .catch(() => {})
+            .catch(() => error("Could not load your orders."))
             .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const recentOrder = orders[0];
@@ -329,6 +332,7 @@ function Addresses() {
     const [addresses, setAddresses] = useState<import("@/config/api").Address[]>([]);
     const [loading,   setLoading]   = useState(true);
     const [error,     setError]     = useState("");
+    const { success, error: toastError } = useToast();
 
     // Add / Edit form state
     const [showForm,   setShowForm]   = useState(false);
@@ -389,13 +393,14 @@ function Addresses() {
             if (editId) {
                 const res = await addressApi.update(editId, { label, street, city, county, isDefault });
                 setAddresses(prev => prev.map(a => a.id === editId ? res.address : a));
+                success("Address updated.");
             } else {
                 const res = await addressApi.create({ label, street, city, county, isDefault });
                 setAddresses(prev => {
-                    // If new address is default, clear others
                     const updated = isDefault ? prev.map(a => ({ ...a, isDefault: false })) : [...prev];
                     return [...updated, res.address];
                 });
+                success("Address added.");
             }
             resetForm();
         } catch (err: unknown) {
@@ -409,8 +414,9 @@ function Addresses() {
         try {
             await addressApi.setDefault(id);
             setAddresses(prev => prev.map(a => ({ ...a, isDefault: a.id === id })));
+            success("Default address updated.");
         } catch {
-            // silent — UI stays consistent
+            toastError("Could not update default address.");
         }
     };
 
@@ -419,15 +425,15 @@ function Addresses() {
             await addressApi.delete(id);
             setAddresses(prev => {
                 const remaining = prev.filter(a => a.id !== id);
-                // If deleted was default and there are others, promote first
                 const wasDefault = prev.find(a => a.id === id)?.isDefault;
                 if (wasDefault && remaining.length > 0) {
                     remaining[0] = { ...remaining[0], isDefault: true };
                 }
                 return remaining;
             });
+            success("Address removed.");
         } catch {
-            // silent
+            toastError("Could not delete address.");
         }
     };
 

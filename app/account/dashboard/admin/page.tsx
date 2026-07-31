@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { WhatsAppIcon } from "@/components/svgicons";
+import { useToast } from "@/context/ToastContext";
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
@@ -154,15 +155,17 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
     const [products, setProducts] = useState<import("@/config/api").Product[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(true);
+    const { error } = useToast();
 
     useEffect(() => {
         productApi.list({ limit: 100 })
             .then(res => setProducts(res.products || []))
-            .catch(() => { });
+            .catch(() => error("Could not load products."));
         orderApi.list({ limit: 100 })
             .then(res => setOrders(res.orders || []))
-            .catch(() => { })
+            .catch(() => error("Could not load orders."))
             .finally(() => setOrdersLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
@@ -267,6 +270,7 @@ function Orders() {
     const [paymentRef, setPaymentRef] = useState("");
     const [updating, setUpdating] = useState(false);
     const [err, setErr] = useState("");
+    const { success, error: toastError } = useToast();
 
     const ORDERS_PER_PAGE = 10;
 
@@ -316,8 +320,11 @@ function Orders() {
             }
             setEditing(null);
             loadOrders(currentPage, search, filter);
+            success("Order updated successfully.");
         } catch (e: unknown) {
-            setErr(e instanceof Error ? e.message : "Failed to update status.");
+            const msg = e instanceof Error ? e.message : "Failed to update order.";
+            setErr(msg);
+            toastError(msg);
         } finally {
             setUpdating(false);
         }

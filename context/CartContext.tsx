@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { cartApi, Cart } from "@/config/api";
+import { useToast } from "@/context/ToastContext";
 
 type CartContextType = {
     cart:        Cart | null;
@@ -19,12 +20,10 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+    const { error: toastError } = useToast();
     const [cart,    setCart]    = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Cart is always fetched — works for both authenticated users and guests.
-    // The backend identifies the caller via JWT cookie (user) or castra_session
-    // cookie (guest) through the resolveCart middleware.
     const refresh = useCallback(async () => {
         setLoading(true);
         try {
@@ -32,12 +31,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
             setCart(res.cart);
         } catch {
             setCart(null);
+            toastError("Could not load your cart. Please refresh the page.");
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Fetch on mount — no auth dependency needed
     useEffect(() => { refresh(); }, [refresh]);
 
     const addItem = async (productId: string, qty = 1) => {

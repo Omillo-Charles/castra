@@ -8,6 +8,7 @@ import { WhatsAppIcon } from "@/components/svgicons";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -20,6 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
     const { isWishlisted, toggle } = useWishlist();
     const { addItem } = useCart();
     const router = useRouter();
+    const { success, error } = useToast();
 
     const [addingToCart, setAddingToCart] = useState(false);
     const [togglingWish, setTogglingWish] = useState(false);
@@ -27,19 +29,36 @@ export function ProductCard({ product }: { product: Product }) {
     const wishlisted = user ? isWishlisted(product.id) : false;
 
     const handleWishlist = async () => {
-        // Wishlist requires an account — send guests to the sign-in page
         if (!user) {
             router.push("/account");
             return;
         }
         setTogglingWish(true);
-        try { await toggle(product.id); } finally { setTogglingWish(false); }
+        try {
+            await toggle(product.id);
+            if (isWishlisted(product.id)) {
+                success("Removed from wishlist.");
+            } else {
+                success("Saved to wishlist.");
+            }
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Failed to update wishlist.");
+        } finally {
+            setTogglingWish(false);
+        }
     };
 
     const handleAddToCart = async () => {
         if (!product.inStock) return;
         setAddingToCart(true);
-        try { await addItem(product.id, 1); } finally { setAddingToCart(false); }
+        try {
+            await addItem(product.id, 1);
+            success(`${product.name} added to cart.`);
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not add item to cart.");
+        } finally {
+            setAddingToCart(false);
+        }
     };
 
     const waMessage = encodeURIComponent(

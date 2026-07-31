@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -15,6 +16,7 @@ function formatKES(n: number) {
 
 export function CartView() {
     const { cart, loading, updateItem, removeItem, applyCoupon } = useCart();
+    const { error } = useToast();
     const router = useRouter();
 
     const [coupon, setCoupon] = useState("");
@@ -31,7 +33,9 @@ export function CartView() {
         const newQty = currentQty + delta;
         setUpdatingId(productId);
         try {
-            await updateItem(productId, newQty); // qty=0 removes the item
+            await updateItem(productId, newQty);
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not update quantity.");
         } finally {
             setUpdatingId(null);
         }
@@ -41,6 +45,8 @@ export function CartView() {
         setUpdatingId(productId);
         try {
             await removeItem(productId);
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not remove item.");
         } finally {
             setUpdatingId(null);
         }

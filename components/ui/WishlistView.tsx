@@ -6,6 +6,7 @@ import { WhatsAppIcon } from "@/components/svgicons";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { useState } from "react";
 
 const WHATSAPP_NUMBER = "254704147774";
@@ -18,16 +19,20 @@ export function WishlistView() {
     const { user }                     = useAuth();
     const { wishlist, loading, remove } = useWishlist();
     const { addItem }                  = useCart();
+    const { success, error }           = useToast();
 
     const [addingId,   setAddingId]   = useState<string | null>(null);
     const [removingId, setRemovingId] = useState<string | null>(null);
 
     const items = wishlist?.items ?? [];
 
-    const handleAddToCart = async (productId: string) => {
+    const handleAddToCart = async (productId: string, productName: string) => {
         setAddingId(productId);
         try {
             await addItem(productId, 1);
+            success(`${productName} added to cart.`);
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not add item to cart.");
         } finally {
             setAddingId(null);
         }
@@ -37,6 +42,9 @@ export function WishlistView() {
         setRemovingId(productId);
         try {
             await remove(productId);
+            success("Removed from wishlist.");
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not remove item.");
         } finally {
             setRemovingId(null);
         }
@@ -145,7 +153,7 @@ export function WishlistView() {
                                 <div className="flex flex-col sm:flex-row items-center gap-2 flex-shrink-0">
                                     <button type="button"
                                         disabled={!product.inStock || busy}
-                                        onClick={() => handleAddToCart(item.productId)}
+                                        onClick={() => handleAddToCart(item.productId, item.product.name)}
                                         className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap">
                                         {addingId === item.productId
                                             ? <span className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />

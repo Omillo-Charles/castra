@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { wishlistApi, Wishlist } from "@/config/api";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 type WishlistContextType = {
     wishlist:    Wishlist | null;
@@ -19,6 +20,7 @@ const WishlistContext = createContext<WishlistContextType | null>(null);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth();
+    const { error: toastError } = useToast();
     const [wishlist, setWishlist] = useState<Wishlist | null>(null);
     const [loading,  setLoading]  = useState(false);
 
@@ -30,9 +32,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             setWishlist(res.wishlist);
         } catch {
             setWishlist(null);
+            toastError("Could not load your wishlist.");
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => { refresh(); }, [refresh]);
