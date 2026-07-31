@@ -181,7 +181,8 @@ export default function CheckoutPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    // Load saved addresses and pre-fill default when landing on delivery step
+    // Load saved addresses and pre-fill default when landing on delivery step.
+    // Only runs when the user is logged in — guests enter the address manually.
     useEffect(() => {
         if (step !== "delivery" || !user) return;
         if (address) return; // already filled
@@ -198,7 +199,8 @@ export default function CheckoutPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, user]);
 
-    // Redirect to cart if cart is empty and not yet placed
+    // Redirect to cart if cart is empty and not yet placed.
+    // Works for both guests and authenticated users.
     useEffect(() => {
         if (!loading && !placed && items.length === 0) {
             router.replace("/cart");

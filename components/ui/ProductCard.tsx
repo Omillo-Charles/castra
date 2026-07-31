@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Heart, ShoppingBag } from "lucide-react";
 import type { Product } from "@/config/api";
 import { WhatsAppIcon } from "@/components/svgicons";
@@ -18,6 +19,7 @@ export function ProductCard({ product }: { product: Product }) {
     const { user } = useAuth();
     const { isWishlisted, toggle } = useWishlist();
     const { addItem } = useCart();
+    const router = useRouter();
 
     const [addingToCart, setAddingToCart] = useState(false);
     const [togglingWish, setTogglingWish] = useState(false);
@@ -25,7 +27,11 @@ export function ProductCard({ product }: { product: Product }) {
     const wishlisted = user ? isWishlisted(product.id) : false;
 
     const handleWishlist = async () => {
-        if (!user) return; // silently ignore — could redirect to /account
+        // Wishlist requires an account — send guests to the sign-in page
+        if (!user) {
+            router.push("/account");
+            return;
+        }
         setTogglingWish(true);
         try { await toggle(product.id); } finally { setTogglingWish(false); }
     };

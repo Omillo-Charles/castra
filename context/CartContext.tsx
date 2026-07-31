@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { cartApi, Cart } from "@/config/api";
-import { useAuth } from "@/context/AuthContext";
 
 type CartContextType = {
     cart:        Cart | null;
@@ -20,12 +19,13 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-    const { user } = useAuth();
     const [cart,    setCart]    = useState<Cart | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
+    // Cart is always fetched — works for both authenticated users and guests.
+    // The backend identifies the caller via JWT cookie (user) or castra_session
+    // cookie (guest) through the resolveCart middleware.
     const refresh = useCallback(async () => {
-        if (!user) { setCart(null); return; }
         setLoading(true);
         try {
             const res = await cartApi.get();
@@ -35,9 +35,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, []);
 
-    // Fetch cart whenever the user logs in / out
+    // Fetch on mount — no auth dependency needed
     useEffect(() => { refresh(); }, [refresh]);
 
     const addItem = async (productId: string, qty = 1) => {

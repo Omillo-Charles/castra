@@ -263,7 +263,8 @@ export type CartItem = {
 
 export type Cart = {
     id: string;
-    userId: string;
+    userId: string | null;
+    sessionId: string | null;
     couponCode: string | null;
     discount: number;
     items: CartItem[];

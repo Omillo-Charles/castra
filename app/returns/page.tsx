@@ -74,7 +74,7 @@ export default function ReturnsPage() {
                     </div>
                     <div className="px-6 py-5 space-y-5">
                         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            <span className="font-semibold text-zinc-800 dark:text-zinc-200">Castra Kicks</span> (footwear) are eligible for <span className="font-bold text-emerald-600 dark:text-emerald-400">size exchanges only</span> — no refunds. To qualify for an exchange, all of the following conditions must be met:
+                            <span className="font-semibold text-zinc-800 dark:text-zinc-200">Castra Kicks</span> (footwear) are eligible for <span className="font-bold text-emerald-600 dark:text-emerald-400">size exchanges only</span> - no refunds. To qualify for an exchange, all of the following conditions must be met:
                         </p>
 
                         <ul className="space-y-2.5">

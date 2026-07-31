@@ -49,8 +49,8 @@ export function AccountForm() {
                 {/* Hero copy */}
                 <div className="relative z-10 space-y-6">
                     <div>
-                        <h2 className="font-mulish italic font-black text-4xl text-white leading-tight mb-3">
-                            {tab === "login" ? "Good to have\nyou back." : "Elevate your\nliving space."}
+                        <h2 className="font-mulish font-black text-4xl text-white leading-tight mb-3">
+                            {tab === "login" ? "Welcome back." : "Elevate your\nliving."}
                         </h2>
                         <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
                             {tab === "login"
@@ -81,7 +81,7 @@ export function AccountForm() {
                     <p className="text-xs text-zinc-500 italic leading-relaxed">
                         &ldquo;Premium living, made accessible for every Kenyan home.&rdquo;
                     </p>
-                    <p className="text-[10px] text-[#C6A16A] font-semibold mt-1 uppercase tracking-wider">— Castra Households</p>
+                    <p className="text-[10px] text-[#C6A16A] font-semibold mt-1 uppercase tracking-wider">- Castra Households</p>
                 </div>
             </div>
 

@@ -292,7 +292,7 @@ export function Navbar() {
                             <div className="flex flex-col text-left">
                                 <span className="text-[10px] opacity-75 leading-tight">My Cart</span>
                                 <span className="text-xs font-bold leading-tight font-mono">
-                                    {user ? `KSh ${total.toLocaleString("en-KE")}` : "KSh 0"}
+                                    {`KSh ${total.toLocaleString("en-KE")}`}
                                 </span>
                             </div>
                         </Link>

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -15,7 +14,6 @@ function formatKES(n: number) {
 }
 
 export function CartView() {
-    const { user } = useAuth();
     const { cart, loading, updateItem, removeItem, applyCoupon } = useCart();
     const router = useRouter();
 
@@ -24,11 +22,10 @@ export function CartView() {
     const [applyingCoupon, setApplyingCoupon] = useState(false);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    const items = cart?.items ?? [];
-    const subtotal = cart?.subtotal ?? 0;
-    const deliveryFee = cart?.deliveryFee ?? 0;
-    const discount = cart?.discount ?? 0;
-    const total = cart?.total ?? 0;
+    const items       = cart?.items ?? [];
+    const subtotal    = cart?.subtotal ?? 0;
+    const discount    = cart?.discount ?? 0;
+    const total       = cart?.total ?? 0;
 
     const handleQtyChange = async (productId: string, delta: number, currentQty: number) => {
         const newQty = currentQty + delta;
@@ -69,18 +66,6 @@ export function CartView() {
     if (loading) return (
         <div className="flex items-center justify-center py-24">
             <span className="w-7 h-7 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
-        </div>
-    );
-
-    // Guest — prompt to sign in
-    if (!user) return (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-zinc-400">
-            <ShoppingBag className="w-14 h-14 opacity-20" />
-            <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-300">Sign in to view your cart</p>
-            <Link href="/account"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors">
-                Sign In / Create Account <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
         </div>
     );
 
