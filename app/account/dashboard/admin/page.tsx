@@ -49,6 +49,7 @@ const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
 export default function AdminPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
+    const { success } = useToast();
     const [section, setSection] = useState<Section>("overview");
 
     // Route protection — must be logged in AND be ADMIN
@@ -60,6 +61,7 @@ export default function AdminPage() {
 
     const handleLogout = async () => {
         await logout();
+        success("Signed out successfully.");
         router.push("/");
     };
 

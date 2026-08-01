@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { InstagramIcon, FacebookIcon, TikTokIcon } from "@/components/svgicons";
 import { scrollToProducts } from "@/lib/scrollToProducts";
+import { useToast } from "@/context/ToastContext";
 
 const FOOTER_CATEGORIES = [
   { name: "Beddings", slug: "beddings" },
@@ -38,6 +39,14 @@ const CUSTOMER_CARE = [
 ];
 
 export function Footer() {
+  const { success } = useToast();
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    success("Subscribed successfully!");
+    setEmail("");
+  };
   return (
     <footer className="w-full bg-zinc-950 text-zinc-300 dark:bg-black dark:text-zinc-400 border-t border-zinc-800/80 transition-colors duration-200 mt-auto">
 
@@ -108,11 +117,13 @@ export function Footer() {
               </p>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-md flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubscribe} className="w-full max-w-md flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address..."
                   className="w-full pl-11 pr-4 py-3.5 rounded-full bg-zinc-950/80 border border-zinc-800 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-[#C6A16A] transition-colors"
                   required
@@ -254,8 +265,8 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-zinc-400">
                 <Mail className="w-4 h-4 text-[#C6A16A] flex-shrink-0" />
-                <a href="mailto:info@castracollection.com" className="hover:text-[#C6A16A] transition-colors">
-                  info@castracollection.com
+                <a href="mailto:info@castrahouseholds.co.ke" className="hover:text-[#C6A16A] transition-colors">
+                  info@castrahouseholds.co.ke
                 </a>
               </li>
             </ul>

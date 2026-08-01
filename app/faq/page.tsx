@@ -105,7 +105,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "How do I delete my account?",
-                a: "To request account deletion, email us at info@castracollection.com or message us on WhatsApp. We will process your request within 7 business days, subject to any legal data retention obligations.",
+                a: "To request account deletion, email us at info@castrahouseholds.co.ke or message us on WhatsApp. We will process your request within 7 business days, subject to any legal data retention obligations.",
             },
         ],
     },
@@ -227,7 +227,7 @@ export default function FaqPage() {
                                 Chat on WhatsApp
                             </a>
                             <a
-                                href="mailto:info@castracollection.com"
+                                href="mailto:info@castrahouseholds.co.ke"
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-zinc-700 hover:border-[#C6A16A]/50 text-zinc-300 hover:text-[#C6A16A] font-bold text-xs transition-all duration-200"
                             >
                                 <Mail className="w-4 h-4" />

@@ -22,6 +22,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Castra Household ",
   description: "Premium household essentials delivered to your doorstep.",
+  icons: {
+    icon: "/branding/icon.png",
+    apple: "/branding/icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -232,8 +232,8 @@ export default function TermsPage() {
                         <div className="flex flex-col gap-3 p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                             <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
                                 <Mail className="w-4 h-4 text-[#C6A16A] flex-shrink-0" />
-                                <a href="mailto:info@castracollection.com" className="hover:text-[#C6A16A] transition-colors">
-                                    info@castracollection.com
+                                <a href="mailto:info@castrahouseholds.co.ke" className="hover:text-[#C6A16A] transition-colors">
+                                    info@castrahouseholds.co.ke
                                 </a>
                             </div>
                             <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">

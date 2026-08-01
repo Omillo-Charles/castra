@@ -40,6 +40,7 @@ function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 export default function DashboardPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
+    const { success } = useToast();
     const [section, setSection] = useState<Section>("overview");
 
     // Route protection — redirect to /account if not logged in
@@ -51,6 +52,7 @@ export default function DashboardPage() {
 
     const handleLogout = async () => {
         await logout();
+        success("Signed out successfully.");
         router.push("/");
     };
 
