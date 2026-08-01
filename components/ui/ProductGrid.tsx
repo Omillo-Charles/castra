@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
@@ -19,6 +19,19 @@ function resolveCategory(categoryParam?: string | null) {
 }
 
 export function ProductGrid() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center py-24 text-zinc-400 gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-[#C6A16A]" />
+                <p className="text-sm font-semibold">Fetching collection...</p>
+            </div>
+        }>
+            <ProductGridInner />
+        </Suspense>
+    );
+}
+
+function ProductGridInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
