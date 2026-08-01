@@ -17,7 +17,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser]       = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true); // true on mount while we check session
 
-    // Rehydrate session on mount — check if cookie is still valid
+    // Rehydrate session on mount — try the access token first.
+    // If it has expired, attemptRefresh() inside request() handles it silently.
+    // If the refresh token is also gone/invalid we get an error and clear the user.
     const fetchMe = useCallback(async () => {
         try {
             const res = await authApi.me();

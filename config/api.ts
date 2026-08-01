@@ -26,26 +26,61 @@ export type AuthResponse = {
     message?: string;
 };
 
+// Token refresh state 
+// A single in-flight refresh promise shared across all concurrent requests
+// so we don't fire multiple refresh calls when several requests expire together.
+
+let _refreshPromise: Promise<AuthResponse> | null = null;
+
+async function attemptRefresh(): Promise<AuthResponse> {
+    if (!_refreshPromise) {
+        _refreshPromise = fetch(`${BASE_URL}/auth/refresh`, {
+            method:      "POST",
+            credentials: "include",
+        })
+            .then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data?.message || "Refresh failed");
+                return data as AuthResponse;
+            })
+            .finally(() => {
+                _refreshPromise = null;
+            });
+    }
+    return _refreshPromise;
+}
+
 // Core fetch wrapper
+// Automatically retries once after a silent token refresh on TOKEN_EXPIRED.
+
 async function request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    _isRetry = false
 ): Promise<T> {
     const url = `${BASE_URL}${endpoint}`;
-
-    // Only set Content-Type to JSON when body is not FormData.
-    // For FormData, the browser sets the correct multipart/form-data boundary automatically.
     const isFormData = options.body instanceof FormData;
 
     const res = await fetch(url, {
         ...options,
         credentials: "include",
         headers: isFormData
-            ? { ...(options.headers ?? {}) }                              // no Content-Type — browser handles it
+            ? { ...(options.headers ?? {}) }
             : { "Content-Type": "application/json", ...(options.headers ?? {}) },
     });
 
     const data = await res.json();
+
+    // Access token expired — try to refresh once, then retry the original call
+    if (!_isRetry && res.status === 401 && data?.code === "TOKEN_EXPIRED") {
+        try {
+            await attemptRefresh();
+            return request<T>(endpoint, options, true);
+        } catch {
+            // Refresh failed — throw the original 401 so the UI can sign the user out
+            throw new Error("Session expired. Please sign in again.");
+        }
+    }
 
     if (!res.ok) {
         throw new Error(data?.message || `Request failed with status ${res.status}`);
@@ -81,6 +116,13 @@ export const authApi = {
     //Sign out — clears the httpOnly cookie server-side.
     logout: () =>
         request<ApiResponse>("/auth/logout", {
+            method: "POST",
+        }),
+
+    // Silently refresh the access token using the refresh_token cookie.
+    // Called automatically by the request wrapper on TOKEN_EXPIRED.
+    refresh: () =>
+        request<AuthResponse>("/auth/refresh", {
             method: "POST",
         }),
 
