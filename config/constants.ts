@@ -13,6 +13,7 @@ export const CATEGORIES_LIST = [
     "Office Equipments",
     "Furniture",
     "Kicks",
+    "Gifts",
 ];
 
 export const PRODUCTS_PER_PAGE = 8;

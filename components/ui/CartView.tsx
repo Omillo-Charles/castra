@@ -16,7 +16,7 @@ function formatKES(n: number) {
 
 export function CartView() {
     const { cart, loading, updateItem, removeItem, applyCoupon } = useCart();
-    const { error } = useToast();
+    const { error, success } = useToast();
     const router = useRouter();
 
     const [coupon, setCoupon] = useState("");
@@ -45,6 +45,7 @@ export function CartView() {
         setUpdatingId(productId);
         try {
             await removeItem(productId);
+            success("Item removed from cart.");
         } catch (err: unknown) {
             error(err instanceof Error ? err.message : "Could not remove item.");
         } finally {

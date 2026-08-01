@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { scrollToProducts } from "@/lib/scrollToProducts";
 import { WhatsAppIcon } from "@/components/svgicons";
@@ -15,7 +16,8 @@ const SLIDES = [
     alt: "Castra Households – Premium Home Essentials",
     title: "Castra Households",
     subtitle: "Premium household essentials delivered to your doorstep.",
-    categorySlug: undefined, // shows all products
+    categorySlug: undefined, // scrolls to the product grid
+    href: undefined,          // no page redirect — scroll behaviour
     whatsappMsg: "Hi, I'd like to view your household products.",
   },
   {
@@ -25,6 +27,7 @@ const SLIDES = [
     title: "Castra Kicks",
     subtitle: "Step into luxury with our curated footwear collection.",
     categorySlug: undefined,
+    href: "/kicks",           // dedicated Kicks page
     whatsappMsg: "Hi, I'd like to view the Castra Kicks collection.",
   },
 ] as const;
@@ -34,6 +37,7 @@ const DELAY = 6000; // 6 seconds
 export function HeroBanner() {
   const [current, setCurrent] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const router = useRouter();
 
   const goTo = useCallback(
     (index: number) => {
@@ -105,7 +109,13 @@ export function HeroBanner() {
             <div className="flex items-center gap-3 flex-wrap justify-center">
               <button
                 type="button"
-                onClick={() => scrollToProducts(slide.categorySlug)}
+                onClick={() => {
+                  if (slide.href) {
+                    router.push(slide.href);
+                  } else {
+                    scrollToProducts(slide.categorySlug);
+                  }
+                }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-sm transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.03]"
               >
                 <ShoppingBag className="w-4 h-4" />

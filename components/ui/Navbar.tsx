@@ -34,6 +34,8 @@ const CATEGORIES = [
     "Decor",
     "Office Equipments",
     "Furniture",
+    "Kicks",
+    "Gifts",
 ];
 
 const PRODUCT_CATEGORIES = CATEGORIES.slice(1);

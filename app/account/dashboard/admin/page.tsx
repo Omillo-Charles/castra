@@ -45,7 +45,7 @@ const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
     { key: "customers", label: "Customers", icon: <Users className="w-4 h-4" /> },
 ];
 
-/* ══ ROOT PAGE ══════════════════════════════════════════════════════════════ */
+/* ROOT PAGE */
 export default function AdminPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
@@ -554,6 +554,7 @@ function Products() {
     const [formActive, setFormActive] = useState(true);
     const [saving, setSaving] = useState(false);
     const [formErr, setFormErr] = useState("");
+    const { success, error } = useToast();
 
     const loadProducts = (page = currentPage, query = search) => {
         setLoading(true);
@@ -571,6 +572,7 @@ function Products() {
                 setProducts([]);
                 setTotalPages(1);
                 setTotalProducts(0);
+                error("Could not load products.");
             })
             .finally(() => setLoading(false));
     };
@@ -623,10 +625,12 @@ function Products() {
             if (editId) {
                 await productApi.update(editId, fd);
                 loadProducts(currentPage);
+                success("Product updated.");
             } else {
                 await productApi.create(fd);
                 setCurrentPage(1);
                 loadProducts(1);
+                success("Product created.");
             }
             resetForm();
         } catch (err: unknown) {
@@ -640,7 +644,7 @@ function Products() {
         try {
             await productApi.toggle(id);
             loadProducts(currentPage);
-        } catch { }
+        } catch { error("Could not toggle product visibility."); }
     };
 
     const handleDelete = async (id: string) => {
@@ -648,7 +652,8 @@ function Products() {
         try {
             await productApi.delete(id);
             loadProducts(currentPage);
-        } catch { }
+            success("Product deleted.");
+        } catch { error("Could not delete product."); }
     };
 
     if (loading) return (

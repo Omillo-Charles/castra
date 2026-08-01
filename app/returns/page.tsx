@@ -50,7 +50,7 @@ export default function ReturnsPage() {
                             All sales on <span className="font-semibold text-zinc-800 dark:text-zinc-200">Castra Collection</span> are <span className="font-bold text-red-500">final</span>. We do not accept returns or issue refunds on any household product once the order has been delivered. This includes:
                         </p>
                         <ul className="grid grid-cols-2 gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                            {["Beddings", "Home Appliances", "Kitchenware", "Organizers", "Electronics", "Decor", "Office Equipment", "Furniture"].map((cat) => (
+                            {["Beddings", "Home Appliances", "Kitchenware", "Organizers", "Electronics", "Decor", "Office Equipment", "Furniture", "Gifts"].map((cat) => (
                                 <li key={cat} className="flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
                                     {cat}

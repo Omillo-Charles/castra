@@ -25,6 +25,7 @@ const FOOTER_CATEGORIES = [
   { name: "Decor", slug: "decor" },
   { name: "Office Equipments", slug: "office-equipments" },
   { name: "Furniture", slug: "furniture" },
+  { name: "Gifts", slug: "gifts" },
 ];
 
 const CUSTOMER_CARE = [
@@ -264,9 +265,6 @@ export function Footer() {
               <div className="flex items-center gap-2 flex-wrap text-[10px]">
                 <span className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold">
                   M-PESA
-                </span>
-                <span className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold">
-                  Cash on Delivery
                 </span>
               </div>
             </div>

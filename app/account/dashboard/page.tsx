@@ -11,6 +11,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { userApi, addressApi, orderApi, normaliseStatus, type Order } from "@/config/api";
 import { useToast } from "@/context/ToastContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
@@ -141,15 +142,20 @@ export default function DashboardPage() {
 
 /* ══ OVERVIEW ══ */
 function Overview({ setSection }: { setSection: (s: Section) => void }) {
-    const [orders,  setOrders]  = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [orders,    setOrders]    = useState<Order[]>([]);
+    const [addresses, setAddresses] = useState<number | null>(null);
+    const [loading,   setLoading]   = useState(true);
     const { error } = useToast();
+    const { itemCount: wishlistCount, loading: wishlistLoading } = useWishlist();
 
     useEffect(() => {
         orderApi.list({ limit: 50 })
             .then(res => setOrders(res.orders || []))
             .catch(() => error("Could not load your orders."))
             .finally(() => setLoading(false));
+        addressApi.list()
+            .then(res => setAddresses(res.addresses.length))
+            .catch(() => {}); // non-critical — card just stays blank
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -160,9 +166,9 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
         <div className="space-y-5">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
-                    { label: "Total Orders",    value: loading ? "—" : orders.length, icon: <Package className="w-5 h-5" />, onClick: () => setSection("orders") },
-                    { label: "Wishlist Items",  value: "—",                           icon: <Heart className="w-5 h-5" />,   onClick: () => setSection("wishlist") },
-                    { label: "Saved Addresses", value: "—",                           icon: <MapPin className="w-5 h-5" />,  onClick: () => setSection("addresses") },
+                    { label: "Total Orders",    value: loading ? "—" : orders.length,                       icon: <Package className="w-5 h-5" />, onClick: () => setSection("orders") },
+                    { label: "Wishlist Items",  value: wishlistLoading ? "—" : wishlistCount,               icon: <Heart className="w-5 h-5" />,   onClick: () => setSection("wishlist") },
+                    { label: "Saved Addresses", value: addresses === null ? "—" : addresses,                icon: <MapPin className="w-5 h-5" />,  onClick: () => setSection("addresses") },
                 ].map(({ label, value, icon, onClick }) => (
                     <button key={label} type="button" onClick={onClick}
                         className="flex flex-col gap-3 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-[#C6A16A]/40 transition-all text-left cursor-pointer group">

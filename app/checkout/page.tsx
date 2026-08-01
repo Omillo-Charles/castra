@@ -12,6 +12,7 @@ import { WhatsAppIcon } from "@/components/svgicons";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { addressApi, orderApi, paymentApi } from "@/config/api";
+import { useToast } from "@/context/ToastContext";
 
 const WHATSAPP_NUMBER = "254704147774";
 
@@ -132,6 +133,7 @@ export default function CheckoutPage() {
     const { user } = useAuth();
     const { cart, loading, refresh: refreshCart } = useCart();
     const router = useRouter();
+    const { error: toastError } = useToast();
 
     const [step, setStep] = useState<Step>("details");
     const [placed, setPlaced] = useState(false);
@@ -195,7 +197,7 @@ export default function CheckoutPage() {
                 setCity(def.city);
                 setCounty(def.county);
             }
-        }).catch(() => { }).finally(() => setAddressLoading(false));
+        }).catch(() => toastError("Could not load your saved addresses.")).finally(() => setAddressLoading(false));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, user]);
 
