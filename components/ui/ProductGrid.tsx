@@ -158,7 +158,7 @@ function ProductGridInner() {
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">
                         Our Collection
                     </p>
-                    <h2 className="text-2xl sm:text-3xl font-bold font-glacial text-zinc-900 dark:text-white leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-bold font-glacial text-white leading-tight">
                         {activeCategory === "All" ? "All Products" : activeCategory}
                     </h2>
                     <p className="text-xs text-zinc-400 mt-1">
@@ -176,7 +176,7 @@ function ProductGridInner() {
                     <select
                         value={sortBy}
                         onChange={(e) => handleSortChange(e.target.value as typeof sortBy)}
-                        className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
+                        className="text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
                     >
                         <option value="default">Default</option>
                         <option value="price-asc">Price: Low to High</option>
@@ -197,7 +197,7 @@ function ProductGridInner() {
                             onClick={() => handleCategory(cat)}
                             className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${isActive
                                 ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800"
+                                : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800"
                                 }`}
                         >
                             {cat}
@@ -207,7 +207,7 @@ function ProductGridInner() {
             </div>
 
             {/* ── Divider ── */}
-            <div className="h-px bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-px bg-zinc-200 bg-zinc-800" />
 
             {/* ── Product grid ── */}
             {loading ? (
@@ -235,7 +235,7 @@ function ProductGridInner() {
                         type="button"
                         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         aria-label="Previous page"
                     >
                         <ChevronLeft className="w-4 h-4" />
@@ -248,7 +248,7 @@ function ProductGridInner() {
                             onClick={() => handlePageChange(page)}
                             className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
                                 ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
+                                : "border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
                                 }`}
                         >
                             {page}
@@ -259,7 +259,7 @@ function ProductGridInner() {
                         type="button"
                         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         aria-label="Next page"
                     >
                         <ChevronRight className="w-4 h-4" />

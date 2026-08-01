@@ -22,7 +22,7 @@ export function AccountForm() {
             : null;
 
     return (
-        <div className="w-full max-w-5xl min-h-[600px] flex rounded-3xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800">
+        <div className="w-full max-w-5xl min-h-[600px] flex rounded-3xl overflow-hidden shadow-2xl border border-zinc-800">
 
             {/* ── LEFT PANEL ── */}
             <div className="hidden lg:flex lg:w-[45%] flex-col justify-between bg-zinc-950 p-10 relative overflow-hidden">
@@ -86,7 +86,7 @@ export function AccountForm() {
             </div>
 
             {/* ── RIGHT PANEL ── */}
-            <div className="flex-1 bg-white dark:bg-[#111111] flex flex-col justify-center px-8 sm:px-12 py-10">
+            <div className="flex-1 bg-[#111111] flex flex-col justify-center px-8 sm:px-12 py-10">
 
                 {/* Mobile logo */}
                 <Link href="/" className="flex lg:hidden items-center gap-2.5 mb-8 group">
@@ -94,17 +94,17 @@ export function AccountForm() {
                         <Image src="/branding/logo.png" alt="Castra" width={28} height={28} className="object-contain" />
                     </div>
                     <div>
-                        <span className="font-glacial font-bold text-lg text-zinc-900 dark:text-white group-hover:text-[#C6A16A] transition-colors">CASTRA</span>
+                        <span className="font-glacial font-bold text-lg text-white group-hover:text-[#C6A16A] transition-colors">CASTRA</span>
                         <span className="block text-[9px] tracking-widest uppercase text-[#C6A16A] font-semibold leading-none">Households</span>
                     </div>
                 </Link>
 
                 {/* Heading */}
                 <div className="mb-7">
-                    <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-glacial">
+                    <h1 className="text-2xl font-bold text-white font-glacial">
                         {tab === "login" ? "Sign in" : "Create account"}
                     </h1>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                    <p className="text-sm text-zinc-400 mt-1">
                         {tab === "login"
                             ? "Enter your credentials to continue."
                             : "Fill in the details below to get started."}
@@ -112,7 +112,7 @@ export function AccountForm() {
                 </div>
 
                 {/* Tab pills */}
-                <div className="flex gap-2 mb-6 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl w-fit">
+                <div className="flex gap-2 mb-6 p-1 bg-zinc-900 rounded-xl w-fit">
                     {(["login", "signup"] as Tab[]).map((t) => (
                         <button
                             key={t}
@@ -120,8 +120,8 @@ export function AccountForm() {
                             onClick={() => setTab(t)}
                             className={`px-5 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
                                 tab === t
-                                    ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm"
-                                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
+                                    ? "bg-zinc-800 text-white shadow-sm"
+                                    : "text-zinc-400 hover:text-zinc-700 hover:text-zinc-300"
                             }`}
                         >
                             {t === "login" ? "Sign In" : "Sign Up"}
@@ -136,26 +136,26 @@ export function AccountForm() {
                         const base = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5500/api/v1").replace("/api/v1", "");
                         window.location.href = `${base}/auth/google`;
                     }}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-200 shadow-sm group"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-50 hover:bg-zinc-800 hover:border-zinc-300 hover:border-zinc-600 transition-all duration-200 shadow-sm group"
                 >
                     <GoogleIcon className="w-5 h-5 flex-shrink-0" />
-                    <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                    <span className="text-sm font-semibold text-zinc-300 group-hover:text-white group-hover:text-white transition-colors">
                         Continue with Google
                     </span>
                 </button>
 
                 {/* Google OAuth error */}
                 {googleError && (
-                    <div className="flex items-center gap-2.5 px-4 py-3 mb-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium">
+                    <div className="flex items-center gap-2.5 px-4 py-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
                         Google sign-in failed. Please try again or use email and password.
                     </div>
                 )}
 
                 {/* Divider */}
                 <div className="flex items-center gap-3 mb-5">
-                    <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+                    <div className="flex-1 h-px bg-zinc-200 bg-zinc-800" />
                     <span className="text-[11px] text-zinc-400 font-semibold uppercase tracking-widest">or</span>
-                    <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+                    <div className="flex-1 h-px bg-zinc-200 bg-zinc-800" />
                 </div>
 
                 {/* Forms */}
@@ -227,7 +227,7 @@ function LoginForm() {
                 autoComplete="current-password"
                 suffix={
                     <button type="button" onClick={() => setShow(s => !s)}
-                        className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors p-0.5">
+                        className="text-zinc-400 hover:text-zinc-600 hover:text-zinc-300 transition-colors p-0.5">
                         {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                 }
@@ -286,7 +286,7 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
                 autoComplete="new-password"
                 suffix={
                     <button type="button" onClick={() => setShow(s => !s)}
-                        className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors p-0.5">
+                        className="text-zinc-400 hover:text-zinc-600 hover:text-zinc-300 transition-colors p-0.5">
                         {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                 }
@@ -310,15 +310,15 @@ function Field({ label, type, value, onChange, placeholder, icon, autoComplete, 
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block tracking-wide">
+            <label className="text-xs font-semibold text-zinc-400 block tracking-wide">
                 {label}
             </label>
-            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-900/60 focus-within:border-[#C6A16A] focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-3 focus-within:ring-[#C6A16A]/10 transition-all duration-200">
-                <span className="text-zinc-400 dark:text-zinc-500 flex-shrink-0">{icon}</span>
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-700/80 bg-zinc-900/60 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-3 focus-within:ring-[#C6A16A]/10 transition-all duration-200">
+                <span className="text-zinc-500 flex-shrink-0">{icon}</span>
                 <input
                     type={type} value={value} onChange={e => onChange(e.target.value)}
                     placeholder={placeholder} autoComplete={autoComplete}
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none min-w-0"
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 placeholder-zinc-600 focus:outline-none min-w-0"
                 />
                 {suffix}
             </div>
@@ -328,7 +328,7 @@ function Field({ label, type, value, onChange, placeholder, icon, autoComplete, 
 
 function ErrorBanner({ message }: { message: string }) {
     return (
-        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium">
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {message}
         </div>

@@ -137,26 +137,26 @@ export default function PrivacyPage() {
             <nav className="flex items-center gap-1.5 text-xs text-zinc-400 mb-8">
                 <Link href="/" className="hover:text-[#C6A16A] transition-colors">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-zinc-600 dark:text-zinc-300 font-semibold">Privacy Policy</span>
+                <span className="text-zinc-300 font-semibold">Privacy Policy</span>
             </nav>
 
             {/* Hero */}
-            <div className="flex items-start gap-5 mb-10 pb-10 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-start gap-5 mb-10 pb-10 border-b border-zinc-800">
                 <div className="p-4 rounded-2xl bg-[#C6A16A]/10 border border-[#C6A16A]/25 text-[#C6A16A] flex-shrink-0">
                     <Shield className="w-7 h-7" />
                 </div>
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Legal</p>
-                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-zinc-900 dark:text-white mb-2">
+                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-white mb-2">
                         Privacy Policy
                     </h1>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xl">
+                    <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
                         At Castra Households, your privacy matters. This policy explains what data we collect,
                         how we use it, and how we keep it safe.
                     </p>
                     <p className="text-xs text-zinc-400 mt-3">
-                        Effective date: <span className="font-semibold text-zinc-600 dark:text-zinc-300">26 August 2026</span>
-                        &nbsp;·&nbsp; Last updated: <span className="font-semibold text-zinc-600 dark:text-zinc-300">27 July 2026</span>
+                        Effective date: <span className="font-semibold text-zinc-300">26 August 2026</span>
+                        &nbsp;·&nbsp; Last updated: <span className="font-semibold text-zinc-300">27 July 2026</span>
                     </p>
                 </div>
             </div>
@@ -171,9 +171,9 @@ export default function PrivacyPage() {
                             <a
                                 key={s.id}
                                 href={`#${s.id}`}
-                                className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] py-1.5 transition-colors group"
+                                className="flex items-center gap-2 text-xs text-zinc-400 hover:text-[#C6A16A] py-1.5 transition-colors group"
                             >
-                                <span className="w-5 h-5 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-400 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] flex items-center justify-center text-[10px] font-bold flex-shrink-0 transition-colors">
+                                <span className="w-5 h-5 rounded-md bg-zinc-900 text-zinc-400 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] flex items-center justify-center text-[10px] font-bold flex-shrink-0 transition-colors">
                                     {i + 1}
                                 </span>
                                 {s.title}
@@ -186,17 +186,17 @@ export default function PrivacyPage() {
                 <article className="flex-1 space-y-12">
                     {SECTIONS.map((section) => (
                         <section key={section.id} id={section.id} className="scroll-mt-24">
-                            <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-5 flex items-center gap-3">
+                            <h2 className="text-lg font-bold font-glacial text-white mb-5 flex items-center gap-3">
                                 <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                                 {section.title}
                             </h2>
                             <div className="space-y-5">
                                 {section.content.map((block) => (
                                     <div key={block.subtitle}>
-                                        <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-1.5">
+                                        <h3 className="text-sm font-bold text-zinc-200 mb-1.5">
                                             {block.subtitle}
                                         </h3>
-                                        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                        <p className="text-sm text-zinc-400 leading-relaxed">
                                             {block.body}
                                         </p>
                                     </div>
@@ -206,29 +206,29 @@ export default function PrivacyPage() {
                     ))}
 
                     {/* Contact */}
-                    <section id="contact" className="scroll-mt-24 pt-6 border-t border-zinc-200 dark:border-zinc-800">
-                        <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-5 flex items-center gap-3">
+                    <section id="contact" className="scroll-mt-24 pt-6 border-t border-zinc-800">
+                        <h2 className="text-lg font-bold font-glacial text-white mb-5 flex items-center gap-3">
                             <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                             Contact Us About Privacy
                         </h2>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-5">
+                        <p className="text-sm text-zinc-400 leading-relaxed mb-5">
                             If you have any questions, concerns, or requests regarding this Privacy Policy or how we handle
                             your personal data, please reach out to us through any of the following channels:
                         </p>
-                        <div className="flex flex-col gap-3 p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                            <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+                        <div className="flex flex-col gap-3 p-5 rounded-xl bg-zinc-900 border border-zinc-800">
+                            <div className="flex items-center gap-3 text-sm text-zinc-400">
                                 <Mail className="w-4 h-4 text-[#C6A16A] flex-shrink-0" />
                                 <a href="mailto:info@castrahouseholds.co.ke" className="hover:text-[#C6A16A] transition-colors">
                                     info@castrahouseholds.co.ke
                                 </a>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            <div className="flex items-center gap-3 text-sm text-zinc-400">
                                 <Phone className="w-4 h-4 text-[#C6A16A] flex-shrink-0" />
                                 <a href="tel:+254704147774" className="hover:text-[#C6A16A] transition-colors">
                                     +254 704 147 774
                                 </a>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            <div className="flex items-center gap-3 text-sm text-zinc-400">
                                 <MapPin className="w-4 h-4 text-[#C6A16A] flex-shrink-0" />
                                 <span>Accra Towers B10, Nairobi, Kenya</span>
                             </div>

@@ -61,7 +61,7 @@ export function WishlistView() {
     if (!user) return (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-zinc-400">
             <Heart className="w-14 h-14 opacity-20" />
-            <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-300">Sign in to view your wishlist</p>
+            <p className="text-sm font-semibold text-zinc-300">Sign in to view your wishlist</p>
             <Link href="/account"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C6A16A] text-zinc-950 font-bold text-xs hover:bg-[#b59059] transition-colors">
                 Sign In / Create Account <ArrowRight className="w-3.5 h-3.5" />
@@ -73,10 +73,10 @@ export function WishlistView() {
         <div className="space-y-8">
 
             {/* Header */}
-            <div className="flex items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <div className="flex items-end justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">My Account</p>
-                    <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white flex items-center gap-3">
+                    <h1 className="text-3xl font-bold font-glacial text-white flex items-center gap-3">
                         <Heart className="w-7 h-7 text-[#C6A16A]" />
                         Wishlist
                     </h1>
@@ -85,7 +85,7 @@ export function WishlistView() {
                     </p>
                 </div>
                 <Link href="/"
-                    className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-[#C6A16A] transition-colors">
+                    className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-[#C6A16A] transition-colors">
                     Continue shopping <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
             </div>
@@ -111,16 +111,16 @@ export function WishlistView() {
 
                         return (
                             <div key={item.id}
-                                className={`flex items-center gap-5 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200 ${busy ? "opacity-60" : ""}`}>
+                                className={`flex items-center gap-5 p-5 bg-[#171717] rounded-2xl border border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200 ${busy ? "opacity-60" : ""}`}>
 
                                 {/* Product image */}
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
                                     {product.images[0] ? (
                                         <img src={product.images[0]} alt={product.name}
                                             className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                            <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+                                            <svg className="w-8 h-8 text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
                                                 <rect x="3" y="3" width="18" height="18" rx="2" />
                                                 <circle cx="8.5" cy="8.5" r="1.5" />
                                                 <path d="M21 15l-5-5L5 21" />
@@ -134,16 +134,16 @@ export function WishlistView() {
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A] mb-0.5">
                                         {product.category}
                                     </p>
-                                    <h3 className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-zinc-100 font-glacial leading-snug truncate">
+                                    <h3 className="text-sm sm:text-base font-semibold text-zinc-100 font-glacial leading-snug truncate">
                                         {product.name}
                                     </h3>
-                                    <p className="text-base font-bold text-zinc-900 dark:text-white mt-1">
+                                    <p className="text-base font-bold text-white mt-1">
                                         {formatKES(product.price)}
                                     </p>
                                     <span className={`inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                                         product.inStock
                                             ? "bg-emerald-500/10 text-emerald-500"
-                                            : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"
+                                            : "bg-zinc-200 bg-zinc-800 text-zinc-400"
                                     }`}>
                                         {product.inStock ? "In Stock" : "Out of Stock"}
                                     </span>
@@ -154,7 +154,7 @@ export function WishlistView() {
                                     <button type="button"
                                         disabled={!product.inStock || busy}
                                         onClick={() => handleAddToCart(item.productId, item.product.name)}
-                                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap">
+                                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap">
                                         {addingId === item.productId
                                             ? <span className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
                                             : <ShoppingBag className="w-3.5 h-3.5" />
@@ -169,15 +169,15 @@ export function WishlistView() {
                                         aria-disabled={!product.inStock}
                                         className={`flex items-center justify-center p-2.5 rounded-xl border transition-all duration-200 ${
                                             product.inStock
-                                                ? "border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
-                                                : "border-zinc-200 dark:border-zinc-800 opacity-30 pointer-events-none"
+                                                ? "border-zinc-700 hover:border-emerald-500/40 hover:bg-emerald-500/5 hover:scale-110"
+                                                : "border-zinc-800 opacity-30 pointer-events-none"
                                         }`}>
                                         <WhatsAppIcon className="w-5 h-5" />
                                     </a>
 
                                     <button type="button" disabled={busy}
                                         onClick={() => handleRemove(item.productId)}
-                                        className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all duration-200 disabled:cursor-not-allowed"
+                                        className="p-2.5 rounded-xl border border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 hover:border-red-500/40 hover:bg-red-50 hover:bg-red-500/5 transition-all duration-200 disabled:cursor-not-allowed"
                                         aria-label="Remove from wishlist">
                                         {removingId === item.productId
                                             ? <span className="w-4 h-4 border-2 border-zinc-400/30 border-t-zinc-400 rounded-full animate-spin block" />

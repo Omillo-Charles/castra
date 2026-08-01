@@ -82,10 +82,10 @@ export function Navbar() {
     };
 
     return (
-        <header className="w-full sticky top-0 z-50 bg-white dark:bg-[#0A0A0A] border-b border-zinc-200 dark:border-zinc-800 shadow-md transition-colors duration-200">
+        <header className="w-full sticky top-0 z-50 bg-[#0A0A0A] border-b border-zinc-800 shadow-md transition-colors duration-200">
 
             {/*  LAYER 1: TOP ANNOUNCEMENT & SOCIAL BAR (VISIBLE ON ALL SCREENS)  */}
-            <div className="w-full bg-zinc-950 text-zinc-300 dark:bg-black dark:text-zinc-400 border-b border-zinc-800/80 text-xs py-2">
+            <div className="w-full bg-black text-zinc-400 border-b border-zinc-800/80 text-xs py-2">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 
                     {/* EXTREME LEFT: Delivery Notice */}
@@ -154,7 +154,7 @@ export function Navbar() {
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-glacial group-hover:text-[#C6A16A] transition-colors leading-tight">
+                                <span className="text-lg sm:text-xl font-bold tracking-tight text-white font-glacial group-hover:text-[#C6A16A] transition-colors leading-tight">
                                     CASTRA
                                 </span>
                                 <span className="text-[9px] sm:text-[10px] tracking-widest uppercase text-[#C6A16A] font-semibold leading-tight">
@@ -167,17 +167,17 @@ export function Navbar() {
                     {/* CENTER: Desktop Search Bar with Category Filter (Hidden on Mobile) */}
                     <div className="flex-1 max-w-2xl mx-2 hidden md:block">
                         <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full">
-                            <div className="flex w-full rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 focus-within:border-[#C6A16A] dark:focus-within:border-[#C6A16A] transition-all duration-200 shadow-xs">
+                            <div className="flex w-full rounded-full border-2 border-zinc-800 bg-zinc-900/80 focus-within:border-[#C6A16A] transition-all duration-200 shadow-xs">
 
                                 {/* Category Dropdown Trigger */}
-                                <div className="relative flex-shrink-0 border-r border-zinc-200 dark:border-zinc-800">
+                                <div className="relative flex-shrink-0 border-r border-zinc-800">
                                     <button
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setIsCategoryOpen(!isCategoryOpen);
                                         }}
-                                        className="h-full px-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] flex items-center gap-2 transition-colors cursor-pointer bg-zinc-100/70 dark:bg-zinc-800/40 select-none rounded-l-full"
+                                        className="h-full px-4 text-xs font-semibold text-zinc-300 hover:text-[#C6A16A] flex items-center gap-2 transition-colors cursor-pointer bg-zinc-800/40 select-none rounded-l-full"
                                     >
                                         <span className="truncate max-w-[130px]">{selectedCategory}</span>
                                         <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${isCategoryOpen ? 'rotate-180 text-[#C6A16A]' : ''}`} />
@@ -190,7 +190,7 @@ export function Navbar() {
                                                 className="fixed inset-0 z-40"
                                                 onClick={() => setIsCategoryOpen(false)}
                                             />
-                                            <div className="absolute left-0 top-full mt-2 w-56 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 py-2 z-50 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 scrollbar-thin">
+                                            <div className="absolute left-0 top-full mt-2 w-56 bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-800 py-2 z-50 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150 scrollbar-thin">
                                                 {CATEGORIES.map((cat) => (
                                                     <button
                                                         key={cat}
@@ -201,7 +201,7 @@ export function Navbar() {
                                                         }}
                                                         className={`w-full text-left px-4 py-2.5 text-xs font-medium transition-colors cursor-pointer flex items-center justify-between ${selectedCategory === cat
                                                             ? "bg-[#C6A16A]/10 text-[#C6A16A] font-bold"
-                                                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+                                                            : "text-zinc-300 hover:bg-zinc-800/60"
                                                             }`}
                                                     >
                                                         <span>{cat}</span>
@@ -221,7 +221,7 @@ export function Navbar() {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search for luxury items, products, brands..."
-                                    className="w-full px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 bg-transparent placeholder-zinc-400 focus:outline-none"
+                                    className="w-full px-4 py-2.5 text-sm text-zinc-100 bg-transparent placeholder-zinc-400 focus:outline-none"
                                 />
 
                                 {/* Search Button */}
@@ -242,17 +242,17 @@ export function Navbar() {
                         {/* Profile Icon / User Account */}
                         <Link
                             href={user ? (user.role === "ADMIN" ? "/account/dashboard/admin" : "/account/dashboard") : "/account"}
-                            className="flex items-center gap-2 p-2 rounded-full text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all duration-200 group"
+                            className="flex items-center gap-2 p-2 rounded-full text-zinc-200 hover:text-[#C6A16A] hover:bg-zinc-800/60 transition-all duration-200 group"
                             title="Account"
                         >
-                            <div className="p-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] transition-colors">
+                            <div className="p-1.5 rounded-full bg-zinc-800 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] transition-colors">
                                 <User className="w-5 h-5" />
                             </div>
                             <div className="hidden xl:flex flex-col text-left">
                                 <span className="text-[10px] text-zinc-400 leading-tight">
                                     {user ? "My Account" : "Welcome"}
                                 </span>
-                                <span className="text-xs font-semibold leading-tight text-zinc-800 dark:text-zinc-100 group-hover:text-[#C6A16A]">
+                                <span className="text-xs font-semibold leading-tight text-zinc-100 group-hover:text-[#C6A16A]">
                                     {user ? `${user.firstName} ${user.lastName}` : "Sign In / Account"}
                                 </span>
                             </div>
@@ -261,10 +261,10 @@ export function Navbar() {
                         {/* Wishlist */}
                         <Link
                             href="/wishlist"
-                            className="relative p-2 rounded-full text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all duration-200 group flex items-center gap-2"
+                            className="relative p-2 rounded-full text-zinc-200 hover:text-[#C6A16A] hover:bg-zinc-800/60 transition-all duration-200 group flex items-center gap-2"
                             title="Wishlist"
                         >
-                            <div className="relative p-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] transition-colors">
+                            <div className="relative p-1.5 rounded-full bg-zinc-800 group-hover:bg-[#C6A16A]/15 group-hover:text-[#C6A16A] transition-colors">
                                 <Heart className="w-5 h-5" />
                                 {wishlistCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-[#C6A16A] text-zinc-950 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
@@ -272,7 +272,7 @@ export function Navbar() {
                                     </span>
                                 )}
                             </div>
-                            <span className="hidden xl:inline text-xs font-semibold text-zinc-800 dark:text-zinc-100 group-hover:text-[#C6A16A]">
+                            <span className="hidden xl:inline text-xs font-semibold text-zinc-100 group-hover:text-[#C6A16A]">
                                 Wishlist
                             </span>
                         </Link>
@@ -280,7 +280,7 @@ export function Navbar() {
                         {/* Cart Section */}
                         <Link
                             href="/cart"
-                            className="flex items-center gap-3 pl-2 pr-3.5 py-1.5 rounded-full bg-zinc-900 text-white dark:bg-zinc-800 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 transition-all duration-200 shadow-sm group"
+                            className="flex items-center gap-3 pl-2 pr-3.5 py-1.5 rounded-full bg-zinc-800 text-white hover:bg-[#C6A16A] hover:text-zinc-950 transition-all duration-200 shadow-sm group"
                             title="Cart"
                         >
                             <div className="relative p-1.5 rounded-full bg-white/10 group-hover:bg-zinc-950/10 transition-colors">
@@ -308,7 +308,7 @@ export function Navbar() {
                         <button
                             type="button"
                             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-                            className="p-2 text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            className="p-2 text-zinc-200 hover:text-[#C6A16A] rounded-full hover:bg-zinc-800 transition-colors"
                             title="Search"
                         >
                             <Search className="w-5 h-5" />
@@ -317,7 +317,7 @@ export function Navbar() {
                         {/* Mobile Profile Icon */}
                         <Link
                             href={user ? (user.role === "ADMIN" ? "/account/dashboard/admin" : "/account/dashboard") : "/account"}
-                            className="p-2 text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            className="p-2 text-zinc-200 hover:text-[#C6A16A] rounded-full hover:bg-zinc-800 transition-colors"
                             title="Account"
                         >
                             <User className="w-5 h-5" />
@@ -326,7 +326,7 @@ export function Navbar() {
                         {/* Mobile Wishlist Icon (Icon only + badge) */}
                         <Link
                             href="/wishlist"
-                            className="relative p-2 text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            className="relative p-2 text-zinc-200 hover:text-[#C6A16A] rounded-full hover:bg-zinc-800 transition-colors"
                             title="Wishlist"
                         >
                             <Heart className="w-5 h-5" />
@@ -340,7 +340,7 @@ export function Navbar() {
                         {/* Mobile Cart Icon (Icon only + badge, NO text/price) */}
                         <Link
                             href="/cart"
-                            className="relative p-2 text-zinc-700 dark:text-zinc-200 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            className="relative p-2 text-zinc-200 hover:text-[#C6A16A] rounded-full hover:bg-zinc-800 transition-colors"
                             title="Cart"
                         >
                             <ShoppingBag className="w-5 h-5" />
@@ -355,7 +355,7 @@ export function Navbar() {
                         <button
                             type="button"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="p-2 text-zinc-800 dark:text-zinc-100 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors ml-0.5"
+                            className="p-2 text-zinc-100 hover:text-[#C6A16A] rounded-lg hover:bg-zinc-800 transition-colors ml-0.5"
                             title="Toggle Menu"
                         >
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -368,16 +368,16 @@ export function Navbar() {
 
             {/*  MOBILE EXPANDABLE SEARCH BAR  */}
             {isMobileSearchOpen && (
-                <div className="md:hidden px-4 py-3 bg-zinc-100 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-2 duration-150">
+                <div className="md:hidden px-4 py-3 bg-zinc-900 border-t border-zinc-800 animate-in slide-in-from-top-2 duration-150">
                     <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                        <div className="flex-1 flex items-center bg-white dark:bg-zinc-950 rounded-full border border-zinc-300 dark:border-zinc-700 px-3.5 py-2 shadow-xs">
+                        <div className="flex-1 flex items-center bg-zinc-950 rounded-full border border-zinc-700 px-3.5 py-2 shadow-xs">
                             <Search className="w-4 h-4 text-zinc-400 mr-2 flex-shrink-0" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search products, brands..."
-                                className="w-full text-sm bg-transparent focus:outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-400"
+                                className="w-full text-sm bg-transparent focus:outline-none text-zinc-100 placeholder-zinc-400"
                             />
                         </div>
                         <button
@@ -391,7 +391,7 @@ export function Navbar() {
             )}
 
             {/*  LAYER 3: CATEGORY NAVIGATION BAR (HIDDEN ON MOBILE, VISIBLE ON DESKTOP ONLY)  */}
-            <div className="hidden md:block w-full bg-zinc-50/90 dark:bg-zinc-950/90 border-t border-zinc-200/80 dark:border-zinc-800/80">
+            <div className="hidden md:block w-full bg-zinc-950/90 border-t border-zinc-800/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-4 py-2">
 
@@ -407,14 +407,14 @@ export function Navbar() {
                                 }}
                                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-150 flex-shrink-0 cursor-pointer shadow-2xs select-none ${activeNavCategory === "All Categories" || activeNavCategory === null
                                     ? "bg-[#C6A16A] text-zinc-950"
-                                    : "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 hover:bg-[#C6A16A] hover:text-zinc-950 dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950"
+                                    : "bg-zinc-900 text-white hover:bg-[#C6A16A] hover:text-zinc-950"
                                     }`}
                             >
                                 <LayoutGrid className="w-3.5 h-3.5" />
                                 <span>All Categories</span>
                             </button>
 
-                            <div className="h-4 w-px bg-zinc-300 dark:bg-zinc-800 mx-1 flex-shrink-0" />
+                            <div className="h-4 w-px bg-zinc-800 mx-1 flex-shrink-0" />
 
                             {/* List of outlined categories starting from left */}
                             {PRODUCT_CATEGORIES.map((cat) => {
@@ -430,7 +430,7 @@ export function Navbar() {
                                         }}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 flex-shrink-0 flex items-center gap-1.5 select-none cursor-pointer ${isActive
                                             ? "bg-[#C6A16A]/15 text-[#C6A16A] font-bold border border-[#C6A16A]/30"
-                                            : "text-zinc-700 dark:text-zinc-300 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
+                                            : "text-zinc-300 hover:text-[#C6A16A] hover:bg-zinc-800/60"
                                             }`}
                                     >
                                         {cat}
@@ -440,7 +440,7 @@ export function Navbar() {
                         </nav>
 
                         {/* Right Action Badge: Castra Kicks */}
-                        <div className="flex items-center gap-2 flex-shrink-0 pl-3 border-l border-zinc-200 dark:border-zinc-800">
+                        <div className="flex items-center gap-2 flex-shrink-0 pl-3 border-l border-zinc-800">
                             <Link
                                 href="/kicks"
                                 className="flex items-center gap-1.5 text-xs font-bold text-[#C6A16A] hover:text-[#b59059] transition-colors py-1.5 px-3 rounded-full bg-[#C6A16A]/10 hover:bg-[#C6A16A]/20 whitespace-nowrap"
@@ -457,10 +457,10 @@ export function Navbar() {
             {/*  MOBILE HAMBURGER MENU DRAWER (OPENS ALL CATEGORIES)  */}
             {isMobileMenuOpen && (
                 <div className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
-                    <div className="w-4/5 max-w-sm h-full bg-white dark:bg-[#0A0A0A] shadow-2xl flex flex-col justify-between border-l border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-right duration-250">
+                    <div className="w-4/5 max-w-sm h-full bg-[#0A0A0A] shadow-2xl flex flex-col justify-between border-l border-zinc-800 animate-in slide-in-from-right duration-250">
 
                         {/* Drawer Header */}
-                        <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/40">
+                        <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/40">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-lg bg-zinc-950 p-1 border border-[#C6A16A]/30 flex items-center justify-center">
                                     <Image
@@ -472,7 +472,7 @@ export function Navbar() {
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-bold text-base tracking-tight text-zinc-900 dark:text-white font-glacial leading-tight">
+                                    <span className="font-bold text-base tracking-tight text-white font-glacial leading-tight">
                                         All Categories
                                     </span>
                                     <span className="text-[10px] text-[#C6A16A] font-semibold uppercase tracking-wider">
@@ -483,7 +483,7 @@ export function Navbar() {
                             <button
                                 type="button"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-2 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                                className="p-2 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
                                 title="Close Menu"
                             >
                                 <X className="w-5 h-5" />
@@ -507,7 +507,7 @@ export function Navbar() {
                                             setIsMobileMenuOpen(false);
                                             scrollToProducts(slug);
                                         }}
-                                        className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-[#C6A16A] dark:hover:text-[#C6A16A] transition-colors group cursor-pointer"
+                                        className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-zinc-200 hover:bg-zinc-900 hover:text-[#C6A16A] transition-colors group cursor-pointer"
                                     >
                                         <span>{cat}</span>
                                         <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-[#C6A16A] transition-colors" />
@@ -517,7 +517,7 @@ export function Navbar() {
                         </div>
 
                         {/* Drawer Footer - Actions */}
-                        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 space-y-2">
+                        <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 space-y-2">
                             <Link
                                 href="/kicks"
                                 onClick={() => setIsMobileMenuOpen(false)}

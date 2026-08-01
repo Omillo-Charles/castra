@@ -48,7 +48,7 @@ export function Footer() {
     setEmail("");
   };
   return (
-    <footer className="w-full bg-zinc-950 text-zinc-300 dark:bg-black dark:text-zinc-400 border-t border-zinc-800/80 transition-colors duration-200 mt-auto">
+    <footer className="w-full bg-black text-zinc-400 border-t border-zinc-800/80 transition-colors duration-200 mt-auto">
 
       {/* TRUST BADGES BANNER */}
       <div className="w-full border-b border-zinc-800/60 bg-zinc-900/40">

@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function AccountPage() {
     return (
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-10 bg-zinc-100 dark:bg-[#0A0A0A]">
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-10 bg-[#0A0A0A]">
             <AccountForm />
         </div>
     );

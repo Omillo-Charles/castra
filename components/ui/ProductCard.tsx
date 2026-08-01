@@ -68,15 +68,15 @@ export function ProductCard({ product }: { product: Product }) {
     const imageUrl = product.images?.[0];
 
     return (
-        <article className="group relative flex flex-col bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C6A16A]/40 dark:hover:border-[#C6A16A]/30 transition-all duration-300">
+        <article className="group relative flex flex-col bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C6A16A]/40 transition-all duration-300">
 
             {/* Image area */}
-            <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+            <div className="relative w-full aspect-square bg-zinc-900 overflow-hidden">
                 {imageUrl ? (
                     <img src={imageUrl} alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-300 dark:text-zinc-700">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-700">
                         <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
                             <rect x="3" y="3" width="18" height="18" rx="2" />
                             <circle cx="8.5" cy="8.5" r="1.5" />
@@ -105,13 +105,13 @@ export function ProductCard({ product }: { product: Product }) {
                     type="button"
                     onClick={handleWishlist}
                     disabled={togglingWish}
-                    className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-700 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[#C6A16A]/60 hover:scale-110 disabled:cursor-not-allowed"
+                    className="absolute top-3 right-3 p-2 rounded-full bg-white/90 bg-zinc-900/90 border border-zinc-700 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:border-[#C6A16A]/60 hover:scale-110 disabled:cursor-not-allowed"
                     aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 >
                     {togglingWish ? (
                         <span className="w-4 h-4 border-2 border-zinc-300/30 border-t-[#C6A16A] rounded-full animate-spin block" />
                     ) : (
-                        <Heart className={`w-4 h-4 transition-colors ${wishlisted ? "fill-[#C6A16A] text-[#C6A16A]" : "text-zinc-500 dark:text-zinc-400"
+                        <Heart className={`w-4 h-4 transition-colors ${wishlisted ? "fill-[#C6A16A] text-[#C6A16A]" : "text-zinc-400"
                             }`} />
                     )}
                 </button>
@@ -123,14 +123,14 @@ export function ProductCard({ product }: { product: Product }) {
                     {product.category}
                 </span>
 
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug line-clamp-2 font-glacial">
+                <h3 className="text-sm font-semibold text-zinc-100 leading-snug line-clamp-2 font-glacial">
                     {product.name}
                 </h3>
 
                 <div className="flex-1" />
 
                 <div className="flex flex-col mt-1">
-                    <span className="text-base font-bold text-zinc-900 dark:text-white">
+                    <span className="text-base font-bold text-white">
                         {formatKES(product.price)}
                     </span>
                 </div>
@@ -141,7 +141,7 @@ export function ProductCard({ product }: { product: Product }) {
                         type="button"
                         disabled={!product.inStock || addingToCart}
                         onClick={handleAddToCart}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 text-white text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
                         aria-label="Add to cart"
                     >
                         {addingToCart ? (
@@ -161,12 +161,12 @@ export function ProductCard({ product }: { product: Product }) {
                         className={`flex items-center justify-center gap-1.5 rounded-xl border transition-all duration-200 shadow-sm
                           w-full p-2 text-xs font-bold sm:w-auto sm:flex-shrink-0 sm:p-2 sm:text-transparent
                           ${product.inStock
-                                ? "border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 sm:hover:scale-110"
-                                : "border-zinc-200 dark:border-zinc-800 opacity-30 cursor-not-allowed pointer-events-none"
+                                ? "border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 sm:hover:scale-110"
+                                : "border-zinc-800 opacity-30 cursor-not-allowed pointer-events-none"
                             }`}
                     >
                         <WhatsAppIcon className="w-5 h-5 flex-shrink-0" />
-                        <span className="sm:hidden text-emerald-600 dark:text-emerald-400">WhatsApp</span>
+                        <span className="sm:hidden text-emerald-400">WhatsApp</span>
                     </a>
                 </div>
             </div>

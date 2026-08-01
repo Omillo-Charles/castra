@@ -71,7 +71,7 @@ export default function DashboardPage() {
             {/* Page header */}
             <div className="mb-8">
                 <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">My Account</p>
-                <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white">
+                <h1 className="text-3xl font-bold font-glacial text-white">
                     Welcome back, {user.firstName}
                 </h1>
             </div>
@@ -80,17 +80,17 @@ export default function DashboardPage() {
 
                 {/* ── Sidebar ── */}
                 <aside className="w-full lg:w-56 flex-shrink-0">
-                    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                    <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
 
                         {/* Avatar */}
-                        <div className="px-5 py-5 flex items-center gap-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+                        <div className="px-5 py-5 flex items-center gap-3 border-b border-zinc-800 bg-zinc-900/50">
                             <div className="w-10 h-10 rounded-full bg-[#C6A16A]/15 border border-[#C6A16A]/30 flex items-center justify-center flex-shrink-0">
                                 <span className="text-sm font-bold text-[#C6A16A]">
                                     {user.firstName[0]}{user.lastName[0]}
                                 </span>
                             </div>
                             <div className="min-w-0">
-                                <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
+                                <p className="text-sm font-bold text-white truncate">{user.firstName} {user.lastName}</p>
                                 <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>
                             </div>
                         </div>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                                     className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold transition-all cursor-pointer text-left ${
                                         section === item.key
                                             ? "text-[#C6A16A] bg-[#C6A16A]/8"
-                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                                            : "text-zinc-400 hover:text-white hover:bg-zinc-900"
                                     }`}
                                 >
                                     <span className={section === item.key ? "text-[#C6A16A]" : "text-zinc-400"}>{item.icon}</span>
@@ -116,11 +116,11 @@ export default function DashboardPage() {
                         </nav>
 
                         {/* Sign out */}
-                        <div className="px-3 pb-3 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                        <div className="px-3 pb-3 pt-1 border-t border-zinc-800">
                             <button
                                 type="button"
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/8 transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-500/8 transition-colors cursor-pointer"
                             >
                                 <LogOut className="w-4 h-4" /> Sign Out
                             </button>
@@ -173,10 +173,10 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                     { label: "Saved Addresses", value: addresses === null ? "—" : addresses,                icon: <MapPin className="w-5 h-5" />,  onClick: () => setSection("addresses") },
                 ].map(({ label, value, icon, onClick }) => (
                     <button key={label} type="button" onClick={onClick}
-                        className="flex flex-col gap-3 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-[#C6A16A]/40 transition-all text-left cursor-pointer group">
+                        className="flex flex-col gap-3 p-5 bg-[#171717] rounded-2xl border border-zinc-800 hover:border-[#C6A16A]/40 transition-all text-left cursor-pointer group">
                         <div className="p-2 rounded-xl bg-[#C6A16A]/10 text-[#C6A16A] w-fit">{icon}</div>
                         <div>
-                            <p className="text-2xl font-bold text-zinc-900 dark:text-white">{value}</p>
+                            <p className="text-2xl font-bold text-white">{value}</p>
                             <p className="text-xs text-zinc-400 mt-0.5">{label}</p>
                         </div>
                     </button>
@@ -184,8 +184,8 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
             </div>
 
             {/* Recent order */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Most Recent Order</h2>
                     <button type="button" onClick={() => setSection("orders")} className="text-xs text-[#C6A16A] font-semibold hover:underline">View all</button>
                 </div>
@@ -196,12 +196,12 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                 ) : recentOrder ? (
                     <div className="px-5 py-4 flex items-center gap-4 flex-wrap">
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{recentOrder.ref}</p>
+                            <p className="text-xs font-mono font-semibold text-zinc-300">{recentOrder.ref}</p>
                             <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(recentOrder.createdAt)} · {recentOrder.items.length} item{recentOrder.items.length !== 1 ? "s" : ""}</p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
                             {recentStatus && <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${recentStatus.color}`}>{recentStatus.label}</span>}
-                            <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(recentOrder.total)}</span>
+                            <span className="text-sm font-bold text-white">{formatKES(recentOrder.total)}</span>
                         </div>
                         <Link href="/track-order" className="flex items-center gap-1.5 text-xs font-semibold text-[#C6A16A] hover:underline flex-shrink-0">
                             <Truck className="w-3.5 h-3.5" /> Track
@@ -216,11 +216,11 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
             </div>
 
             {/* Quick links */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="px-5 py-4 border-b border-zinc-800">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Quick Links</h2>
                 </div>
-                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <div className="divide-y divide-zinc-800">
                     {[
                         { label: "Edit Profile",     sub: "Update your name, email and phone", onClick: () => setSection("profile") },
                         { label: "Manage Addresses", sub: "Add or edit delivery addresses",     onClick: () => setSection("addresses") },
@@ -228,20 +228,20 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                         { label: "Track an Order",   sub: "Check your delivery status",         href: "/track-order" },
                     ].map(({ label, sub, onClick, href }) => (
                         href ? (
-                            <Link key={label} href={href} className="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
+                            <Link key={label} href={href} className="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-900 transition-colors group">
                                 <div>
-                                    <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-[#C6A16A] transition-colors">{label}</p>
+                                    <p className="text-sm font-semibold text-zinc-200 group-hover:text-[#C6A16A] transition-colors">{label}</p>
                                     <p className="text-xs text-zinc-400 mt-0.5">{sub}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-[#C6A16A] transition-colors" />
+                                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#C6A16A] transition-colors" />
                             </Link>
                         ) : (
-                            <button key={label} type="button" onClick={onClick} className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group cursor-pointer text-left">
+                            <button key={label} type="button" onClick={onClick} className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-zinc-900 transition-colors group cursor-pointer text-left">
                                 <div>
-                                    <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-[#C6A16A] transition-colors">{label}</p>
+                                    <p className="text-sm font-semibold text-zinc-200 group-hover:text-[#C6A16A] transition-colors">{label}</p>
                                     <p className="text-xs text-zinc-400 mt-0.5">{sub}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-[#C6A16A] transition-colors" />
+                                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#C6A16A] transition-colors" />
                             </button>
                         )
                     ))}
@@ -272,7 +272,7 @@ function Orders() {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">My Orders</h2>
+            <h2 className="text-lg font-bold font-glacial text-white">My Orders</h2>
             {error && <p className="text-sm text-red-500 font-semibold">{error}</p>}
             {orders.map((order) => {
                 const uiKey = normaliseStatus(order.status);
@@ -280,19 +280,19 @@ function Orders() {
                 const isDelivered = uiKey === "delivered";
                 const hasItemImage = order.items.some((item) => item.imageUrl);
                 return (
-                    <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
+                    <div key={order.id} className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
                         {!hasItemImage && (
-                            <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
+                            <div className="p-2.5 rounded-xl bg-zinc-900 flex-shrink-0">
                                 <Package className="w-5 h-5 text-zinc-400" />
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
+                            <p className="text-xs font-mono font-semibold text-zinc-300">{order.ref}</p>
                             <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(order.createdAt)} · {order.items.length} item{order.items.length !== 1 ? "s" : ""}</p>
                             <div className="mt-3 space-y-2">
                                 {order.items.map((item) => (
                                     <div key={item.id} className="flex items-center gap-2 min-w-0">
-                                        <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
                                             {item.imageUrl ? (
                                                 <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                                             ) : (
@@ -300,7 +300,7 @@ function Orders() {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{item.name}</p>
+                                            <p className="text-xs font-semibold text-zinc-200 truncate">{item.name}</p>
                                             <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
                                         </div>
                                     </div>
@@ -309,7 +309,7 @@ function Orders() {
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
                             <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>{status.label}</span>
-                            <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(order.total)}</span>
+                            <span className="text-sm font-bold text-white">{formatKES(order.total)}</span>
                             {!isDelivered && (
                                 <Link href="/track-order" className="flex items-center gap-1.5 text-xs font-semibold text-[#C6A16A] hover:underline">
                                     <Truck className="w-3.5 h-3.5" /> Track
@@ -454,7 +454,7 @@ function Addresses() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Saved Addresses</h2>
+                <h2 className="text-lg font-bold font-glacial text-white">Saved Addresses</h2>
                 <button type="button" onClick={openAdd}
                     className="flex items-center gap-1.5 text-xs font-bold text-[#C6A16A] hover:underline">
                     <Plus className="w-3.5 h-3.5" /> Add New
@@ -465,8 +465,8 @@ function Addresses() {
 
             {/* Add / Edit form */}
             {showForm && (
-                <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
-                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
+                <div className="bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
+                    <h3 className="text-sm font-bold text-white">
                         {editId ? "Edit Address" : "New Address"}
                     </h3>
                     <form onSubmit={handleSubmit} className="space-y-3">
@@ -479,7 +479,7 @@ function Addresses() {
                         <label className="flex items-center gap-2.5 cursor-pointer">
                             <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)}
                                 className="w-4 h-4 accent-[#C6A16A]" />
-                            <span className="text-sm text-zinc-700 dark:text-zinc-300">Set as default address</span>
+                            <span className="text-sm text-zinc-300">Set as default address</span>
                         </label>
                         {formError && <p className="text-xs text-red-500 font-semibold">{formError}</p>}
                         <div className="flex items-center gap-3 pt-1">
@@ -490,7 +490,7 @@ function Addresses() {
                                     : editId ? "Save Changes" : "Add Address"}
                             </button>
                             <button type="button" onClick={resetForm}
-                                className="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                className="px-4 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-white transition-all">
                                 Cancel
                             </button>
                         </div>
@@ -500,18 +500,18 @@ function Addresses() {
 
             {/* Address list */}
             {addresses.map((addr) => (
-                <div key={addr.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-start gap-4 hover:border-[#C6A16A]/30 transition-all">
+                <div key={addr.id} className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 flex items-start gap-4 hover:border-[#C6A16A]/30 transition-all">
                     <div className="p-2.5 rounded-xl bg-[#C6A16A]/10 text-[#C6A16A] flex-shrink-0 mt-0.5">
                         <MapPin className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <p className="text-sm font-bold text-zinc-900 dark:text-white">{addr.label}</p>
+                            <p className="text-sm font-bold text-white">{addr.label}</p>
                             {addr.isDefault && (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C6A16A]/15 text-[#C6A16A] border border-[#C6A16A]/25">Default</span>
                             )}
                         </div>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400">{addr.street}</p>
+                        <p className="text-sm text-zinc-400">{addr.street}</p>
                         <p className="text-xs text-zinc-400 mt-0.5">{addr.city} · {addr.county}</p>
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -526,7 +526,7 @@ function Addresses() {
                             <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button type="button" onClick={() => handleDelete(addr.id)}
-                            className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
+                            className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-500/10">
                             <X className="w-3.5 h-3.5" />
                         </button>
                     </div>
@@ -552,11 +552,11 @@ function AddrField({ label, value, onChange, placeholder }: {
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">{label}</label>
+            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">{label}</label>
             <input
                 type="text" value={value} onChange={e => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all"
             />
         </div>
     );
@@ -567,7 +567,7 @@ function Wishlist() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Wishlist</h2>
+                <h2 className="text-lg font-bold font-glacial text-white">Wishlist</h2>
                 <Link href="/wishlist" className="text-xs font-bold text-[#C6A16A] hover:underline">View full wishlist</Link>
             </div>
             <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
@@ -647,10 +647,10 @@ function Profile() {
 
     return (
         <div className="space-y-5">
-            <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Profile & Settings</h2>
+            <h2 className="text-lg font-bold font-glacial text-white">Profile & Settings</h2>
 
             {/* Personal info */}
-            <form onSubmit={handleSaveProfile} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
+            <form onSubmit={handleSaveProfile} className="bg-[#171717] rounded-2xl border border-zinc-800 p-6 space-y-5">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Personal Information</h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                     <ProfileField label="First name" value={firstName} onChange={setFirstName} icon={<User className="w-4 h-4" />} />
@@ -658,10 +658,10 @@ function Profile() {
                 </div>
                 {/* Email is read-only — changes require re-verification */}
                 <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">Email address</label>
-                    <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/60">
+                    <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Email address</label>
+                    <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/60">
                         <Mail className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                        <span className="text-sm text-zinc-500 dark:text-zinc-400">{user?.email}</span>
+                        <span className="text-sm text-zinc-400">{user?.email}</span>
                         <span className="ml-auto text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Read only</span>
                     </div>
                 </div>
@@ -682,10 +682,10 @@ function Profile() {
             </form>
 
             {/* Change password */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
                 <div className="p-5 flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Password</p>
+                        <p className="text-sm font-semibold text-zinc-200">Password</p>
                         <p className="text-xs text-zinc-400 mt-0.5">Change your account password</p>
                     </div>
                     <button type="button" onClick={() => { setShowPwd(v => !v); setPwdMsg(null); }}
@@ -695,7 +695,7 @@ function Profile() {
                 </div>
 
                 {showPwd && (
-                    <form onSubmit={handleChangePassword} className="px-5 pb-5 space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                    <form onSubmit={handleChangePassword} className="px-5 pb-5 space-y-4 border-t border-zinc-800 pt-4">
                         <ProfileField label="Current password" type="password" value={currentPwd} onChange={setCurrentPwd} />
                         <ProfileField label="New password (min. 8 characters)" type="password" value={newPwd} onChange={setNewPwd} />
                         {pwdMsg && (
@@ -714,10 +714,10 @@ function Profile() {
             </div>
 
             {/* Delete account */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-red-200 dark:border-red-500/20 overflow-hidden">
+            <div className="bg-[#171717] rounded-2xl border border-red-500/20 overflow-hidden">
                 <div className="p-5 flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Delete Account</p>
+                        <p className="text-sm font-semibold text-zinc-200">Delete Account</p>
                         <p className="text-xs text-zinc-400 mt-0.5">Permanently delete your account and all data</p>
                     </div>
                     <button type="button" onClick={() => setConfirmDelete(v => !v)}
@@ -727,8 +727,8 @@ function Profile() {
                 </div>
 
                 {confirmDelete && (
-                    <div className="px-5 pb-5 border-t border-red-100 dark:border-red-500/10 pt-4 space-y-3">
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <div className="px-5 pb-5 border-t border-red-500/10 pt-4 space-y-3">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
                             This action is <span className="font-bold text-red-500">irreversible</span>. All your orders, addresses, and wishlist items will be permanently deleted.
                         </p>
                         {deleteErr && <p className="text-xs text-red-500 font-semibold">{deleteErr}</p>}
@@ -750,11 +750,11 @@ function ProfileField({ label, type = "text", value, onChange, icon }: {
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">{label}</label>
-            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10 transition-all">
+            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">{label}</label>
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10 transition-all">
                 {icon && <span className="text-zinc-400 flex-shrink-0">{icon}</span>}
                 <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none min-w-0" />
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none min-w-0" />
             </div>
         </div>
     );

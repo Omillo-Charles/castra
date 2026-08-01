@@ -16,20 +16,20 @@ export default function ShippingPolicyPage() {
             <nav className="flex items-center gap-1.5 text-xs text-zinc-400 mb-8">
                 <Link href="/" className="hover:text-[#C6A16A] transition-colors">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-zinc-600 dark:text-zinc-300 font-semibold">Shipping & Delivery Policy</span>
+                <span className="text-zinc-300 font-semibold">Shipping & Delivery Policy</span>
             </nav>
 
             {/* Hero */}
-            <div className="flex items-start gap-5 mb-12 pb-10 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-start gap-5 mb-12 pb-10 border-b border-zinc-800">
                 <div className="p-4 rounded-2xl bg-[#C6A16A]/10 border border-[#C6A16A]/25 text-[#C6A16A] flex-shrink-0">
                     <Truck className="w-7 h-7" />
                 </div>
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Delivery</p>
-                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-zinc-900 dark:text-white mb-2">
+                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-white mb-2">
                         Shipping & Delivery Policy
                     </h1>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xl">
+                    <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
                         We deliver countrywide across Kenya. Here is everything you need to know about how we get your order to you.
                     </p>
                 </div>
@@ -39,7 +39,7 @@ export default function ShippingPolicyPage() {
 
                 {/* How it works */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-5 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-white mb-5 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         How Delivery Works
                     </h2>
@@ -49,13 +49,13 @@ export default function ShippingPolicyPage() {
                             { icon: <Clock className="w-5 h-5" />, step: "2. We Process", desc: "We confirm your order, prepare your items, and hand them over to our delivery partner - typically within 24 hours." },
                             { icon: <Truck className="w-5 h-5" />, step: "3. We Deliver", desc: "Your order is dispatched and delivered to your provided address. You will receive a notification when it is on its way." },
                         ].map(({ icon, step, desc }) => (
-                            <div key={step} className="flex flex-col gap-3 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
+                            <div key={step} className="flex flex-col gap-3 p-5 rounded-2xl bg-[#171717] border border-zinc-800">
                                 <div className="w-10 h-10 rounded-xl bg-[#C6A16A]/10 border border-[#C6A16A]/25 text-[#C6A16A] flex items-center justify-center flex-shrink-0">
                                     {icon}
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-zinc-900 dark:text-white mb-1">{step}</p>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">{desc}</p>
+                                    <p className="text-xs font-bold text-white mb-1">{step}</p>
+                                    <p className="text-xs text-zinc-400 leading-relaxed">{desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -64,45 +64,45 @@ export default function ShippingPolicyPage() {
 
                 {/* Nairobi delivery */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-4 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-white mb-4 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         Nairobi Delivery
                     </h2>
-                    <div className="space-y-4 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <div className="space-y-4 p-5 rounded-2xl bg-[#171717] border border-zinc-800">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
                             Since distances within Nairobi are relatively short, delivery fees are primarily driven by the
-                            <span className="font-semibold text-zinc-800 dark:text-zinc-200"> size and weight of your item</span> rather than the specific location.
+                            <span className="font-semibold text-zinc-200"> size and weight of your item</span> rather than the specific location.
                             A small, lightweight item - like a decor piece or set of mugs - will attract a low fee, while a bulky item
                             like a vacuum cleaner, large bedding set, or piece of furniture will cost more due to handling and transport requirements.
                         </p>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
                             That said, areas further from the city centre - such as Ruiru, Athi River, or Kitengela - will attract a slightly
                             higher fee compared to central zones like Westlands or the CBD, even for similar item sizes.
                         </p>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            The exact fee will always be communicated to you <span className="font-semibold text-zinc-800 dark:text-zinc-200">before your order is confirmed</span> - you will never be surprised at checkout.
+                        <p className="text-sm text-zinc-400 leading-relaxed">
+                            The exact fee will always be communicated to you <span className="font-semibold text-zinc-200">before your order is confirmed</span> - you will never be surprised at checkout.
                         </p>
                     </div>
                 </section>
 
                 {/* Upcountry delivery */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-4 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-white mb-4 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         Upcountry Delivery
                     </h2>
-                    <div className="space-y-4 p-5 rounded-2xl bg-white dark:bg-[#171717] border border-zinc-200 dark:border-zinc-800">
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <div className="space-y-4 p-5 rounded-2xl bg-[#171717] border border-zinc-800">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
                             For deliveries outside Nairobi, fees are calculated based on
-                            <span className="font-semibold text-zinc-800 dark:text-zinc-200"> both the distance to your county and the size or weight of your items</span>.
+                            <span className="font-semibold text-zinc-200"> both the distance to your county and the size or weight of your items</span>.
                             A small item going to Nakuru will cost significantly less than a large appliance or piece of furniture going to Mombasa or Kisumu.
                         </p>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
                             Closer counties like Nakuru and Nyeri attract lower fees, while destinations further away - such as Mombasa, Kisumu, or Eldoret -
                             will cost more, especially for heavier or bulkier items. Very remote areas or counties off major transit routes may require a custom quote.
                         </p>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            In all cases, we will give you a <span className="font-semibold text-zinc-800 dark:text-zinc-200">clear delivery quote before dispatch</span>.
+                        <p className="text-sm text-zinc-400 leading-relaxed">
+                            In all cases, we will give you a <span className="font-semibold text-zinc-200">clear delivery quote before dispatch</span>.
                             If you are unsure of the fee for your location and item, reach out on WhatsApp and we will respond promptly.
                         </p>
                     </div>
@@ -114,7 +114,7 @@ export default function ShippingPolicyPage() {
 
                 {/* Important notes */}
                 <section>
-                    <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-5 flex items-center gap-3">
+                    <h2 className="text-lg font-bold font-glacial text-white mb-5 flex items-center gap-3">
                         <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                         Important Notes
                     </h2>
@@ -125,18 +125,18 @@ export default function ShippingPolicyPage() {
                             { icon: <AlertTriangle className="w-4 h-4" />, text: "We are not liable for delays caused by third-party couriers, adverse weather, or circumstances outside our control. We will communicate any known delays proactively." },
                             { icon: <Truck className="w-4 h-4" />, text: "Risk of loss passes to you upon delivery. Inspect your order at the point of delivery and report any visible damage immediately to our team." },
                         ].map(({ icon, text }) => (
-                            <div key={text} className="flex items-start gap-3.5 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                            <div key={text} className="flex items-start gap-3.5 p-4 rounded-xl bg-zinc-900 border border-zinc-800">
                                 <div className="p-1.5 rounded-lg bg-[#C6A16A]/10 text-[#C6A16A] flex-shrink-0 mt-0.5">
                                     {icon}
                                 </div>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{text}</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed">{text}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 {/* CTA */}
-                <div className="rounded-2xl bg-zinc-950 dark:bg-zinc-900 border border-zinc-800 p-7 text-center space-y-4">
+                <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-7 text-center space-y-4">
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A]">Questions?</p>
                     <h3 className="text-lg font-bold font-glacial text-white">
                         Not sure about delivery to your area?

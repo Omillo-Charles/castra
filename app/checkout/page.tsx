@@ -35,14 +35,14 @@ function Field({ label, type = "text", value, onChange, placeholder, icon, requi
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                 {label}{required && <span className="text-[#C6A16A] ml-0.5">*</span>}
             </label>
-            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10 transition-all duration-200">
-                {icon && <span className="text-zinc-400 dark:text-zinc-500 flex-shrink-0">{icon}</span>}
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10 transition-all duration-200">
+                {icon && <span className="text-zinc-500 flex-shrink-0">{icon}</span>}
                 <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder} autoComplete={autoComplete} required={required}
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none min-w-0" />
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none min-w-0" />
             </div>
         </div>
     );
@@ -59,10 +59,10 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
     const total = cart?.total ?? 0;
 
     return (
-        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
             {compact && (
                 <button type="button" onClick={() => setOpen((o) => !o)}
-                    className="w-full flex items-center justify-between px-5 py-4 text-sm font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-800">
+                    className="w-full flex items-center justify-between px-5 py-4 text-sm font-bold text-zinc-200 border-b border-zinc-800">
                     <span className="flex items-center gap-2"><Package className="w-4 h-4 text-[#C6A16A]" /> Order Summary</span>
                     <div className="flex items-center gap-3">
                         <span className="text-[#C6A16A]">{formatKES(total)}</span>
@@ -71,8 +71,8 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                 </button>
             )}
             {!compact && (
-                <div className="px-5 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                <div className="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
                         <Package className="w-3.5 h-3.5 text-[#C6A16A]" /> Order Summary
                     </h2>
                 </div>
@@ -82,25 +82,25 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                     <div className="space-y-3">
                         {items.map((item) => (
                             <div key={item.id} className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
                                     {item.product.images[0]
                                         ? <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                                         : <Package className="w-4 h-4 text-zinc-400" />
                                     }
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{item.product.name}</p>
+                                    <p className="text-xs font-semibold text-zinc-200 truncate">{item.product.name}</p>
                                     <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
                                 </div>
-                                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex-shrink-0">
+                                <span className="text-xs font-bold text-zinc-200 flex-shrink-0">
                                     {formatKES(item.product.price * item.qty)}
                                 </span>
                             </div>
                         ))}
                     </div>
-                    <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
+                    <div className="h-px bg-zinc-800" />
                     <div className="space-y-2">
-                        <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
+                        <div className="flex justify-between text-sm text-zinc-400">
                             <span>Subtotal</span><span>{formatKES(subtotal)}</span>
                         </div>
                         {discount > 0 && (
@@ -108,16 +108,16 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
                                 <span>Discount</span><span>−{formatKES(discount)}</span>
                             </div>
                         )}
-                        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
-                            <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                        <div className="pt-2 border-t border-zinc-800 space-y-1">
+                            <div className="flex justify-between text-xs text-zinc-400">
                                 <span className="flex items-center gap-1.5 font-medium"><Truck className="w-3.5 h-3.5 text-[#C6A16A]" /> Delivery Fee:</span>
-                                <span className="font-semibold text-amber-600 dark:text-amber-400">Excluded</span>
+                                <span className="font-semibold text-amber-400">Excluded</span>
                             </div>
-                            <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500 italic">
+                            <p className="text-[11px] leading-snug text-zinc-500 italic">
                                 Delivery charges are excluded and will be communicated directly via email or WhatsApp.
                             </p>
                         </div>
-                        <div className="flex justify-between text-base font-bold text-zinc-900 dark:text-white pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                        <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-zinc-800">
                             <span>Total</span>
                             <span className="text-[#C6A16A]">{formatKES(total)}</span>
                         </div>
@@ -297,13 +297,13 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-2">Order Placed</p>
-                    <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white mb-2">Thank you!</h1>
+                    <h1 className="text-3xl font-bold font-glacial text-white mb-2">Thank you!</h1>
                     {placedOrderRef && (
-                        <p className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400 mb-3 tracking-wider">
-                            Reference: <span className="text-zinc-800 dark:text-zinc-200">{placedOrderRef}</span>
+                        <p className="text-xs font-mono font-semibold text-zinc-400 mb-3 tracking-wider">
+                            Reference: <span className="text-zinc-200">{placedOrderRef}</span>
                         </p>
                     )}
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm mx-auto">
+                    <p className="text-sm text-zinc-400 leading-relaxed max-w-sm mx-auto">
                         Your order has been received. We will confirm availability and reach out via WhatsApp or phone shortly.
                     </p>
                 </div>
@@ -311,10 +311,10 @@ export default function CheckoutPage() {
                 {/* STK Push payment status */}
                 {stkRequestId && (
                     <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${stkPayStatus === "PAID"
-                        ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400"
+                        ? "bg-emerald-500/10 border-emerald-200 border-emerald-500/25 text-emerald-400"
                         : stkPayStatus === "FAILED"
-                            ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/25 text-red-500"
-                            : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/25 text-amber-600 dark:text-amber-400"
+                            ? "bg-red-500/10 border-red-200 text-red-500"
+                            : "bg-amber-500/10 border-amber-200 border-amber-500/25 text-amber-400"
                         }`}>
                         {stkPayStatus === "PAID" ? (
                             <><CheckCircle2 className="w-4 h-4" /> M-Pesa payment confirmed!</>
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                         <WhatsAppIcon className="w-4 h-4" /> Confirm on WhatsApp
                     </a>
                     <Link href="/track-order"
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-bold text-xs hover:border-[#C6A16A]/50 hover:text-[#C6A16A] transition-all">
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-zinc-700 text-zinc-300 font-bold text-xs hover:border-[#C6A16A]/50 hover:text-[#C6A16A] transition-all">
                         Track Order <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </div>
@@ -348,12 +348,12 @@ export default function CheckoutPage() {
                 <ChevronRight className="w-3 h-3" />
                 <Link href="/cart" className="hover:text-[#C6A16A] transition-colors">Cart</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-zinc-600 dark:text-zinc-300 font-semibold">Checkout</span>
+                <span className="text-zinc-300 font-semibold">Checkout</span>
             </nav>
 
             <div className="mb-8">
                 <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Secure Checkout</p>
-                <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white flex items-center gap-3">
+                <h1 className="text-3xl font-bold font-glacial text-white flex items-center gap-3">
                     <Lock className="w-6 h-6 text-[#C6A16A]" /> Complete Your Order
                 </h1>
             </div>
@@ -367,13 +367,13 @@ export default function CheckoutPage() {
                         <div key={s.key} className="flex items-center flex-shrink-0">
                             <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold transition-all ${active ? "bg-[#C6A16A] text-zinc-950 shadow-md"
                                 : done ? "bg-[#C6A16A]/15 text-[#C6A16A]"
-                                    : "bg-zinc-100 dark:bg-zinc-900 text-zinc-400"
+                                    : "bg-zinc-900 text-zinc-400"
                                 }`}>
                                 <span>{s.icon}</span>
                                 <span className="hidden sm:inline">{s.label}</span>
                             </div>
                             {i < STEPS.length - 1 && (
-                                <div className={`w-8 h-0.5 mx-1 rounded-full transition-colors ${done ? "bg-[#C6A16A]" : "bg-zinc-200 dark:bg-zinc-800"}`} />
+                                <div className={`w-8 h-0.5 mx-1 rounded-full transition-colors ${done ? "bg-[#C6A16A]" : "bg-zinc-200 bg-zinc-800"}`} />
                             )}
                         </div>
                     );
@@ -385,8 +385,8 @@ export default function CheckoutPage() {
 
                     {/* STEP 1: Contact details */}
                     {step === "details" && (
-                        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
-                            <h2 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-glacial">
+                        <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-6 space-y-5">
+                            <h2 className="text-sm font-bold text-white flex items-center gap-2 font-glacial">
                                 <User className="w-4 h-4 text-[#C6A16A]" /> Contact Information
                             </h2>
                             <div className="grid sm:grid-cols-2 gap-4">
@@ -400,28 +400,28 @@ export default function CheckoutPage() {
 
                     {/* STEP 2: Delivery */}
                     {step === "delivery" && (
-                        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
-                            <h2 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-glacial">
+                        <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-6 space-y-5">
+                            <h2 className="text-sm font-bold text-white flex items-center gap-2 font-glacial">
                                 <MapPin className="w-4 h-4 text-[#C6A16A]" /> Delivery Address
                             </h2>
 
                             {/* Saved address picker */}
                             {savedAddresses.length > 0 && (
                                 <div className="space-y-2">
-                                    <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide">Use a saved address</p>
+                                    <p className="text-xs font-semibold text-zinc-400 tracking-wide">Use a saved address</p>
                                     <div className="flex flex-wrap gap-2">
                                         {savedAddresses.map((a) => (
                                             <button key={a.id} type="button"
                                                 onClick={() => { setAddress(a.street); setCity(a.city); setCounty(a.county); }}
                                                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${address === a.street && city === a.city
                                                     ? "border-[#C6A16A] bg-[#C6A16A]/10 text-[#C6A16A]"
-                                                    : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-[#C6A16A]/50"
+                                                    : "border-zinc-700 text-zinc-400 hover:border-[#C6A16A]/50"
                                                     }`}>
                                                 {a.label}{a.isDefault ? " (Default)" : ""}
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
+                                    <div className="h-px bg-zinc-800" />
                                 </div>
                             )}
 
@@ -439,21 +439,21 @@ export default function CheckoutPage() {
                                 <Field label="County" value={county} onChange={setCounty} placeholder="Nairobi County" autoComplete="address-level1" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+                                <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                                     Delivery notes <span className="text-zinc-400 font-normal">(optional)</span>
                                 </label>
                                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Any landmarks, gate codes, or special instructions..."
                                     rows={3}
-                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all resize-none" />
+                                    className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all resize-none" />
                             </div>
                         </div>
                     )}
 
                     {/* STEP 3: Payment — unchanged */}
                     {step === "payment" && (
-                        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-5">
-                            <h2 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2 font-glacial">
+                        <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-6 space-y-5">
+                            <h2 className="text-sm font-bold text-white flex items-center gap-2 font-glacial">
                                 <CreditCard className="w-4 h-4 text-[#C6A16A]" /> Payment Method
                             </h2>
                             <div className="space-y-3">
@@ -462,21 +462,21 @@ export default function CheckoutPage() {
                                     <div className="flex-1 space-y-3">
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <p className="text-sm font-bold text-zinc-900 dark:text-white">M-Pesa STK Push</p>
+                                                <p className="text-sm font-bold text-white">M-Pesa STK Push</p>
                                             </div>
-                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt — just enter your PIN.</p>
+                                            <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt — just enter your PIN.</p>
                                         </div>
                                         <div className="space-y-3">
                                             <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
-                                            <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-600 dark:text-zinc-400">
+                                            <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-400">
                                                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                                                <span>After placing your order, an M-Pesa prompt for <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatKES(total)}</span> will be sent to your phone.</span>
+                                                <span>After placing your order, an M-Pesa prompt for <span className="font-bold text-zinc-200">{formatKES(total)}</span> will be sent to your phone.</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-400">
                                 <Lock className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0" />
                                 Your payment details are safe. We do not store your M-Pesa PIN or personal credentials.
                             </div>
@@ -486,30 +486,30 @@ export default function CheckoutPage() {
                     {/* STEP 4: Review */}
                     {step === "review" && (
                         <div className="space-y-4">
-                            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5">
+                            <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-5">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Contact</h3>
+                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Contact</h3>
                                     <button type="button" onClick={() => setStep("details")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
-                                <p className="text-sm text-zinc-700 dark:text-zinc-300">{firstName} {lastName}</p>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400">{phone}</p>
-                                {email && <p className="text-sm text-zinc-500 dark:text-zinc-400">{email}</p>}
+                                <p className="text-sm text-zinc-300">{firstName} {lastName}</p>
+                                <p className="text-sm text-zinc-400">{phone}</p>
+                                {email && <p className="text-sm text-zinc-400">{email}</p>}
                             </div>
-                            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5">
+                            <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-5">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Delivery</h3>
+                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Delivery</h3>
                                     <button type="button" onClick={() => setStep("delivery")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
-                                <p className="text-sm text-zinc-700 dark:text-zinc-300">{address}</p>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400">{city}{county ? `, ${county}` : ""}</p>
+                                <p className="text-sm text-zinc-300">{address}</p>
+                                <p className="text-sm text-zinc-400">{city}{county ? `, ${county}` : ""}</p>
                                 {notes && <p className="text-xs text-zinc-400 mt-1 italic">{notes}</p>}
                             </div>
-                            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5">
+                            <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-5">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Payment</h3>
+                                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Payment</h3>
                                     <button type="button" onClick={() => setStep("payment")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
-                                <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                <p className="text-sm font-semibold text-zinc-300">
                                     M-Pesa STK Push
                                 </p>
                                 {stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
@@ -521,12 +521,12 @@ export default function CheckoutPage() {
                     <div className="flex items-center justify-between gap-3 pt-2">
                         {currentIndex > 0 ? (
                             <button type="button" onClick={goBack}
-                                className="px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                className="px-5 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white transition-all">
                                 ← Back
                             </button>
                         ) : (
                             <Link href="/cart"
-                                className="px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                className="px-5 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white transition-all">
                                 ← Back to Cart
                             </Link>
                         )}
@@ -558,7 +558,7 @@ export default function CheckoutPage() {
                 {/* Order summary sidebar */}
                 <div className="w-full lg:w-80 flex-shrink-0 space-y-4 sticky top-24">
                     <OrderSummary />
-                    <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#C6A16A]/8 border border-[#C6A16A]/20 text-xs text-zinc-600 dark:text-zinc-400">
+                    <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#C6A16A]/8 border border-[#C6A16A]/20 text-xs text-zinc-400">
                         <Truck className="w-4 h-4 text-[#C6A16A] flex-shrink-0 mt-0.5" />
                         <span>Countrywide delivery. Estimated 2–5 business days after order confirmation.</span>
                     </div>

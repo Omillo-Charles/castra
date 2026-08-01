@@ -115,15 +115,15 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     const [open, setOpen] = useState(false);
     return (
         <div className={`border rounded-xl overflow-hidden transition-all duration-200 ${open
-            ? "border-[#C6A16A]/40 bg-[#C6A16A]/5 dark:bg-[#C6A16A]/5"
-            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#171717] hover:border-zinc-300 dark:hover:border-zinc-700"
+            ? "border-[#C6A16A]/40 bg-[#C6A16A]/5"
+            : "border-zinc-800 bg-[#171717] hover:border-zinc-300 hover:border-zinc-700"
             }`}>
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer"
             >
-                <span className={`text-sm font-semibold leading-snug transition-colors ${open ? "text-[#C6A16A]" : "text-zinc-900 dark:text-zinc-100"
+                <span className={`text-sm font-semibold leading-snug transition-colors ${open ? "text-[#C6A16A]" : "text-zinc-100"
                     }`}>
                     {q}
                 </span>
@@ -133,7 +133,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
             {open && (
                 <div className="px-5 pb-5">
                     <div className="h-px bg-[#C6A16A]/20 mb-4" />
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{a}</p>
+                    <p className="text-sm text-zinc-400 leading-relaxed">{a}</p>
                 </div>
             )}
         </div>
@@ -151,20 +151,20 @@ export default function FaqPage() {
             <nav className="flex items-center gap-1.5 text-xs text-zinc-400 mb-8">
                 <Link href="/" className="hover:text-[#C6A16A] transition-colors">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-zinc-600 dark:text-zinc-300 font-semibold">FAQs & Help Center</span>
+                <span className="text-zinc-300 font-semibold">FAQs & Help Center</span>
             </nav>
 
             {/* Hero */}
-            <div className="flex items-start gap-5 mb-10 pb-10 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-start gap-5 mb-10 pb-10 border-b border-zinc-800">
                 <div className="p-4 rounded-2xl bg-[#C6A16A]/10 border border-[#C6A16A]/25 text-[#C6A16A] flex-shrink-0">
                     <HelpCircle className="w-7 h-7" />
                 </div>
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Help Center</p>
-                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-zinc-900 dark:text-white mb-2">
+                    <h1 className="text-3xl sm:text-4xl font-bold font-glacial text-white mb-2">
                         Frequently Asked Questions
                     </h1>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xl">
+                    <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
                         Find answers to common questions about orders, delivery, exchanges, and more.
                         Can&apos;t find what you&apos;re looking for? Reach out to us directly.
                     </p>
@@ -184,7 +184,7 @@ export default function FaqPage() {
                                 onClick={() => setActiveGroup(group.id)}
                                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all duration-150 cursor-pointer ${activeGroup === group.id
                                     ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white"
+                                    : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
                                     }`}
                             >
                                 {group.label}
@@ -196,7 +196,7 @@ export default function FaqPage() {
                 {/* FAQs */}
                 <div className="flex-1 space-y-8">
                     <div>
-                        <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white mb-5 flex items-center gap-3">
+                        <h2 className="text-lg font-bold font-glacial text-white mb-5 flex items-center gap-3">
                             <span className="w-1 h-5 rounded-full bg-[#C6A16A] flex-shrink-0" />
                             {current.label}
                         </h2>
@@ -208,7 +208,7 @@ export default function FaqPage() {
                     </div>
 
                     {/* Still need help */}
-                    <div className="mt-8 p-6 rounded-2xl bg-zinc-950 dark:bg-zinc-900 border border-zinc-800 text-center space-y-4">
+                    <div className="mt-8 p-6 rounded-2xl bg-zinc-900 border border-zinc-800 text-center space-y-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A]">Still need help?</p>
                         <h3 className="text-lg font-bold font-glacial text-white">
                             We&apos;re happy to assist you

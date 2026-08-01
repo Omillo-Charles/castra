@@ -80,7 +80,7 @@ export default function AdminPage() {
             <div className="flex items-end justify-between mb-8">
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Admin</p>
-                    <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white">
+                    <h1 className="text-3xl font-bold font-glacial text-white">
                         Castra Admin
                     </h1>
                 </div>
@@ -93,10 +93,10 @@ export default function AdminPage() {
 
                 {/* Sidebar */}
                 <aside className="w-full lg:w-52 flex-shrink-0">
-                    <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                    <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
 
                         {/* Admin identity */}
-                        <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+                        <div className="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-full bg-[#C6A16A]/15 border border-[#C6A16A]/30 flex items-center justify-center flex-shrink-0">
                                     <span className="text-xs font-bold text-[#C6A16A]">
@@ -104,7 +104,7 @@ export default function AdminPage() {
                                     </span>
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{user.firstName} {user.lastName}</p>
+                                    <p className="text-sm font-bold text-white truncate">{user.firstName} {user.lastName}</p>
                                     <p className="text-[10px] font-semibold uppercase tracking-wider text-[#C6A16A]">Admin</p>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@ export default function AdminPage() {
                                     onClick={() => setSection(item.key)}
                                     className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold transition-all cursor-pointer text-left ${section === item.key
                                             ? "text-[#C6A16A] bg-[#C6A16A]/8"
-                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                                            : "text-zinc-400 hover:text-white hover:bg-zinc-900"
                                         }`}
                                 >
                                     <span className={section === item.key ? "text-[#C6A16A]" : "text-zinc-400"}>{item.icon}</span>
@@ -128,11 +128,11 @@ export default function AdminPage() {
                             ))}
                         </nav>
 
-                        <div className="px-3 pb-3 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                        <div className="px-3 pb-3 pt-1 border-t border-zinc-800">
                             <button
                                 type="button"
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/8 transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-500/8 transition-colors cursor-pointer"
                             >
                                 <LogOut className="w-4 h-4" /> Sign Out
                             </button>
@@ -190,10 +190,10 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {stats.map(({ label, value, icon, color }) => (
-                    <div key={label} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3">
+                    <div key={label} className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 space-y-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>{icon}</div>
                         <div>
-                            <p className="text-xl font-bold text-zinc-900 dark:text-white">{value}</p>
+                            <p className="text-xl font-bold text-white">{value}</p>
                             <p className="text-xs text-zinc-400 mt-0.5">{label}</p>
                         </div>
                     </div>
@@ -201,12 +201,12 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
             </div>
 
             {/* Recent orders */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Orders</h2>
                     <button type="button" onClick={() => setSection("orders")} className="text-xs text-[#C6A16A] font-semibold hover:underline">View all</button>
                 </div>
-                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <div className="divide-y divide-zinc-800">
                     {ordersLoading ? (
                         <div className="flex items-center justify-center py-8">
                             <span className="w-5 h-5 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
@@ -219,12 +219,12 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
                         return (
                             <div key={order.id} className="px-5 py-3.5 flex items-center gap-4 flex-wrap">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
+                                    <p className="text-xs font-mono font-semibold text-zinc-300">{order.ref}</p>
                                     <p className="text-[11px] text-zinc-400 mt-0.5">{order.firstName} {order.lastName} · {formatDate(order.createdAt)}</p>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
                                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${s.color}`}>{s.label}</span>
-                                    <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200">{formatKES(order.total)}</span>
+                                    <span className="text-sm font-bold text-zinc-200">{formatKES(order.total)}</span>
                                 </div>
                             </div>
                         );
@@ -234,17 +234,17 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
 
             {/* Low stock alert */}
             {lowStock > 0 && (
-                <div className="bg-white dark:bg-[#171717] rounded-2xl border border-red-200 dark:border-red-500/20 overflow-hidden">
-                    <div className="px-5 py-4 border-b border-red-100 dark:border-red-500/10 flex items-center justify-between bg-red-50 dark:bg-red-500/5">
+                <div className="bg-[#171717] rounded-2xl border border-red-500/20 overflow-hidden">
+                    <div className="px-5 py-4 border-b border-red-500/10 flex items-center justify-between bg-red-500/5">
                         <h2 className="text-xs font-bold uppercase tracking-widest text-red-500 flex items-center gap-2">
                             <AlertTriangle className="w-3.5 h-3.5" /> Low Stock Alert
                         </h2>
                         <button type="button" onClick={() => setSection("products")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Manage</button>
                     </div>
-                    <div className="divide-y divide-red-100 dark:divide-red-500/10">
+                    <div className="divide-y divide-red-500/10">
                         {lowStockItems.map(p => (
                             <div key={p.id} className="px-5 py-3 flex items-center justify-between text-sm">
-                                <span className="font-semibold text-zinc-800 dark:text-zinc-200">{p.name}</span>
+                                <span className="font-semibold text-zinc-200">{p.name}</span>
                                 <span className={`font-bold ${p.stock === 0 ? "text-red-500" : "text-amber-500"}`}>
                                     {p.stock === 0 ? "Out of stock" : `${p.stock} left`}
                                 </span>
@@ -335,7 +335,7 @@ function Orders() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Orders</h2>
+                <h2 className="text-lg font-bold font-glacial text-white">Orders</h2>
                 {!loading && (
                     <span className="text-xs text-zinc-400">
                         {totalOrders} order{totalOrders !== 1 ? "s" : ""} found
@@ -345,19 +345,19 @@ function Orders() {
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
+                <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                     <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                     <input
                         type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                         placeholder="Search by reference, customer name or phone..."
-                        className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
+                        className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none"
                     />
                     {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
                 </div>
                 <select
                     value={filter}
                     onChange={(e) => { setFilter(e.target.value as OrderStatus | "all"); setCurrentPage(1); }}
-                    className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
+                    className="text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
                 >
                     <option value="all">All Statuses</option>
                     {(Object.keys(ORDER_STATUS) as OrderStatus[]).map((k) => (
@@ -384,11 +384,11 @@ function Orders() {
                         : "No Payment Details";
                     const paymentStatusMeta = order.payment ? PAYMENT_STATUS[order.payment.status] : null;
                     return (
-                        <div key={order.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 space-y-3 hover:border-[#C6A16A]/30 transition-all">
+                        <div key={order.id} className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 space-y-3 hover:border-[#C6A16A]/30 transition-all">
                             <div className="flex items-start gap-4 flex-wrap">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">{order.ref}</p>
-                                    <p className="text-sm font-semibold text-zinc-900 dark:text-white mt-0.5">{order.firstName} {order.lastName}</p>
+                                    <p className="text-xs font-mono font-bold text-zinc-300">{order.ref}</p>
+                                    <p className="text-sm font-semibold text-white mt-0.5">{order.firstName} {order.lastName}</p>
                                     <div className="flex items-center gap-3 mt-1 flex-wrap text-xs text-zinc-400">
                                         <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{order.phone}</span>
                                         <span>{formatDate(order.createdAt)}</span>
@@ -403,7 +403,7 @@ function Orders() {
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
                                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${s.color}`}>{s.label}</span>
-                                    <span className="text-sm font-bold text-zinc-900 dark:text-white">{formatKES(order.total)}</span>
+                                    <span className="text-sm font-bold text-white">{formatKES(order.total)}</span>
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -420,11 +420,11 @@ function Orders() {
                                 </div>
                             </div>
 
-                            <div className="grid gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 sm:grid-cols-2">
+                            <div className="grid gap-2 pt-3 border-t border-zinc-800 sm:grid-cols-2">
                                 {order.items.map((item) => (
-                                    <div key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 px-3 py-2">
+                                    <div key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-zinc-900/50 border border-zinc-800 px-3 py-2">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <div className="w-10 h-10 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                            <div className="w-10 h-10 rounded-lg bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0">
                                                 {item.imageUrl ? (
                                                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -432,11 +432,11 @@ function Orders() {
                                                 )}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{item.name}</p>
+                                                <p className="text-xs font-semibold text-zinc-200 truncate">{item.name}</p>
                                                 <p className="text-[10px] text-zinc-400">Qty: {item.qty}</p>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex-shrink-0">
+                                        <span className="text-xs font-bold text-zinc-200 flex-shrink-0">
                                             {formatKES(item.price * item.qty)}
                                         </span>
                                     </div>
@@ -445,12 +445,12 @@ function Orders() {
 
                             {/* Inline status update */}
                             {isEditing && (
-                                <div className="flex items-center gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex-wrap">
+                                <div className="flex items-center gap-3 pt-2 border-t border-zinc-800 flex-wrap">
                                     <span className="text-xs font-semibold text-zinc-500">Order:</span>
                                     <select
                                         value={newStatus}
                                         onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                                        className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A] cursor-pointer"
+                                        className="text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A] cursor-pointer"
                                     >
                                         {(Object.keys(ORDER_STATUS) as OrderStatus[]).map((k) => (
                                             <option key={k} value={k}>{ORDER_STATUS[k].label}</option>
@@ -462,7 +462,7 @@ function Orders() {
                                             <select
                                                 value={paymentStatus}
                                                 onChange={(e) => setPaymentStatus(e.target.value as PaymentStatus)}
-                                                className="text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A] cursor-pointer"
+                                                className="text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A] cursor-pointer"
                                             >
                                                 {(Object.keys(PAYMENT_STATUS) as PaymentStatus[]).map((k) => (
                                                     <option key={k} value={k}>{PAYMENT_STATUS[k].label}</option>
@@ -473,7 +473,7 @@ function Orders() {
                                                 value={paymentRef}
                                                 onChange={(e) => setPaymentRef(e.target.value)}
                                                 placeholder="M-Pesa ref"
-                                                className="w-32 text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A]"
+                                                className="w-32 text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#C6A16A]"
                                             />
                                         </>
                                     )}
@@ -482,7 +482,7 @@ function Orders() {
                                         {updating ? "Saving..." : "Save"}
                                     </button>
                                     <button type="button" onClick={() => setEditing(null)}
-                                        className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 font-bold text-xs hover:border-zinc-400 transition-colors">
+                                        className="px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-500 font-bold text-xs hover:border-zinc-400 transition-colors">
                                         Cancel
                                     </button>
                                 </div>
@@ -502,9 +502,9 @@ function Orders() {
             {!loading && totalOrders > 0 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-xs text-zinc-400">
-                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * ORDERS_PER_PAGE + 1}</span> to{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * ORDERS_PER_PAGE, totalOrders)}</span> of{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalOrders}</span> orders
+                        Showing <span className="font-semibold text-zinc-300">{(currentPage - 1) * ORDERS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-300">{Math.min(currentPage * ORDERS_PER_PAGE, totalOrders)}</span> of{" "}
+                        <span className="font-semibold text-zinc-300">{totalOrders}</span> orders
                     </p>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-2">
@@ -512,18 +512,18 @@ function Orders() {
                                 type="button"
                                 disabled={currentPage === 1}
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 transition-all"
+                                className="px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white disabled:opacity-50 transition-all"
                             >
                                 Previous
                             </button>
-                            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                            <span className="text-xs font-semibold text-zinc-400">
                                 Page {currentPage} of {totalPages}
                             </span>
                             <button
                                 type="button"
                                 disabled={currentPage === totalPages}
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 transition-all"
+                                className="px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white disabled:opacity-50 transition-all"
                             >
                                 Next
                             </button>
@@ -667,7 +667,7 @@ function Products() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Products</h2>
+                <h2 className="text-lg font-bold font-glacial text-white">Products</h2>
                 <button type="button" onClick={() => { resetForm(); setShowForm(true); }}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] text-zinc-950 font-bold text-xs transition-all shadow-sm">
                     <Plus className="w-3.5 h-3.5" /> Add Product
@@ -676,21 +676,21 @@ function Products() {
 
             {/* Add / Edit form */}
             {showForm && (
-                <div className="bg-white dark:bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
-                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-glacial">
+                <div className="bg-[#171717] rounded-2xl border border-[#C6A16A]/40 p-5 space-y-4">
+                    <h3 className="text-sm font-bold text-white font-glacial">
                         {editId ? "Edit Product" : "New Product"}
                     </h3>
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <div className="grid sm:grid-cols-2 gap-3">
                             <AdminField label="Product name" value={formName} onChange={setFormName} placeholder="Egyptian Cotton Duvet Set" />
                             <div className="space-y-1">
-                                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+                                <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                                     Category
                                 </label>
                                 <select
                                     value={formCat}
                                     onChange={(e) => handleCategorySelect(e.target.value)}
-                                    className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-sm font-medium text-zinc-900 dark:text-white focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
+                                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm font-medium text-white focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
                                 >
                                     <option value="">Select category...</option>
                                     {adminCategories.map((cat) => (
@@ -707,17 +707,17 @@ function Products() {
                             <AdminField label="Stock" value={formStock} onChange={setFormStock} placeholder="10" type="number" />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">
+                            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                                 Images (up to 5, JPEG/PNG/WebP)
                             </label>
                             <input type="file" accept="image/*" multiple
                                 onChange={e => setFormFiles(e.target.files)}
-                                className="w-full text-sm text-zinc-600 dark:text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#C6A16A]/15 file:text-[#C6A16A] hover:file:bg-[#C6A16A]/25 cursor-pointer" />
+                                className="w-full text-sm text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#C6A16A]/15 file:text-[#C6A16A] hover:file:bg-[#C6A16A]/25 cursor-pointer" />
                         </div>
                         <label className="flex items-center gap-2.5 cursor-pointer">
                             <input type="checkbox" checked={formActive} onChange={e => setFormActive(e.target.checked)}
                                 className="w-4 h-4 accent-[#C6A16A]" />
-                            <span className="text-sm text-zinc-700 dark:text-zinc-300">Active (visible to customers)</span>
+                            <span className="text-sm text-zinc-300">Active (visible to customers)</span>
                         </label>
                         {formErr && <p className="text-xs text-red-500 font-semibold">{formErr}</p>}
                         <div className="flex items-center gap-3 pt-1">
@@ -728,7 +728,7 @@ function Products() {
                                     : editId ? "Save Changes" : "Create Product"}
                             </button>
                             <button type="button" onClick={resetForm}
-                                className="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
+                                className="px-4 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-white transition-all">
                                 Cancel
                             </button>
                         </div>
@@ -737,24 +737,24 @@ function Products() {
             )}
 
             {/* Search */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                     placeholder="Search products..."
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none" />
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none" />
                 {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <div className="grid grid-cols-12 px-5 py-3 bg-zinc-50 dark:bg-zinc-900/60 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="grid grid-cols-12 px-5 py-3 bg-zinc-900/60 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-800">
                     <span className="col-span-5">Product</span>
                     <span className="col-span-2">Category</span>
                     <span className="col-span-2 text-right">Price</span>
                     <span className="col-span-1 text-center">Stock</span>
                     <span className="col-span-2 text-center">Actions</span>
                 </div>
-                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <div className="divide-y divide-zinc-800">
                     {loading ? (
                         <div className="text-center py-12 text-zinc-400">
                             <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
@@ -765,16 +765,16 @@ function Products() {
                             <div className="col-span-5 flex items-center gap-3 min-w-0">
                                 {p.images[0] ? (
                                     <img src={p.images[0]} alt={p.name}
-                                        className="w-8 h-8 rounded-lg object-cover border border-zinc-200 dark:border-zinc-800 flex-shrink-0" />
+                                        className="w-8 h-8 rounded-lg object-cover border border-zinc-800 flex-shrink-0" />
                                 ) : (
-                                    <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0">
                                         <Package className="w-3.5 h-3.5 text-zinc-400" />
                                     </div>
                                 )}
-                                <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">{p.name}</span>
+                                <span className="font-semibold text-zinc-200 truncate">{p.name}</span>
                             </div>
                             <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
-                            <span className="col-span-2 text-right font-semibold text-zinc-800 dark:text-zinc-200">{formatKES(p.price)}</span>
+                            <span className="col-span-2 text-right font-semibold text-zinc-200">{formatKES(p.price)}</span>
                             <span className={`col-span-1 text-center text-xs font-bold ${p.stock === 0 ? "text-red-500" : p.stock <= 2 ? "text-amber-500" : "text-emerald-500"
                                 }`}>
                                 {p.stock === 0 ? "Out" : p.stock}
@@ -786,13 +786,13 @@ function Products() {
                                 </button>
                                 <button type="button" onClick={() => handleToggle(p.id)}
                                     className={`p-1.5 rounded-lg transition-colors ${p.active
-                                            ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10"
-                                            : "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                                            ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10"
+                                            : "text-emerald-500 hover:bg-emerald-500/10"
                                         }`} title={p.active ? "Deactivate" : "Activate"}>
                                     {p.active ? <Eye className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                 </button>
                                 <button type="button" onClick={() => handleDelete(p.id)}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" title="Delete">
+                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors" title="Delete">
                                     <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                             </div>
@@ -811,9 +811,9 @@ function Products() {
             {!loading && totalProducts > 0 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-xs text-zinc-400">
-                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * PRODUCTS_PER_PAGE + 1}</span> to{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * PRODUCTS_PER_PAGE, totalProducts)}</span> of{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalProducts}</span> products
+                        Showing <span className="font-semibold text-zinc-300">{(currentPage - 1) * PRODUCTS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-300">{Math.min(currentPage * PRODUCTS_PER_PAGE, totalProducts)}</span> of{" "}
+                        <span className="font-semibold text-zinc-300">{totalProducts}</span> products
                     </p>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-1.5">
@@ -821,7 +821,7 @@ function Products() {
                                 type="button"
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                 aria-label="Previous page"
                             >
                                 <ChevronLeft className="w-4 h-4" />
@@ -834,7 +834,7 @@ function Products() {
                                     onClick={() => setCurrentPage(page)}
                                     className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
                                             ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                            : "border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
+                                            : "border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
                                         }`}
                                 >
                                     {page}
@@ -845,7 +845,7 @@ function Products() {
                                 type="button"
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                 aria-label="Next page"
                             >
                                 <ChevronRight className="w-4 h-4" />
@@ -863,9 +863,9 @@ function AdminField({ label, value, onChange, placeholder, type = "text" }: {
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 tracking-wide block">{label}</label>
+            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">{label}</label>
             <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
+                className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
         </div>
     );
 }
@@ -918,7 +918,7 @@ function Customers() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-glacial text-zinc-900 dark:text-white">Customers</h2>
+                <h2 className="text-lg font-bold font-glacial text-white">Customers</h2>
                 {!loading && (
                     <span className="text-xs text-zinc-400">
                         {totalCustomers} customer{totalCustomers !== 1 ? "s" : ""} with orders
@@ -927,12 +927,12 @@ function Customers() {
             </div>
 
             {/* Search */}
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 <input
                     type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                     placeholder="Search by name, email or phone..."
-                    className="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none"
                 />
                 {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
@@ -947,7 +947,7 @@ function Customers() {
                         <p className="text-xs font-semibold">Loading customers...</p>
                     </div>
                 ) : customers.map((c) => (
-                    <div key={c.id} className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
+                    <div key={c.id} className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 flex items-center gap-4 flex-wrap hover:border-[#C6A16A]/30 transition-all">
                         {/* Avatar */}
                         <div className="w-10 h-10 rounded-full bg-[#C6A16A]/15 border border-[#C6A16A]/30 flex items-center justify-center flex-shrink-0">
                             <span className="text-sm font-bold text-[#C6A16A]">
@@ -956,7 +956,7 @@ function Customers() {
                         </div>
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-zinc-900 dark:text-white">{c.name}</p>
+                            <p className="text-sm font-bold text-white">{c.name}</p>
                             <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                                 {c.email && <span className="flex items-center gap-1 text-xs text-zinc-400"><Mail className="w-3 h-3" />{c.email}</span>}
                                 <span className="flex items-center gap-1 text-xs text-zinc-400"><Phone className="w-3 h-3" />{c.phone}</span>
@@ -965,7 +965,7 @@ function Customers() {
                         {/* Stats */}
                         <div className="flex items-center gap-5 flex-shrink-0 text-center">
                             <div>
-                                <p className="text-sm font-bold text-zinc-900 dark:text-white">{c.orders}</p>
+                                <p className="text-sm font-bold text-white">{c.orders}</p>
                                 <p className="text-[10px] text-zinc-400">Orders</p>
                             </div>
                             <div>
@@ -976,7 +976,7 @@ function Customers() {
                                 href={`https://wa.me/${normaliseWhatsappPhone(c.phone)}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/15 transition-colors"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold hover:bg-emerald-500/15 transition-colors"
                             >
                                 <WhatsAppIcon className="w-4 h-4 flex-shrink-0" />
                                 WhatsApp
@@ -995,9 +995,9 @@ function Customers() {
             {!loading && totalCustomers > 0 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-xs text-zinc-400">
-                        Showing <span className="font-semibold text-zinc-700 dark:text-zinc-300">{(currentPage - 1) * CUSTOMERS_PER_PAGE + 1}</span> to{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{Math.min(currentPage * CUSTOMERS_PER_PAGE, totalCustomers)}</span> of{" "}
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalCustomers}</span> customers
+                        Showing <span className="font-semibold text-zinc-300">{(currentPage - 1) * CUSTOMERS_PER_PAGE + 1}</span> to{" "}
+                        <span className="font-semibold text-zinc-300">{Math.min(currentPage * CUSTOMERS_PER_PAGE, totalCustomers)}</span> of{" "}
+                        <span className="font-semibold text-zinc-300">{totalCustomers}</span> customers
                     </p>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-1.5">
@@ -1005,19 +1005,19 @@ function Customers() {
                                 type="button"
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                 aria-label="Previous page"
                             >
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                            <span className="text-xs font-semibold text-zinc-400">
                                 Page {currentPage} of {totalPages}
                             </span>
                             <button
                                 type="button"
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                 aria-label="Next page"
                             >
                                 <ChevronRight className="w-4 h-4" />

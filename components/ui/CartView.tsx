@@ -80,10 +80,10 @@ export function CartView() {
         <div className="space-y-8">
 
             {/* Page header */}
-            <div className="flex items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <div className="flex items-end justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-[#C6A16A] mb-1">Checkout</p>
-                    <h1 className="text-3xl font-bold font-glacial text-zinc-900 dark:text-white flex items-center gap-3">
+                    <h1 className="text-3xl font-bold font-glacial text-white flex items-center gap-3">
                         <ShoppingBag className="w-7 h-7 text-[#C6A16A]" />
                         My Cart
                     </h1>
@@ -92,7 +92,7 @@ export function CartView() {
                     </p>
                 </div>
                 <Link href="/"
-                    className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-[#C6A16A] transition-colors">
+                    className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-[#C6A16A] transition-colors">
                     Continue shopping <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
             </div>
@@ -116,16 +116,16 @@ export function CartView() {
                             const busy = updatingId === item.productId;
                             return (
                                 <div key={item.id}
-                                    className={`flex items-center gap-5 p-5 bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200 ${busy ? "opacity-60" : ""}`}>
+                                    className={`flex items-center gap-5 p-5 bg-[#171717] rounded-2xl border border-zinc-800 shadow-sm hover:border-[#C6A16A]/30 transition-all duration-200 ${busy ? "opacity-60" : ""}`}>
 
                                     {/* Product image */}
-                                    <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                                    <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800">
                                         {item.product.images[0] ? (
                                             <img src={item.product.images[0]} alt={item.product.name}
                                                 className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
-                                                <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
+                                                <svg className="w-8 h-8 text-zinc-700 opacity-60" fill="none" stroke="currentColor" strokeWidth="1.2" viewBox="0 0 24 24">
                                                     <rect x="3" y="3" width="18" height="18" rx="2" />
                                                     <circle cx="8.5" cy="8.5" r="1.5" />
                                                     <path d="M21 15l-5-5L5 21" />
@@ -139,35 +139,35 @@ export function CartView() {
                                         <p className="text-[10px] font-bold uppercase tracking-widest text-[#C6A16A] mb-0.5">
                                             {item.product.category}
                                         </p>
-                                        <h3 className="text-sm sm:text-base font-semibold text-zinc-900 dark:text-zinc-100 font-glacial leading-snug">
+                                        <h3 className="text-sm sm:text-base font-semibold text-zinc-100 font-glacial leading-snug">
                                             {item.product.name}
                                         </h3>
                                         <p className="text-sm text-zinc-400 mt-0.5">{formatKES(item.product.price)} each</p>
-                                        <p className="text-base font-bold text-zinc-900 dark:text-white mt-1">
+                                        <p className="text-base font-bold text-white mt-1">
                                             {formatKES(item.product.price * item.qty)}
                                         </p>
                                     </div>
 
                                     {/* Qty + remove */}
                                     <div className="flex flex-col items-center gap-3 flex-shrink-0">
-                                        <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-0.5">
+                                        <div className="flex items-center gap-1 bg-zinc-900 rounded-xl border border-zinc-800 p-0.5">
                                             <button type="button" disabled={busy}
                                                 onClick={() => handleQtyChange(item.productId, -1, item.qty)}
-                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 transition-all disabled:cursor-not-allowed">
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-white hover:bg-white hover:bg-zinc-800 transition-all disabled:cursor-not-allowed">
                                                 <Minus className="w-3.5 h-3.5" />
                                             </button>
-                                            <span className="w-8 text-center text-sm font-bold text-zinc-900 dark:text-white">
+                                            <span className="w-8 text-center text-sm font-bold text-white">
                                                 {item.qty}
                                             </span>
                                             <button type="button" disabled={busy}
                                                 onClick={() => handleQtyChange(item.productId, 1, item.qty)}
-                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 transition-all disabled:cursor-not-allowed">
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-white hover:bg-white hover:bg-zinc-800 transition-all disabled:cursor-not-allowed">
                                                 <Plus className="w-3.5 h-3.5" />
                                             </button>
                                         </div>
                                         <button type="button" disabled={busy}
                                             onClick={() => handleRemove(item.productId)}
-                                            className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all duration-200 disabled:cursor-not-allowed"
+                                            className="p-2 rounded-xl border border-zinc-700 text-zinc-400 hover:text-red-500 hover:border-red-300 hover:border-red-500/40 hover:bg-red-50 hover:bg-red-500/5 transition-all duration-200 disabled:cursor-not-allowed"
                                             aria-label="Remove item">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -179,10 +179,10 @@ export function CartView() {
 
                     {/* ── Order summary ── */}
                     <div className="w-full lg:w-80 flex-shrink-0 space-y-4 sticky top-24">
-                        <div className="bg-white dark:bg-[#171717] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                        <div className="bg-[#171717] rounded-2xl border border-zinc-800 shadow-sm overflow-hidden">
 
-                            <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800">
-                                <h2 className="text-sm font-bold text-zinc-900 dark:text-white font-glacial uppercase tracking-wide">
+                            <div className="px-6 py-5 border-b border-zinc-800">
+                                <h2 className="text-sm font-bold text-white font-glacial uppercase tracking-wide">
                                     Order Summary
                                 </h2>
                             </div>
@@ -191,15 +191,15 @@ export function CartView() {
                                 {/* Coupon */}
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-center gap-2">
-                                        <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
+                                        <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                                             <Tag className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
                                             <input type="text" value={coupon}
                                                 onChange={(e) => { setCoupon(e.target.value); setCouponMsg(null); }}
                                                 placeholder="Coupon code"
-                                                className="flex-1 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none" />
+                                                className="flex-1 bg-transparent text-xs text-zinc-100 placeholder-zinc-400 focus:outline-none" />
                                         </div>
                                         <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon}
-                                            className="px-3 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] dark:hover:bg-[#C6A16A] dark:hover:text-zinc-950 hover:text-zinc-950 transition-all disabled:opacity-50">
+                                            className="px-3 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 hover:text-zinc-950 transition-all disabled:opacity-50">
                                             {applyingCoupon ? "..." : "Apply"}
                                         </button>
                                     </div>
@@ -212,7 +212,7 @@ export function CartView() {
 
                                 {/* Line items */}
                                 <div className="space-y-2 pt-2">
-                                    <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
+                                    <div className="flex justify-between text-sm text-zinc-400">
                                         <span>Subtotal</span><span>{formatKES(subtotal)}</span>
                                     </div>
                                     {discount > 0 && (
@@ -220,16 +220,16 @@ export function CartView() {
                                             <span>Discount</span><span>−{formatKES(discount)}</span>
                                         </div>
                                     )}
-                                    <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
-                                        <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                                    <div className="pt-2 border-t border-zinc-800 space-y-1">
+                                        <div className="flex justify-between text-xs text-zinc-400">
                                             <span className="flex items-center gap-1.5 font-medium"><Truck className="w-3.5 h-3.5 text-[#C6A16A]" /> Delivery Fee:</span>
-                                            <span className="font-semibold text-amber-600 dark:text-amber-400">Excluded</span>
+                                            <span className="font-semibold text-amber-400">Excluded</span>
                                         </div>
-                                        <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500 italic">
+                                        <p className="text-[11px] leading-snug text-zinc-500 italic">
                                             Delivery charges are excluded and will be communicated directly via email or WhatsApp.
                                         </p>
                                     </div>
-                                    <div className="flex justify-between text-base font-bold text-zinc-900 dark:text-white pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                                    <div className="flex justify-between text-base font-bold text-white pt-3 border-t border-zinc-800">
                                         <span>Total</span>
                                         <span className="text-[#C6A16A]">{formatKES(total)}</span>
                                     </div>
@@ -243,14 +243,14 @@ export function CartView() {
                                 </button>
                                 <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`}
                                     target="_blank" rel="noopener noreferrer"
-                                    className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all duration-200 text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                                    className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl border border-zinc-700 bg-zinc-900 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all duration-200 text-sm font-bold text-zinc-300">
                                     <WhatsAppIcon className="w-5 h-5" />
                                     Order via WhatsApp
                                 </a>
                             </div>
                         </div>
 
-                        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#C6A16A]/8 border border-[#C6A16A]/20 text-xs text-zinc-600 dark:text-zinc-400">
+                        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#C6A16A]/8 border border-[#C6A16A]/20 text-xs text-zinc-400">
                             <Truck className="w-4 h-4 text-[#C6A16A] flex-shrink-0 mt-0.5" />
                             <span>Countrywide delivery across Kenya. Estimated 2–5 business days after confirmation.</span>
                         </div>
