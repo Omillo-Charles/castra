@@ -6,29 +6,18 @@
   --primary-dark: #000000;
   --primary-dark-elevated: #0a0a0a;
 
-  /* Brand Accent Colors (extracted from public/branding/logo.png) */
+  /* Brand Accent Colors */
   --brand-gold: #c6a16a;
   --brand-gold-light: #fff2c6;
   --brand-gold-muted: #eed195;
   --brand-gold-dark: #76532b;
   --brand-gold-deep: #6f4e24;
 
-  /* Surface & Canvas Default */
-  --background: var(--primary-white);
-  --foreground: var(--primary-dark-elevated);
-
-  /* Borders & Muted */
-  --border: #e4e4e7;
-  --muted: #71717a;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--primary-dark-elevated);
-    --foreground: var(--primary-white);
-    --border: #27272a;
-    --muted: #a1a1aa;
-  }
+  /* Always dark — site theme is permanently dark */
+  --background: var(--primary-dark-elevated);
+  --foreground: var(--primary-white);
+  --border: #27272a;
+  --muted: #a1a1aa;
 }
 
 @theme inline {

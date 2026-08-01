@@ -36,9 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${chirp.variable} ${glacial.variable} ${mulish.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${chirp.variable} ${glacial.variable} ${mulish.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-mulish bg-white dark:bg-[#0A0A0A] text-zinc-900 dark:text-zinc-100">
+      <body className="min-h-full flex flex-col font-mulish bg-[#0A0A0A] text-zinc-100">
         <ToastProvider>
           <AuthProvider>
             <CartProvider>
