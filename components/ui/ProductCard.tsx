@@ -141,7 +141,7 @@ export function ProductCard({ product }: { product: Product }) {
                         type="button"
                         disabled={!product.inStock || addingToCart}
                         onClick={handleAddToCart}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 text-white text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
                         aria-label="Add to cart"
                     >
                         {addingToCart ? (

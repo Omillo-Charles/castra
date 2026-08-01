@@ -88,7 +88,7 @@ function KickCard({ product }: { product: Product }) {
 
                 <div className="flex items-center gap-2 mt-1">
                     <button type="button" disabled={!product.inStock || addingToCart} onClick={handleCart}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 text-white text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm">
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 text-zinc-950 text-xs font-bold hover:bg-[#C6A16A] hover:text-zinc-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm">
                         {addingToCart
                             ? <span className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
                             : <ShoppingBag className="w-3.5 h-3.5" />
