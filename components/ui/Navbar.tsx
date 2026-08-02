@@ -34,7 +34,6 @@ const CATEGORIES = [
     "Decor",
     "Office Equipments",
     "Furniture",
-    "Kicks",
     "Gifts",
 ];
 

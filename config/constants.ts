@@ -12,7 +12,6 @@ export const CATEGORIES_LIST = [
     "Decor",
     "Office Equipments",
     "Furniture",
-    "Kicks",
     "Gifts",
 ];
 
