@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
-import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+import { ADMIN_CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useToast } from "@/context/ToastContext";
 
@@ -583,7 +583,7 @@ function Products() {
         loadProducts(currentPage, search);
     }, [currentPage, search]);
 
-    const adminCategories = CATEGORIES_LIST.filter((c) => c !== "All");
+    const adminCategories = ADMIN_CATEGORIES_LIST;
 
     const handleCategorySelect = (cat: string) => {
         setFormCat(cat);

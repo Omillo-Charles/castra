@@ -37,17 +37,17 @@ export default function ReturnsPage() {
 
             <div className="space-y-8">
 
-                {/* No Returns — Castra Collection */}
+                {/* No Returns — Castra Households */}
                 <div className="rounded-2xl border border-red-500/20 bg-red-500/5 overflow-hidden">
                     <div className="flex items-center gap-3 px-6 py-4 border-b border-red-500/20 bg-red-500/10">
                         <X className="w-5 h-5 text-red-500 flex-shrink-0" />
                         <h2 className="text-sm font-bold text-red-400 uppercase tracking-wide">
-                            No Returns — Castra Collection
+                            No Returns — Castra Households
                         </h2>
                     </div>
                     <div className="px-6 py-5 space-y-4">
                         <p className="text-sm text-zinc-400 leading-relaxed">
-                            All sales on <span className="font-semibold text-zinc-200">Castra Collection</span> are <span className="font-bold text-red-500">final</span>. We do not accept returns or issue refunds on any household product once the order has been delivered. This includes:
+                            All sales on <span className="font-semibold text-zinc-200">Castra Households</span> are <span className="font-bold text-red-500">final</span>. We do not accept returns or issue refunds on any household product once the order has been delivered. This includes:
                         </p>
                         <ul className="grid grid-cols-2 gap-2 text-xs text-zinc-400">
                             {["Beddings", "Home Appliances", "Kitchenware", "Organizers", "Electronics", "Decor", "Office Equipment", "Furniture", "Gifts"].map((cat) => (

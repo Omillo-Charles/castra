@@ -81,7 +81,7 @@ export function Footer() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">Secure Payments</h4>
-                <p className="text-xs text-zinc-400 mt-0.5">M-Pesa & Cash on Delivery</p>
+                <p className="text-xs text-zinc-400 mt-0.5">M-Pesa Express</p>
               </div>
             </div>
 
