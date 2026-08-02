@@ -17,15 +17,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser]       = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true); // true on mount while we check session
 
-    // Rehydrate session on mount — try the access token first.
-    // If it has expired, attemptRefresh() inside request() handles it silently.
-    // If the refresh token is also gone/invalid we get an error and clear the user.
+    // Rehydrate session on mount.
+    // Strategy:
+    //   1. Try /auth/me — succeeds if the access token cookie is still valid.
+    //   2. If that fails for any auth reason (expired, missing cookie), attempt a
+    //      proactive token refresh using the refresh_token cookie, then retry /me.
+    //   3. Only clear the user if the refresh also fails (refresh token expired/revoked).
     const fetchMe = useCallback(async () => {
         try {
             const res = await authApi.me();
             setUser(res.user);
         } catch {
-            setUser(null);
+            // Access token missing or expired — try to refresh proactively
+            try {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5500/api/v1"}/auth/refresh`, {
+                    method:      "POST",
+                    credentials: "include",
+                });
+                // After refresh, the new access token cookie is set — retry /me
+                const res = await authApi.me();
+                setUser(res.user);
+            } catch {
+                // Refresh token also gone/expired — user must log in again
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }
