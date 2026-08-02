@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+
+const GRID_PAGE_SIZE = 12; // product grid shows 12 per page; other pages use PRODUCTS_PER_PAGE (8)
 import { ProductCard } from "@/components/ui/ProductCard";
 import { productApi, type Product } from "@/config/api";
 
@@ -62,7 +64,7 @@ function ProductGridInner() {
         productApi.list({
             category,
             page: currentPage,
-            limit: PRODUCTS_PER_PAGE,
+            limit: GRID_PAGE_SIZE,
             sort,
             search: trimmedQuery || undefined,
         })
