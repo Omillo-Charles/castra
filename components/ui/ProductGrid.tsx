@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
@@ -49,13 +49,18 @@ function ProductGridInner() {
         return value === "price-asc" || value === "price-desc" ? value : "default";
     })();
 
-    // Fetch products whenever category, page, or sort changes
+    // Keep a ref to the latest searchParams so the categorychange listener
+    // always reads the current value without needing to be re-registered on
+    // every navigation — which was the root cause of the stale-closure race.
+    const searchParamsRef = useRef(searchParams);
+    useEffect(() => { searchParamsRef.current = searchParams; }, [searchParams]);
+
+    // Fetch products whenever category, page, sort, or search changes.
+    // setLoading is synchronous here — queueMicrotask was causing the spinner
+    // to be skipped/deferred under React's prod batching.
     useEffect(() => {
         let isMounted = true;
-
-        queueMicrotask(() => {
-            if (isMounted) setLoading(true);
-        });
+        setLoading(true);
 
         const category = activeCategory === "All" ? undefined : activeCategory;
         const sort = sortBy === "default" ? undefined : sortBy;
@@ -74,8 +79,7 @@ function ProductGridInner() {
                 setTotalPages(res.pagination?.totalPages || 1);
                 setTotalProducts(res.pagination?.total || (res.products?.length ?? 0));
             })
-            .catch((err) => {
-                console.error("Failed to load products:", err);
+            .catch(() => {
                 if (isMounted) setProducts([]);
             })
             .finally(() => {
@@ -87,38 +91,40 @@ function ProductGridInner() {
         };
     }, [activeCategory, currentPage, sortBy, searchQuery]);
 
-    // React to navbar category clicks — listens for custom event
+    // React to navbar category clicks — listens for a custom DOM event.
+    // searchParams is intentionally NOT in the dep array — we use a ref
+    // instead so this listener is only registered once per router instance
+    // and never fires with stale closure data during mid-navigation renders.
     useEffect(() => {
         const onCategoryChange = (e: Event) => {
             const slug = (e as CustomEvent<{ slug?: string }>).detail.slug;
+            const params = new URLSearchParams(searchParamsRef.current.toString());
+
             if (!slug) {
-                const params = new URLSearchParams(searchParams.toString());
                 params.delete("category");
                 params.set("page", "1");
-                const queryString = params.toString();
-                router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
-                return;
-            }
-
-            const match = CATEGORIES_LIST.find(
-                (c) => c.toLowerCase().replace(/\s+/g, "-") === slug
-            );
-            if (match) {
-                const params = new URLSearchParams(searchParams.toString());
+            } else {
+                const match = CATEGORIES_LIST.find(
+                    (c) => c.toLowerCase().replace(/\s+/g, "-") === slug
+                );
+                if (!match) return;
                 params.set("category", slug);
                 params.set("page", "1");
-                const queryString = params.toString();
-                router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
             }
+
+            const queryString = params.toString();
+            router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
         };
 
         window.addEventListener("categorychange", onCategoryChange);
         return () => window.removeEventListener("categorychange", onCategoryChange);
-    }, [router, searchParams]);
+    }, [router]); // ← router only; searchParams handled via ref above
 
+    // updateQueryParams no longer sets loading — the fetch effect owns that
+    // exclusively. Setting it here created a double-loading race where a
+    // stale in-flight request's finally() could clear the spinner too early.
     const updateQueryParams = (updates: Record<string, string | null>) => {
-        const params = new URLSearchParams(searchParams.toString());
-        setLoading(true);
+        const params = new URLSearchParams(searchParamsRef.current.toString());
 
         Object.entries(updates).forEach(([key, value]) => {
             if (value === null || value === "") {
