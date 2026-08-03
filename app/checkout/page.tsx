@@ -29,20 +29,25 @@ const STEP_KEYS = STEPS.map((s) => s.key);
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
 /* ── Field primitive ── */
-function Field({ label, type = "text", value, onChange, placeholder, icon, required = true, autoComplete }: {
+function Field({ label, type = "text", value, onChange, placeholder, icon, required = true, autoComplete, disabled = false }: {
     label: string; type?: string; value: string; onChange: (v: string) => void;
-    placeholder: string; icon?: React.ReactNode; required?: boolean; autoComplete?: string;
+    placeholder: string; icon?: React.ReactNode; required?: boolean; autoComplete?: string; disabled?: boolean;
 }) {
     return (
         <div className="space-y-1.5">
             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                 {label}{required && <span className="text-[#C6A16A] ml-0.5">*</span>}
             </label>
-            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10 transition-all duration-200">
+            <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border transition-all duration-200 ${
+                disabled
+                    ? "border-zinc-800 bg-zinc-900/40 cursor-not-allowed opacity-50"
+                    : "border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10"
+            }`}>
                 {icon && <span className="text-zinc-500 flex-shrink-0">{icon}</span>}
                 <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder} autoComplete={autoComplete} required={required}
-                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none min-w-0" />
+                    disabled={disabled}
+                    className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none min-w-0 disabled:cursor-not-allowed" />
             </div>
         </div>
     );
@@ -515,11 +520,12 @@ export default function CheckoutPage() {
                                 <button
                                     type="button"
                                     onClick={() => setPayMethod("mpesa-stk")}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                                        payMethod === "mpesa-stk" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                                    disabled
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all opacity-40 cursor-not-allowed ${
+                                        payMethod === "mpesa-stk" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400"
                                     }`}
                                 >
-                                    M-Pesa STK Prompt
+                                    M-Pesa STK Prompt <span className="text-[10px] font-normal">(coming soon)</span>
                                 </button>
                             </div>
 
@@ -585,7 +591,11 @@ export default function CheckoutPage() {
                                                 <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt on your phone — just enter your PIN.</p>
                                             </div>
                                             <div className="space-y-3">
-                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
+                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="Coming soon — not available yet" icon={<Phone className="w-4 h-4" />} autoComplete="tel" disabled />
+                                                <p className="text-[11px] text-amber-400/80 flex items-center gap-1.5">
+                                                    <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                                                    STK Push is not yet active. Please use Manual M-Pesa payment above.
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
