@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
     User, MapPin, ShoppingBag, Heart, Settings,
     LogOut, ChevronRight, Package, Truck, CheckCircle2,
-    Edit2, Phone, Mail, Home, Plus, X,
+    Edit2, Phone, Mail, Home, Plus, X, KeyRound,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { userApi, addressApi, orderApi, normaliseStatus, type Order } from "@/config/api";
@@ -703,6 +703,24 @@ function Profile() {
                                 {pwdMsg.text}
                             </p>
                         )}
+                        {/* Forgot current password helper */}
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                            <KeyRound className="w-3 h-3 text-zinc-500" />
+                            <p className="text-[11px] text-zinc-500">
+                                Forgot your current password?{" "}
+                                <a
+                                    href="/account"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        // Navigate to sign-in page; user can click "Forgot password?" there
+                                        window.location.href = "/account";
+                                    }}
+                                    className="text-[#C6A16A] font-semibold hover:underline"
+                                >
+                                    Reset via email link
+                                </a>
+                            </p>
+                        </div>
                         <button type="submit" disabled={savingPwd}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
                             {savingPwd
