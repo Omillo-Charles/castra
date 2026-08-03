@@ -209,7 +209,26 @@ export default function CheckoutPage() {
         }
     }, [loading, placed, items.length, router]);
 
-    const goNext = () => { const n = STEP_KEYS[currentIndex + 1]; if (n) setStep(n as Step); };
+    const goNext = () => {
+        // Validate contact step before advancing
+        if (step === "details") {
+            if (!firstName.trim() || !lastName.trim()) {
+                setPlaceErr("Please enter your first and last name.");
+                return;
+            }
+            if (!email.trim()) {
+                setPlaceErr("Email address is required so we can send your order confirmation.");
+                return;
+            }
+            if (!phone.trim()) {
+                setPlaceErr("Phone number is required for delivery coordination.");
+                return;
+            }
+            setPlaceErr("");
+        }
+        const n = STEP_KEYS[currentIndex + 1];
+        if (n) setStep(n as Step);
+    };
     const goBack = () => { const p = STEP_KEYS[currentIndex - 1]; if (p) setStep(p as Step); };
 
     const placeOrder = async () => {
@@ -217,7 +236,7 @@ export default function CheckoutPage() {
         setPlacing(true);
         try {
             const res = await orderApi.place({
-                contact: { firstName, lastName, email: email || undefined, phone },
+                contact: { firstName, lastName, email, phone },
                 delivery: { street: address, city, county, notes: notes || undefined },
                 payment: {
                     method: payMethod,
@@ -393,8 +412,11 @@ export default function CheckoutPage() {
                                 <Field label="First name" value={firstName} onChange={setFirstName} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" />
                                 <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Wanjiku" autoComplete="family-name" />
                             </div>
-                            <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" required={false} />
+                            <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" />
                             <Field label="Phone number" type="tel" value={phone} onChange={setPhone} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
+                            {placeErr && (
+                                <p className="text-xs text-red-400 font-semibold">{placeErr}</p>
+                            )}
                         </div>
                     )}
 
