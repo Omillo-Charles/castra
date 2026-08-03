@@ -133,6 +133,27 @@ export const authApi = {
     //Returns the URL to redirect the browser to for Google OAuth.
     //This is a full-page redirect, not a fetch call.
     googleLoginUrl: () => `${BASE_URL}/auth/google`,
+
+    // Send a password-reset link to the given email address.
+    forgotPassword: (body: { email: string }) =>
+        request<ApiResponse>("/auth/forgot-password", {
+            method: "POST",
+            body: JSON.stringify(body),
+        }),
+
+    // Set a new password using the token from the reset email.
+    resetPassword: (body: { token: string; password: string }) =>
+        request<ApiResponse>("/auth/reset-password", {
+            method: "POST",
+            body: JSON.stringify(body),
+        }),
+
+    // Re-send the verification email for the given address.
+    resendVerification: (body: { email: string }) =>
+        request<ApiResponse>("/auth/resend-verification", {
+            method: "POST",
+            body: JSON.stringify(body),
+        }),
 };
 
 // User API

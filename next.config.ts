@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-// ─── Content Security Policy ───────────────────────────────────────────────────
+// Content Security Policy
 // Resolve the API origin from the env so connect-src stays in sync with
 // NEXT_PUBLIC_API_URL regardless of environment (dev, staging, production).
 

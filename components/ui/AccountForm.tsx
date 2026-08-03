@@ -318,15 +318,7 @@ function ForgotPasswordForm({ prefillEmail, onBack }: { prefillEmail: string; on
 
         setLoading(true);
         try {
-            // TODO: wire to POST /api/v1/auth/forgot-password once the backend is ready
-            // await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ email }),
-            // });
-
-            // Simulated delay while backend is not yet wired
-            await new Promise(r => setTimeout(r, 1200));
+            await authApi.forgotPassword({ email });
             setSent(true);
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -458,13 +450,7 @@ function VerifyEmailPanel({ email, onSkip }: { email: string; onSkip: () => void
         setResentErr("");
         setResending(true);
         try {
-            // TODO: wire to POST /api/v1/auth/resend-verification once the backend is ready
-            // await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/resend-verification`, {
-            //     method:  "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body:    JSON.stringify({ email }),
-            // });
-            await new Promise(r => setTimeout(r, 1000));
+            await authApi.resendVerification({ email });
             setResentMsg("Email resent! Check your inbox (and spam folder).");
         } catch (err: unknown) {
             setResentErr(err instanceof Error ? err.message : "Failed to resend. Please try again.");

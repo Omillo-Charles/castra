@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     User, MapPin, ShoppingBag, Heart, Settings,
     LogOut, ChevronRight, Package, Truck, CheckCircle2,
@@ -38,10 +38,35 @@ const ORDER_STATUS: Record<string, { label: string; color: string }> = {
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
 export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
+    );
+}
+
+function DashboardContent() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { success } = useToast();
     const [section, setSection] = useState<Section>("overview");
+
+    // Show a one-time toast when the user arrives via the email verification link
+    useEffect(() => {
+        if (searchParams.get("verified") === "1") {
+            success("Email verified! Your account is fully active.");
+            // Clean the URL without a page reload
+            const url = new URL(window.location.href);
+            url.searchParams.delete("verified");
+            window.history.replaceState({}, "", url.toString());
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Route protection — redirect to /account if not logged in
     useEffect(() => {
