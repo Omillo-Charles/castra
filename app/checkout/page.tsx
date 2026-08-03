@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
     ChevronRight, Package, MapPin, CreditCard,
     CheckCircle2, ArrowRight, ChevronDown, Truck,
-    Phone, Mail, User, Building2, Lock,
+    Phone, Mail, User, Building2, Lock, Copy, Check, Info,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useCart } from "@/context/CartContext";
@@ -142,9 +142,11 @@ export default function CheckoutPage() {
 
     // Stored after a successful placeOrder call
     const [placedOrderRef, setPlacedOrderRef] = useState("");
-    const [placedOrderId, setPlacedOrderId] = useState("");
-    const [stkRequestId, setStkRequestId] = useState<string | null>(null);
-    const [stkPayStatus, setStkPayStatus] = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
+    // placedOrderId kept for future use (e.g. deep-link to order page)
+    const [placedOrderId,  setPlacedOrderId]  = useState("");
+    // STK polling state — only populated when customer chose mpesa-stk
+    const [stkRequestId,   setStkRequestId]   = useState<string | null>(null);
+    const [stkPayStatus,   setStkPayStatus]   = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
 
     // ── Contact — pre-fill from logged-in user ──
     const [firstName, setFirstName] = useState(user?.firstName ?? "");
@@ -161,8 +163,15 @@ export default function CheckoutPage() {
     const [savedAddresses, setSavedAddresses] = useState<import("@/config/api").Address[]>([]);
 
     // Payment
-    const [payMethod] = useState<"mpesa-stk">("mpesa-stk");
-    const [stkPhone, setStkPhone] = useState("");
+    const [payMethod, setPayMethod] = useState<"manual" | "mpesa-stk">("manual");
+    const [stkPhone, setStkPhone]   = useState("");
+    const [copiedField, setCopiedField] = useState<string | null>(null);
+
+    const handleCopy = (text: string, label: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedField(label);
+        setTimeout(() => setCopiedField(null), 2000);
+    };
 
     const items = cart?.items ?? [];
     const subtotal = cart?.subtotal ?? 0;
@@ -209,57 +218,41 @@ export default function CheckoutPage() {
         }
     }, [loading, placed, items.length, router]);
 
-    const goNext = () => {
-        // Validate contact step before advancing
-        if (step === "details") {
-            if (!firstName.trim() || !lastName.trim()) {
-                setPlaceErr("Please enter your first and last name.");
-                return;
-            }
-            if (!email.trim()) {
-                setPlaceErr("Email address is required so we can send your order confirmation.");
-                return;
-            }
-            if (!phone.trim()) {
-                setPlaceErr("Phone number is required for delivery coordination.");
-                return;
-            }
-            setPlaceErr("");
-        }
-        const n = STEP_KEYS[currentIndex + 1];
-        if (n) setStep(n as Step);
-    };
+    const goNext = () => { const n = STEP_KEYS[currentIndex + 1]; if (n) setStep(n as Step); };
     const goBack = () => { const p = STEP_KEYS[currentIndex - 1]; if (p) setStep(p as Step); };
 
     const placeOrder = async () => {
         setPlaceErr("");
+
+        // Validate STK phone before submitting
+        if (payMethod === "mpesa-stk" && !stkPhone.trim()) {
+            setPlaceErr("Please enter your M-Pesa phone number for the STK prompt.");
+            return;
+        }
+
         setPlacing(true);
         try {
             const res = await orderApi.place({
-                contact: { firstName, lastName, email, phone },
+                contact:  { firstName, lastName, email: email || undefined, phone },
                 delivery: { street: address, city, county, notes: notes || undefined },
-                payment: {
-                    method: payMethod,
-                    stkPhone: stkPhone ? stkPhone : undefined,
-                },
+                payment: payMethod === "mpesa-stk"
+                    ? { method: "mpesa-stk", stkPhone: stkPhone.trim() }
+                    : { method: "manual" },
             });
 
             setPlacedOrderRef(res.order.ref);
             setPlacedOrderId(res.order.id);
             setPlaced(true);
-
-            // Sync the frontend cart state — the server already cleared it
-            // during the transaction, so this brings the client in line.
             refreshCart();
 
-            // ── STK Push: poll for payment confirmation ──
-            if (res.stk?.checkoutRequestId) {
+            // STK Push: start polling only when the server actually triggered a push
+            if (payMethod === "mpesa-stk" && res.stk?.checkoutRequestId) {
                 const reqId = res.stk.checkoutRequestId;
                 setStkRequestId(reqId);
                 setStkPayStatus("PENDING");
 
                 let attempts = 0;
-                const MAX_ATTEMPTS = 12; // 12 × 5 s = 60 s total
+                const MAX_ATTEMPTS = 12; // 12 × 5s = 60s total
 
                 const poll = async () => {
                     if (attempts >= MAX_ATTEMPTS) {
@@ -269,15 +262,8 @@ export default function CheckoutPage() {
                     attempts++;
                     try {
                         const qRes = await paymentApi.stkQuery(reqId);
-                        if (qRes.status === "PAID") {
-                            setStkPayStatus("PAID");
-                            return;
-                        }
-                        if (qRes.status === "FAILED") {
-                            setStkPayStatus("FAILED");
-                            return;
-                        }
-                        // Still PENDING — retry
+                        if (qRes.status === "PAID")   { setStkPayStatus("PAID");   return; }
+                        if (qRes.status === "FAILED") { setStkPayStatus("FAILED"); return; }
                         setTimeout(poll, 5000);
                     } catch {
                         setTimeout(poll, 5000);
@@ -285,7 +271,6 @@ export default function CheckoutPage() {
                 };
                 setTimeout(poll, 5000);
             }
-
         } catch (err: unknown) {
             setPlaceErr(err instanceof Error ? err.message : "Failed to place order. Please try again.");
         } finally {
@@ -294,10 +279,12 @@ export default function CheckoutPage() {
     };
 
     const waMsg = encodeURIComponent(
-        `Hi, I'd like to confirm my order:\n\n` +
+        `Hi, I'd like to confirm my order:\n\nRef: ${placedOrderRef}\n` +
         items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
         `\n\nTotal: ${formatKES(total)} (Delivery fee excluded)\nDelivery to: ${address}, ${city}, ${county}` +
-        `\nPayment: M-Pesa STK Push`
+        (payMethod === "mpesa-stk"
+            ? `\nPayment: M-Pesa STK Push to ${stkPhone}`
+            : `\nPayment: M-Pesa Manual — Paybill 542542 / Send Money 0704147774`)
     );
 
     // Loading spinner while cart loads
@@ -327,14 +314,15 @@ export default function CheckoutPage() {
                     </p>
                 </div>
 
-                {/* STK Push payment status */}
-                {stkRequestId && (
-                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${stkPayStatus === "PAID"
-                        ? "bg-emerald-500/10 border-emerald-200 border-emerald-500/25 text-emerald-400"
-                        : stkPayStatus === "FAILED"
-                            ? "bg-red-500/10 border-red-200 text-red-500"
-                            : "bg-amber-500/10 border-amber-200 border-amber-500/25 text-amber-400"
-                        }`}>
+                {/* STK payment status — only shown for STK orders */}
+                {payMethod === "mpesa-stk" && stkRequestId && (
+                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${
+                        stkPayStatus === "PAID"
+                            ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
+                            : stkPayStatus === "FAILED"
+                            ? "bg-red-500/10 border-red-500/25 text-red-400"
+                            : "bg-amber-500/10 border-amber-500/25 text-amber-400"
+                    }`}>
                         {stkPayStatus === "PAID" ? (
                             <><CheckCircle2 className="w-4 h-4" /> M-Pesa payment confirmed!</>
                         ) : stkPayStatus === "FAILED" ? (
@@ -343,6 +331,43 @@ export default function CheckoutPage() {
                             <><span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin flex-shrink-0" /> Waiting for M-Pesa confirmation…</>
                         )}
                     </div>
+                )}
+
+                {/* Manual payment instructions — only shown for manual orders */}
+                {payMethod === "manual" && (
+                <div className="bg-[#171717] rounded-2xl border border-[#C6A16A]/30 p-5 space-y-3 text-left max-w-md mx-auto">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#C6A16A] flex items-center gap-1.5">
+                        <Info className="w-4 h-4" /> M-Pesa Payment Details
+                    </p>
+                    <div className="space-y-2 text-xs text-zinc-300">
+                        <div className="p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-1">
+                            <p className="font-bold text-white text-sm">Option 1: M-Pesa Paybill</p>
+                            <p className="flex justify-between items-center">
+                                <span className="text-zinc-400">Business No: <strong className="text-white font-mono text-xs">542542</strong></span>
+                                <button type="button" onClick={() => handleCopy("542542", "paybill")} className="text-[10px] text-[#C6A16A] hover:underline flex items-center gap-1 font-semibold">
+                                    {copiedField === "paybill" ? <><Check className="w-3 h-3 text-emerald-400" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+                                </button>
+                            </p>
+                            <p className="flex justify-between items-center">
+                                <span className="text-zinc-400">Account No: <strong className="text-white font-mono text-xs">03703439943450</strong></span>
+                                <button type="button" onClick={() => handleCopy("03703439943450", "acc")} className="text-[10px] text-[#C6A16A] hover:underline flex items-center gap-1 font-semibold">
+                                    {copiedField === "acc" ? <><Check className="w-3 h-3 text-emerald-400" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+                                </button>
+                            </p>
+                            <p className="text-zinc-400 text-[11px]">Account Name: <strong className="text-zinc-200">Laureen Nyaboke Maina</strong></p>
+                        </div>
+                        <div className="p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-1">
+                            <p className="font-bold text-white text-sm">Option 2: Send Money</p>
+                            <p className="flex justify-between items-center">
+                                <span className="text-zinc-400">Phone No: <strong className="text-white font-mono text-xs">0704147774</strong></span>
+                                <button type="button" onClick={() => handleCopy("0704147774", "phone")} className="text-[10px] text-[#C6A16A] hover:underline flex items-center gap-1 font-semibold">
+                                    {copiedField === "phone" ? <><Check className="w-3 h-3 text-emerald-400" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+                                </button>
+                            </p>
+                            <p className="text-zinc-400 text-[11px]">Recipient: <strong className="text-zinc-200">Laureen Nyaboke Maina</strong></p>
+                        </div>
+                    </div>
+                </div>
                 )}
 
                 <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -412,11 +437,8 @@ export default function CheckoutPage() {
                                 <Field label="First name" value={firstName} onChange={setFirstName} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" />
                                 <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Wanjiku" autoComplete="family-name" />
                             </div>
-                            <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" />
+                            <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" required={false} />
                             <Field label="Phone number" type="tel" value={phone} onChange={setPhone} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
-                            {placeErr && (
-                                <p className="text-xs text-red-400 font-semibold">{placeErr}</p>
-                            )}
                         </div>
                     )}
 
@@ -472,32 +494,104 @@ export default function CheckoutPage() {
                         </div>
                     )}
 
-                    {/* STEP 3: Payment — unchanged */}
+                    {/* STEP 3: Payment */}
                     {step === "payment" && (
                         <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-6 space-y-5">
                             <h2 className="text-sm font-bold text-white flex items-center gap-2 font-glacial">
                                 <CreditCard className="w-4 h-4 text-[#C6A16A]" /> Payment Method
                             </h2>
-                            <div className="space-y-3">
-                                {/* STK Push only */}
-                                <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 transition-all">
-                                    <div className="flex-1 space-y-3">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-bold text-white">M-Pesa STK Push</p>
-                                            </div>
-                                            <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt — just enter your PIN.</p>
+
+                            {/* Payment mode selector tabs */}
+                            <div className="flex gap-2 p-1 bg-zinc-900 rounded-xl w-fit">
+                                <button
+                                    type="button"
+                                    onClick={() => setPayMethod("manual")}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                                        payMethod === "manual" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                                    }`}
+                                >
+                                    Paybill / Send Money (Manual)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPayMethod("mpesa-stk")}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                                        payMethod === "mpesa-stk" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                                    }`}
+                                >
+                                    M-Pesa STK Prompt
+                                </button>
+                            </div>
+
+                            {payMethod === "manual" ? (
+                                <div className="space-y-4">
+                                    <div className="p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-[#C6A16A]" />
+                                            <p className="text-sm font-bold text-white">Manual M-Pesa Payment</p>
                                         </div>
-                                        <div className="space-y-3">
-                                            <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
-                                            <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-400">
-                                                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                                                <span>After placing your order, an M-Pesa prompt for <span className="font-bold text-zinc-200">{formatKES(total)}</span> will be sent to your phone.</span>
+                                        <p className="text-xs text-zinc-400 leading-relaxed">
+                                            Please use either of the options below on your phone&apos;s M-Pesa menu to pay <strong className="text-white">{formatKES(total)}</strong>.
+                                        </p>
+
+                                        <div className="grid sm:grid-cols-2 gap-3">
+                                            {/* Paybill Card */}
+                                            <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-bold text-[#C6A16A] uppercase tracking-wider">Option A: Paybill</span>
+                                                    <button type="button" onClick={() => handleCopy("542542", "paybill")} className="text-[11px] text-[#C6A16A] font-semibold hover:underline flex items-center gap-1">
+                                                        {copiedField === "paybill" ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
+                                                    </button>
+                                                </div>
+                                                <div className="text-xs space-y-1">
+                                                    <p className="text-zinc-400">Business No: <span className="font-mono font-bold text-white text-sm ml-1">542542</span></p>
+                                                    <p className="text-zinc-400 flex items-center justify-between">
+                                                        <span>Account No: <span className="font-mono font-bold text-white text-xs ml-1">03703439943450</span></span>
+                                                        <button type="button" onClick={() => handleCopy("03703439943450", "acc")} className="text-[10px] text-[#C6A16A] hover:underline flex items-center gap-1">
+                                                            {copiedField === "acc" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                                        </button>
+                                                    </p>
+                                                    <p className="text-zinc-400 text-[11px] pt-1 border-t border-zinc-800/80">Account Name: <span className="text-zinc-200 font-medium">Laureen Nyaboke Maina</span></p>
+                                                </div>
+                                            </div>
+
+                                            {/* Send Money Card */}
+                                            <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-bold text-[#C6A16A] uppercase tracking-wider">Option B: Send Money</span>
+                                                    <button type="button" onClick={() => handleCopy("0704147774", "phone")} className="text-[11px] text-[#C6A16A] font-semibold hover:underline flex items-center gap-1">
+                                                        {copiedField === "phone" ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
+                                                    </button>
+                                                </div>
+                                                <div className="text-xs space-y-1">
+                                                    <p className="text-zinc-400">Phone No: <span className="font-mono font-bold text-white text-sm ml-1">0704147774</span></p>
+                                                    <p className="text-zinc-400 text-[11px] pt-1 border-t border-zinc-800/80">Recipient Name: <span className="text-zinc-200 font-medium">Laureen Nyaboke Maina</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-400">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                            <span>After completing payment, click <strong>Continue</strong> below to place your order. You will also get a direct WhatsApp confirmation link.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 transition-all">
+                                        <div className="flex-1 space-y-3">
+                                            <div>
+                                                <p className="text-sm font-bold text-white">M-Pesa STK Push Prompt</p>
+                                                <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt on your phone — just enter your PIN.</p>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="e.g. 0712 345 678" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
+
                             <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-400">
                                 <Lock className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0" />
                                 Your payment details are safe. We do not store your M-Pesa PIN or personal credentials.
@@ -532,9 +626,9 @@ export default function CheckoutPage() {
                                     <button type="button" onClick={() => setStep("payment")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
                                 <p className="text-sm font-semibold text-zinc-300">
-                                    M-Pesa STK Push
+                                    {payMethod === "manual" ? "Manual M-Pesa (Paybill 542542 / Send Money 0704147774)" : "M-Pesa STK Prompt"}
                                 </p>
-                                {stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
+                                {payMethod === "mpesa-stk" && stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
                             </div>
                         </div>
                     )}

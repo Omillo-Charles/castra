@@ -423,7 +423,7 @@ export type OrderStatus =
     | "OUT_FOR_DELIVERY"
     | "DELIVERED";
 
-export type PaymentMethod = "MPESA_STK";
+export type PaymentMethod = "MPESA_STK" | "MPESA_MANUAL";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 
 export type OrderItem = {
@@ -515,8 +515,8 @@ export type PlaceOrderBody = {
         notes?: string;
     };
     payment: {
-        method: "mpesa-stk";
-        stkPhone?: string;
+        method: "manual" | "mpesa-stk";
+        stkPhone?: string; // required when method = "mpesa-stk"
     };
 };
 

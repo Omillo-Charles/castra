@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { authApi } from "@/config/api";
 
 /* ─── Inner component — reads searchParams ─── */
 function ResetPasswordContent() {
@@ -52,15 +53,7 @@ function ResetPasswordContent() {
 
         setLoading(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`, {
-                method:  "POST",
-                headers: { "Content-Type": "application/json" },
-                body:    JSON.stringify({ token, password }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to reset password.");
-            }
+            await authApi.resetPassword({ token, password });
             setDone(true);
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
