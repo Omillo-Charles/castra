@@ -57,7 +57,7 @@
   --font-mulish: var(--font-mulish), sans-serif;
 }
 
-/* ─── Global Base Styles ──────────────────────────────────────────────────── */
+/* Global Base Styles */
 *,
 *::before,
 *::after {
@@ -76,7 +76,7 @@ body {
   line-height: 1.6;
 }
 
-/* ─── Heading defaults: Glacial Indifference ─────────────────────────────── */
+/* Heading defaults: Glacial Indifference */
 h1,
 h2,
 h3,
@@ -87,7 +87,7 @@ h6 {
   line-height: 1.2;
 }
 
-/* ─── Code / mono ───────────────────────────────────────────────────────── */
+/* Code / mono */
 code,
 kbd,
 pre,

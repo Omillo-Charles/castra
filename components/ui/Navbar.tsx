@@ -90,7 +90,7 @@ export function Navbar() {
                     {/* EXTREME LEFT: Delivery Notice */}
                     <div className="flex items-center gap-2">
                         <Truck className="w-3.5 h-3.5 text-[#C6A16A]" />
-                        <span className="font-chirp font-medium tracking-wide text-zinc-200 text-[11px] sm:text-xs">
+                        <span className="font-mulish font-semibold tracking-wide text-zinc-200 text-[11px] sm:text-xs">
                             We do delivery countrywide
                         </span>
                     </div>
