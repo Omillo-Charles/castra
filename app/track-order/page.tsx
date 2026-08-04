@@ -290,7 +290,11 @@ function TrackOrderContent() {
 
 export default function TrackOrderPage() {
     return (
-        <Suspense>
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <span className="w-7 h-7 border-2 border-zinc-700 border-t-[#C6A16A] rounded-full animate-spin" />
+            </div>
+        }>
             <TrackOrderContent />
         </Suspense>
     );
