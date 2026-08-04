@@ -5,6 +5,10 @@ export const metadata = {
     description: "Sign in or create a Castra account.",
 };
 
+// Dynamic — page receives ?error= from OAuth redirects and ?verified= from
+// email verification. Static rendering would ignore these params.
+export const dynamic = "force-dynamic";
+
 export default function AccountPage() {
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-10 bg-[#0A0A0A]">

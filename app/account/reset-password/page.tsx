@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
@@ -7,6 +8,11 @@ export const metadata = {
     title: "Reset Password – Castra Households",
     description: "Set a new password for your Castra account.",
 };
+
+// Force dynamic — page reads ?token= from the URL via useSearchParams inside
+// ResetPasswordForm. Without this, Next.js may statically render the page and
+// fail to complete hydration when the token param is present.
+export const dynamic = "force-dynamic";
 
 export default function ResetPasswordPage() {
     return (
@@ -97,7 +103,13 @@ export default function ResetPasswordPage() {
                     </div>
 
                     {/* Client component — handles searchParams + form state */}
-                    <ResetPasswordForm />
+                    <Suspense fallback={
+                        <div className="flex items-center justify-center py-10">
+                            <span className="w-6 h-6 border-2 border-zinc-700 border-t-[#C6A16A] rounded-full animate-spin" />
+                        </div>
+                    }>
+                        <ResetPasswordForm />
+                    </Suspense>
 
                     {/* Back link */}
                     <p className="text-center text-xs text-zinc-400 mt-6">
