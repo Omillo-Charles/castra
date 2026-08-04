@@ -100,16 +100,18 @@ function ProductGridInner() {
             const slug = (e as CustomEvent<{ slug?: string }>).detail.slug;
             const params = new URLSearchParams(searchParamsRef.current.toString());
 
+            // Always clear search and reset to page 1 when switching category
+            params.delete("search");
+            params.set("page", "1");
+
             if (!slug) {
                 params.delete("category");
-                params.set("page", "1");
             } else {
                 const match = CATEGORIES_LIST.find(
                     (c) => c.toLowerCase().replace(/\s+/g, "-") === slug
                 );
                 if (!match) return;
                 params.set("category", slug);
-                params.set("page", "1");
             }
 
             const queryString = params.toString();
@@ -142,7 +144,8 @@ function ProductGridInner() {
         const slug = cat === "All" ? null : cat.toLowerCase().replace(/\s+/g, "-");
         updateQueryParams({
             category: slug,
-            page: "1",
+            page:     "1",
+            search:   null, // clear any active search when switching category
         });
     };
 

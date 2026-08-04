@@ -29,9 +29,9 @@ const STEP_KEYS = STEPS.map((s) => s.key);
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
 /* ── Field primitive ── */
-function Field({ label, type = "text", value, onChange, placeholder, icon, required = true, autoComplete, disabled = false }: {
+function Field({ label, type = "text", value, onChange, placeholder, icon, required = true, autoComplete, disabled = false, error }: {
     label: string; type?: string; value: string; onChange: (v: string) => void;
-    placeholder: string; icon?: React.ReactNode; required?: boolean; autoComplete?: string; disabled?: boolean;
+    placeholder: string; icon?: React.ReactNode; required?: boolean; autoComplete?: string; disabled?: boolean; error?: string;
 }) {
     return (
         <div className="space-y-1.5">
@@ -41,14 +41,17 @@ function Field({ label, type = "text", value, onChange, placeholder, icon, requi
             <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border transition-all duration-200 ${
                 disabled
                     ? "border-zinc-800 bg-zinc-900/40 cursor-not-allowed opacity-50"
+                    : error
+                    ? "border-red-500/60 bg-zinc-900 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/10"
                     : "border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-[#C6A16A]/10"
             }`}>
-                {icon && <span className="text-zinc-500 flex-shrink-0">{icon}</span>}
+                {icon && <span className={`flex-shrink-0 ${error ? "text-red-500" : "text-zinc-500"}`}>{icon}</span>}
                 <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder} autoComplete={autoComplete} required={required}
                     disabled={disabled}
                     className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none min-w-0 disabled:cursor-not-allowed" />
             </div>
+            {error && <p className="text-xs text-red-400 font-medium">{error}</p>}
         </div>
     );
 }
@@ -144,6 +147,7 @@ export default function CheckoutPage() {
     const [placed, setPlaced] = useState(false);
     const [placing, setPlacing] = useState(false);
     const [placeErr, setPlaceErr] = useState("");
+    const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
 
     // Stored after a successful placeOrder call
     const [placedOrderRef, setPlacedOrderRef] = useState("");
@@ -223,8 +227,36 @@ export default function CheckoutPage() {
         }
     }, [loading, placed, items.length, router]);
 
-    const goNext = () => { const n = STEP_KEYS[currentIndex + 1]; if (n) setStep(n as Step); };
-    const goBack = () => { const p = STEP_KEYS[currentIndex - 1]; if (p) setStep(p as Step); };
+    const goNext = () => {
+        const errors: Record<string, string> = {};
+
+        if (step === "details") {
+            if (!firstName.trim()) errors.firstName = "First name is required.";
+            if (!lastName.trim())  errors.lastName  = "Last name is required.";
+            if (!phone.trim())     errors.phone     = "Phone number is required for delivery coordination.";
+        }
+
+        if (step === "delivery") {
+            if (!address.trim()) errors.address = "Street / estate address is required.";
+            if (!city.trim())    errors.city    = "Town or city is required.";
+            if (!county.trim())  errors.county  = "County is required.";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setStepErrors(errors);
+            return;
+        }
+
+        setStepErrors({});
+        const n = STEP_KEYS[currentIndex + 1];
+        if (n) setStep(n as Step);
+    };
+
+    const goBack = () => {
+        setStepErrors({});
+        const p = STEP_KEYS[currentIndex - 1];
+        if (p) setStep(p as Step);
+    };
 
     const placeOrder = async () => {
         setPlaceErr("");
@@ -439,11 +471,11 @@ export default function CheckoutPage() {
                                 <User className="w-4 h-4 text-[#C6A16A]" /> Contact Information
                             </h2>
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <Field label="First name" value={firstName} onChange={setFirstName} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" />
-                                <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Wanjiku" autoComplete="family-name" />
+                                <Field label="First name" value={firstName} onChange={(v) => { setFirstName(v); setStepErrors(e => ({ ...e, firstName: "" })); }} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" error={stepErrors.firstName} />
+                                <Field label="Last name" value={lastName} onChange={(v) => { setLastName(v); setStepErrors(e => ({ ...e, lastName: "" })); }} placeholder="Wanjiku" autoComplete="family-name" error={stepErrors.lastName} />
                             </div>
                             <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" required={false} />
-                            <Field label="Phone number" type="tel" value={phone} onChange={setPhone} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" />
+                            <Field label="Phone number" type="tel" value={phone} onChange={(v) => { setPhone(v); setStepErrors(e => ({ ...e, phone: "" })); }} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" error={stepErrors.phone} />
                         </div>
                     )}
 
@@ -481,11 +513,11 @@ export default function CheckoutPage() {
                                 </div>
                             )}
 
-                            <Field label="Street / Estate / Building" value={address} onChange={setAddress}
-                                placeholder="e.g. Westlands, Mpaka Road, Apt 4B" icon={<Building2 className="w-4 h-4" />} autoComplete="address-line1" />
+                            <Field label="Street / Estate / Building" value={address} onChange={(v) => { setAddress(v); setStepErrors(e => ({ ...e, address: "" })); }}
+                                placeholder="e.g. Westlands, Mpaka Road, Apt 4B" icon={<Building2 className="w-4 h-4" />} autoComplete="address-line1" error={stepErrors.address} />
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <Field label="Town / City" value={city} onChange={setCity} placeholder="Nairobi" icon={<MapPin className="w-4 h-4" />} autoComplete="address-level2" />
-                                <Field label="County" value={county} onChange={setCounty} placeholder="Nairobi County" autoComplete="address-level1" />
+                                <Field label="Town / City" value={city} onChange={(v) => { setCity(v); setStepErrors(e => ({ ...e, city: "" })); }} placeholder="Nairobi" icon={<MapPin className="w-4 h-4" />} autoComplete="address-level2" error={stepErrors.city} />
+                                <Field label="County" value={county} onChange={(v) => { setCounty(v); setStepErrors(e => ({ ...e, county: "" })); }} placeholder="Nairobi County" autoComplete="address-level1" error={stepErrors.county} />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
