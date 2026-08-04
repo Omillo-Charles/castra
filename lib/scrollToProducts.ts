@@ -1,23 +1,21 @@
 /**
  * Smoothly scrolls to the #products section, accounting for the sticky
- * navbar height, and updates the URL with the selected category slug
- * without triggering a Next.js navigation / re-render.
+ * navbar height, and dispatches a "categorychange" custom event so the
+ * ProductGrid can react and update the URL correctly.
  *
- * Also dispatches a "categorychange" custom event so ProductGrid can
- * react immediately — replaceState alone never fires popstate.
+ * We no longer call window.history.replaceState here — the ProductGrid's
+ * updateQueryParams owns URL state. Calling replaceState directly was
+ * clobbering search params set by router.replace in handleSearchSubmit.
  */
 export function scrollToProducts(slug?: string) {
     const el = document.getElementById("products");
-    if (!el) return;
+    if (el) {
+        const navbarHeight = document.querySelector("header")?.offsetHeight ?? 80;
+        const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight - 8;
+        window.scrollTo({ top, behavior: "smooth" });
+    }
 
-    const navbarHeight = document.querySelector("header")?.offsetHeight ?? 80;
-    const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight - 8;
-
-    window.scrollTo({ top, behavior: "smooth" });
-
-    const url = slug ? `/?category=${slug}` : "/";
-    window.history.replaceState({ category: slug ?? null }, "", url);
-
-    // Notify ProductGrid — replaceState never fires popstate
+    // Notify ProductGrid — it will update the URL via router.replace,
+    // preserving any other existing params (like search).
     window.dispatchEvent(new CustomEvent("categorychange", { detail: { slug } }));
 }

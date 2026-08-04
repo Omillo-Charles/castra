@@ -76,8 +76,10 @@ export function Navbar() {
         const queryString = params.toString();
         const targetUrl = queryString ? `/?${queryString}` : "/";
 
-        scrollToProducts(selectedCategory !== "All Categories" ? slugifyCategory(selectedCategory) : undefined);
-        router.push(targetUrl);
+        // Use replace so the back button doesn't stack search states,
+        // and do NOT call scrollToProducts here — that function issues its
+        // own replaceState which would overwrite the URL we just set.
+        router.replace(targetUrl);
     };
 
     return (
