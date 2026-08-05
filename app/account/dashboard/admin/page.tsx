@@ -745,8 +745,10 @@ function Products() {
                 {search && <button type="button" onClick={() => { setSearch(""); setCurrentPage(1); }}><X className="w-4 h-4 text-zinc-400" /></button>}
             </div>
 
-            {/* Table */}
+            {/* Table — horizontally scrollable on mobile */}
             <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700">
+                <div className="min-w-[600px]">
                 <div className="grid grid-cols-12 px-5 py-3 bg-zinc-900/60 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-800">
                     <span className="col-span-5">Product</span>
                     <span className="col-span-2">Category</span>
@@ -804,6 +806,8 @@ function Products() {
                             <p className="text-sm font-semibold">No products found</p>
                         </div>
                     )}
+                </div>
+                </div>
                 </div>
             </div>
 
