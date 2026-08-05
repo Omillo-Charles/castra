@@ -33,6 +33,7 @@ const ORDER_STATUS: Record<string, { label: string; color: string }> = {
     "dispatched":        { label: "Dispatched",       color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
     "out-for-delivery":  { label: "Out for Delivery", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
     "delivered":         { label: "Delivered",        color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    "cancelled":         { label: "Cancelled",        color: "text-red-500 bg-red-500/10 border-red-500/20" },
 };
 
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }

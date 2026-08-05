@@ -421,7 +421,8 @@ export type OrderStatus =
     | "PROCESSING"
     | "DISPATCHED"
     | "OUT_FOR_DELIVERY"
-    | "DELIVERED";
+    | "DELIVERED"
+    | "CANCELLED";
 
 export type PaymentMethod = "MPESA_STK" | "MPESA_MANUAL";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";

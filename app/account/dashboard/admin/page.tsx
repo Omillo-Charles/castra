@@ -20,11 +20,12 @@ function formatDate(iso: string) {
 }
 
 const ORDER_STATUS = {
-    confirmed: { label: "Confirmed", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-    processing: { label: "Processing", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    dispatched: { label: "Dispatched", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+    confirmed:          { label: "Confirmed",       color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+    processing:         { label: "Processing",       color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+    dispatched:         { label: "Dispatched",       color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
     "out-for-delivery": { label: "Out for Delivery", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
-    delivered: { label: "Delivered", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    delivered:          { label: "Delivered",        color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    cancelled:          { label: "Cancelled",        color: "text-red-500 bg-red-500/10 border-red-500/20" },
 };
 
 const PAYMENT_STATUS: Record<PaymentStatus, { label: string; color: string }> = {
@@ -170,8 +171,8 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
-    const pendingOrders = orders.filter(o => o.status !== "DELIVERED").length;
+    const totalRevenue  = orders.filter(o => o.status !== "CANCELLED").reduce((s, o) => s + o.total, 0);
+    const pendingOrders = orders.filter(o => o.status !== "DELIVERED" && o.status !== "CANCELLED").length;
     const deliveredCount = orders.filter(o => o.status === "DELIVERED").length;
     const lowStockItems = products.filter(p => p.stock <= 2);
     const lowStock = lowStockItems.length;
