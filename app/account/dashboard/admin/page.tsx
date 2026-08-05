@@ -271,6 +271,11 @@ function Orders() {
     const [newStatus, setNewStatus] = useState<OrderStatus>("confirmed");
     const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("PENDING");
     const [paymentRef, setPaymentRef] = useState("");
+    // Track original payment values so we only call updatePaymentStatus if
+    // the admin actually changed something — prevents a spurious payment email
+    // firing every time the order status alone is updated.
+    const [originalPaymentStatus, setOriginalPaymentStatus] = useState<PaymentStatus>("PENDING");
+    const [originalPaymentRef,    setOriginalPaymentRef]    = useState("");
     const [updating, setUpdating] = useState(false);
     const [err, setErr] = useState("");
     const { success, error: toastError } = useToast();
@@ -314,13 +319,23 @@ function Orders() {
         setErr("");
         try {
             await orderApi.updateStatus(id, uiToApiStatus(newStatus));
+
+            // Only update payment if the admin actually changed the status or
+            // receipt number — prevents a spurious payment email firing every
+            // time the order status alone is saved.
             const order = orders.find((item) => item.id === id);
-            if (order?.payment) {
-                await paymentApi.updateStatus(order.payment.id, {
+            const paymentChanged =
+                order?.payment &&
+                (paymentStatus !== originalPaymentStatus ||
+                 paymentRef.trim() !== originalPaymentRef.trim());
+
+            if (paymentChanged) {
+                await paymentApi.updateStatus(order!.payment!.id, {
                     status: paymentStatus,
                     mpesaReceiptNumber: paymentRef || undefined,
                 });
             }
+
             setEditing(null);
             loadOrders(currentPage, search, filter);
             success("Order updated successfully.");
@@ -410,8 +425,13 @@ function Orders() {
                                         onClick={() => {
                                             setEditing(isEditing ? null : order.id);
                                             setNewStatus(normaliseStatus(order.status) as OrderStatus);
-                                            setPaymentStatus(order.payment?.status ?? "PENDING");
-                                            setPaymentRef(order.payment?.mpesaReceiptNumber ?? "");
+                                            const currentPayStatus = order.payment?.status ?? "PENDING";
+                                            const currentPayRef    = order.payment?.mpesaReceiptNumber ?? "";
+                                            setPaymentStatus(currentPayStatus);
+                                            setPaymentRef(currentPayRef);
+                                            // Snapshot originals so we can diff on save
+                                            setOriginalPaymentStatus(currentPayStatus);
+                                            setOriginalPaymentRef(currentPayRef);
                                         }}
                                         className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors"
                                         title="Update status"
