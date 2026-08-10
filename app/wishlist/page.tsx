@@ -1,8 +1,10 @@
 import { WishlistView } from "@/components/ui/WishlistView";
 
 export const metadata = {
-    title: "Wishlist – Castra Households",
-    description: "Your saved items.",
+    title:       "My Wishlist",
+    description: "Your saved products on Castra Households.",
+    alternates:  { canonical: "/wishlist" },
+    robots:      { index: false, follow: false }, // personal — not indexable
 };
 
 export default function WishlistPage() {

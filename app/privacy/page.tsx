@@ -2,8 +2,14 @@ import Link from "next/link";
 import { Shield, Mail, Phone, MapPin, ChevronRight } from "lucide-react";
 
 export const metadata = {
-    title: "Privacy Policy – Castra Households",
+    title:       "Privacy Policy",
     description: "How Castra Households collects, uses, and protects your personal data.",
+    alternates:  { canonical: "/privacy" },
+    openGraph: {
+        title:       "Privacy Policy | Castra Households",
+        description: "How Castra Households handles your personal data.",
+        url:         "https://castrahouseholds.co.ke/privacy",
+    },
 };
 
 const SECTIONS = [

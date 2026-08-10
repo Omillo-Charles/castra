@@ -1,8 +1,14 @@
 import { AccountForm } from "@/components/ui/AccountForm";
 
 export const metadata = {
-    title: "Account – Castra Households",
-    description: "Sign in or create a Castra account.",
+    title: "Sign In or Register",
+    description: "Sign in to your Castra Households account or create a new one to track orders, save your wishlist, and enjoy a faster checkout.",
+    alternates: { canonical: "/account" },
+    openGraph: {
+        title: "Sign In or Register | Castra Households",
+        description: "Manage your orders, wishlist, and account at Castra Households.",
+        url: "https://castrahouseholds.co.ke/account",
+    },
 };
 
 // Dynamic — page receives ?error= from OAuth redirects and ?verified= from

@@ -2,8 +2,14 @@ import Link from "next/link";
 import { ScrollText, Mail, Phone, MapPin, ChevronRight } from "lucide-react";
 
 export const metadata = {
-    title: "Terms & Conditions – Castra Households",
-    description: "The terms and conditions governing your use of Castra Households.",
+    title:       "Terms & Conditions",
+    description: "The terms and conditions governing your use of Castra Households — covering orders, payments, delivery, returns, and your rights as a customer.",
+    alternates:  { canonical: "/terms" },
+    openGraph: {
+        title:       "Terms & Conditions | Castra Households",
+        description: "Read the terms and conditions governing your use of Castra Households.",
+        url:         "https://castrahouseholds.co.ke/terms",
+    },
 };
 
 const SECTIONS = [

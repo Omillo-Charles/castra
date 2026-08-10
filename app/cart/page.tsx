@@ -1,8 +1,10 @@
 import { CartView } from "@/components/ui/CartView";
 
 export const metadata = {
-    title: "Cart – Castra Households",
-    description: "Your shopping cart.",
+    title: "Your Cart",
+    description: "Review your items and proceed to checkout. Castra Households — countrywide delivery across Kenya.",
+    alternates: { canonical: "/cart" },
+    robots: { index: false, follow: false }, // cart is session-specific
 };
 
 export default function CartPage() {

@@ -4,8 +4,14 @@ import { RefreshCcw, X, ArrowLeftRight, AlertTriangle, MessageCircle, Mail, Chev
 const WHATSAPP_NUMBER = "254704147774";
 
 export const metadata = {
-    title: "Returns & Exchanges – Castra Households",
-    description: "Castra Households returns and exchanges policy.",
+    title:       "Returns & Exchanges Policy",
+    description: "Learn about Castra Households' returns and exchanges policy — how to return items, timelines, and what's eligible.",
+    alternates:  { canonical: "/returns" },
+    openGraph: {
+        title:       "Returns & Exchanges | Castra Households",
+        description: "How to return or exchange items at Castra Households.",
+        url:         "https://castrahouseholds.co.ke/returns",
+    },
 };
 
 export default function ReturnsPage() {

@@ -4,8 +4,14 @@ import { Truck, Clock, MapPin, CreditCard, Phone, MessageCircle, AlertTriangle, 
 const WHATSAPP_NUMBER = "254704147774";
 
 export const metadata = {
-    title: "Shipping & Delivery Policy – Castra Households",
-    description: "Everything you need to know about how Castra Households delivers across Kenya.",
+    title:       "Shipping & Delivery Policy",
+    description: "Everything you need to know about how Castra Households delivers across Kenya — timelines, fees, Nairobi and upcountry rates.",
+    alternates:  { canonical: "/shipping-policy" },
+    openGraph: {
+        title:       "Shipping & Delivery Policy | Castra Households",
+        description: "Learn how Castra Households delivers across all 47 counties in Kenya.",
+        url:         "https://castrahouseholds.co.ke/shipping-policy",
+    },
 };
 
 export default function ShippingPolicyPage() {
