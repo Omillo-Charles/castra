@@ -2,12 +2,52 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 
 const GRID_PAGE_SIZE = 12; // product grid shows 12 per page; other pages use PRODUCTS_PER_PAGE (8)
 import { ProductCard } from "@/components/ui/ProductCard";
 import { productApi, type Product } from "@/config/api";
+
+// Skeleton card — mirrors the real ProductCard shape so the layout
+// doesn't shift at all when products load in.
+function ProductCardSkeleton() {
+    return (
+        <div className="flex flex-col bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden animate-pulse">
+            {/* Image area */}
+            <div className="w-full aspect-square bg-zinc-800" />
+            {/* Info */}
+            <div className="flex flex-col p-4 gap-3">
+                {/* Category label */}
+                <div className="h-2.5 w-1/3 rounded-full bg-zinc-800" />
+                {/* Product name — two lines */}
+                <div className="space-y-2">
+                    <div className="h-3 w-full rounded-full bg-zinc-800" />
+                    <div className="h-3 w-3/4 rounded-full bg-zinc-800" />
+                </div>
+                {/* Price */}
+                <div className="h-4 w-1/2 rounded-full bg-zinc-800 mt-1" />
+                {/* Buttons */}
+                <div className="flex gap-2 mt-1">
+                    <div className="flex-1 h-9 rounded-xl bg-zinc-800" />
+                    <div className="w-9 h-9 rounded-xl bg-zinc-800" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ProductGridSkeleton — full grid of GRID_PAGE_SIZE skeleton cards.
+// Used as both the Suspense fallback and the internal loading state.
+function ProductGridSkeleton() {
+    return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {Array.from({ length: GRID_PAGE_SIZE }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+            ))}
+        </div>
+    );
+}
 
 function resolveCategory(categoryParam?: string | null) {
     if (!categoryParam) return "All";
@@ -22,12 +62,7 @@ function resolveCategory(categoryParam?: string | null) {
 
 export function ProductGrid() {
     return (
-        <Suspense fallback={
-            <div className="flex flex-col items-center justify-center py-24 text-zinc-400 gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-[#C6A16A]" />
-                <p className="text-sm font-semibold">Fetching collection...</p>
-            </div>
-        }>
+        <Suspense fallback={<ProductGridSkeleton />}>
             <ProductGridInner />
         </Suspense>
     );
@@ -220,12 +255,9 @@ function ProductGridInner() {
             {/* ── Divider ── */}
             <div className="h-px bg-zinc-200 bg-zinc-800" />
 
-            {/* ── Product grid ── */}
+            {/* -- Product grid -- */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-24 text-zinc-400 gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#C6A16A]" />
-                    <p className="text-sm font-semibold">Fetching collection...</p>
-                </div>
+                <ProductGridSkeleton />
             ) : products.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-zinc-400">
                     <LayoutGrid className="w-12 h-12 mb-4 opacity-30" />

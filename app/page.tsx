@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { HeroBanner } from "@/components/ui/heroBanner";
 import { ProductGrid } from "@/components/ui/ProductGrid";
-import { Loader2 } from "lucide-react";
 
 // Force dynamic rendering - this page depends on URL search params
 // (?search=, ?category=, ?page=, ?sort=). Without this Next.js may attempt
@@ -56,13 +55,9 @@ export default function Home() {
           Suspense is required here because ProductGrid uses useSearchParams()
           internally. Without this boundary, any URL with query params causes
           React to suspend during hydration, leaving the page non-interactive.
+          The skeleton is rendered by ProductGrid itself via its own inner Suspense.
         */}
-        <Suspense fallback={
-          <div className="flex flex-col items-center justify-center py-24 text-zinc-400 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-[#C6A16A]" />
-            <p className="text-sm font-semibold">Fetching collection...</p>
-          </div>
-        }>
+        <Suspense fallback={null}>
           <ProductGrid />
         </Suspense>
       </section>
