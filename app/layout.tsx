@@ -29,20 +29,40 @@ export const metadata: Metadata = {
   description:
     "Shop premium beddings, kitchenware, electronics, furniture, décor and more. Countrywide delivery across Kenya. Castra Households — elevating Kenyan living.",
   keywords: [
-    "household essentials Kenya",
-    "online shopping Kenya",
-    "beddings Kenya",
-    "kitchenware Nairobi",
-    "home appliances Kenya",
-    "furniture Kenya",
-    "electronics Kenya",
-    "home decor Kenya",
-    "organizers Kenya",
-    "gifts Kenya",
+    // Brand
     "Castra Households",
-    "castra kicks",
-    "premium household Kenya",
+    "Castra Kicks",
+    "castrahouseholds.co.ke",
+    // High-intent discovery queries
+    "best household website Kenya",
+    "best online household store Kenya",
+    "household shopping online Kenya",
+    "buy home essentials Kenya",
+    "household items online Kenya",
+    "home goods delivery Kenya",
+    "household items Nairobi delivery",
+    // Product categories
+    "household essentials Kenya",
+    "beddings Kenya",
+    "premium bedding Kenya",
+    "kitchenware Nairobi",
+    "kitchen accessories Kenya",
+    "kitchenware online Kenya",
+    "home appliances Kenya",
+    "home appliances online Kenya",
+    "electronics Kenya",
+    "furniture Kenya",
+    "online furniture store Kenya",
+    "home decor Kenya",
+    "affordable home decor Nairobi",
+    "organizers Kenya",
+    "premium footwear Kenya",
+    // Broader shopping
+    "online shopping Kenya",
+    "best online shop Kenya",
+    "e-commerce Kenya household",
     "countrywide delivery Kenya",
+    "M-Pesa online shopping Kenya",
   ],
   authors: [{ name: "Castra Households", url: "https://castrahouseholds.co.ke" }],
   creator: "Castra Households",
@@ -158,6 +178,79 @@ const websiteSchema = {
   },
 };
 
+// JSON-LD: LocalBusiness + Store
+// Critical for local Kenyan search rankings. Tells Google this is a
+// physical/local business serving Kenya, which surfaces it in
+// "best household stores in Kenya" and map-adjacent queries.
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "Store"],
+  "@id": `${BASE_URL}/#localbusiness`,
+  name: "Castra Households",
+  description: "Kenya's premier online household store offering premium beddings, kitchenware, electronics, furniture, décor, organizers, and footwear with countrywide delivery.",
+  url: BASE_URL,
+  logo: `${BASE_URL}/branding/logo.png`,
+  image: `${BASE_URL}/branding/og-image.png`,
+  telephone: "+254704147774",
+  email: "info@castrahouseholds.co.ke",
+  priceRange: "KES",
+  currenciesAccepted: "KES",
+  paymentAccepted: "Cash, M-Pesa",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Accra Towers B10",
+    addressLocality: "Nairobi",
+    addressRegion: "Nairobi County",
+    addressCountry: "KE",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: -1.2921,
+    longitude: 36.8219,
+  },
+  areaServed: [
+    { "@type": "Country", name: "Kenya" },
+    { "@type": "City", name: "Nairobi" },
+    { "@type": "City", name: "Mombasa" },
+    { "@type": "City", name: "Kisumu" },
+    { "@type": "City", name: "Nakuru" },
+    { "@type": "City", name: "Eldoret" },
+    { "@type": "City", name: "Thika" },
+  ],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "08:00",
+      closes: "20:00",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Sunday"],
+      opens: "10:00",
+      closes: "18:00",
+    },
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Castra Households Product Catalogue",
+    itemListElement: [
+      { "@type": "OfferCatalog", name: "Beddings & Linens" },
+      { "@type": "OfferCatalog", name: "Kitchenware" },
+      { "@type": "OfferCatalog", name: "Electronics" },
+      { "@type": "OfferCatalog", name: "Furniture" },
+      { "@type": "OfferCatalog", name: "Home Décor" },
+      { "@type": "OfferCatalog", name: "Organizers" },
+      { "@type": "OfferCatalog", name: "Footwear" },
+    ],
+  },
+  sameAs: [
+    "https://www.instagram.com/_castrahouseholds",
+    "https://www.facebook.com/castrahouseholds",
+    "https://www.tiktok.com/@castrahouseholds",
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -171,6 +264,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-mulish bg-[#0A0A0A] text-zinc-100">
         <JsonLd schema={organizationSchema} />
         <JsonLd schema={websiteSchema} />
+        <JsonLd schema={localBusinessSchema} />
         <ToastProvider>
           <AuthProvider>
             <CartProvider>

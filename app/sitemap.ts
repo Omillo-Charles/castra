@@ -40,6 +40,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
 
+        // About page
+        {
+            url: `${BASE_URL}/about`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.8,
+        },
+
         // Order tracking
         {
             url: `${BASE_URL}/track-order`,
