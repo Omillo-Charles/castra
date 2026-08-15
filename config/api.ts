@@ -231,6 +231,7 @@ export const addressApi = {
 export type Product = {
     id: string;
     name: string;
+    description: string | null;
     category: string;
     slug: string;
     price: number;

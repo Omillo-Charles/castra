@@ -118,7 +118,7 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
 
             {/* Info */}
-            <div className="flex flex-col flex-1 p-4 gap-2">
+            <div className="flex flex-col flex-1 p-4 gap-1.5">
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-[#C6A16A]">
                     {product.category}
                 </span>
@@ -126,6 +126,12 @@ export function ProductCard({ product }: { product: Product }) {
                 <h3 className="text-sm font-semibold text-zinc-100 leading-snug line-clamp-2 font-glacial">
                     {product.name}
                 </h3>
+
+                {product.description && (
+                    <p className="text-xs text-zinc-400 font-normal leading-relaxed line-clamp-2 mt-0.5">
+                        {product.description}
+                    </p>
+                )}
 
                 <div className="flex-1" />
 

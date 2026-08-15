@@ -17,7 +17,7 @@ function ProductCardSkeleton() {
             {/* Image area */}
             <div className="w-full aspect-square bg-zinc-800" />
             {/* Info */}
-            <div className="flex flex-col p-4 gap-3">
+            <div className="flex flex-col p-4 gap-2.5">
                 {/* Category label */}
                 <div className="h-2.5 w-1/3 rounded-full bg-zinc-800" />
                 {/* Product name — two lines */}
@@ -25,6 +25,8 @@ function ProductCardSkeleton() {
                     <div className="h-3 w-full rounded-full bg-zinc-800" />
                     <div className="h-3 w-3/4 rounded-full bg-zinc-800" />
                 </div>
+                {/* Description placeholder */}
+                <div className="h-2.5 w-5/6 rounded-full bg-zinc-800/60" />
                 {/* Price */}
                 <div className="h-4 w-1/2 rounded-full bg-zinc-800 mt-1" />
                 {/* Buttons */}

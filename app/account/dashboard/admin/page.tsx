@@ -569,6 +569,7 @@ function Products() {
     const [showForm, setShowForm] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
     const [formName, setFormName] = useState("");
+    const [formDesc, setFormDesc] = useState("");
     const [formCat, setFormCat] = useState("");
     const [formSlug, setFormSlug] = useState("");
     const [formPrice, setFormPrice] = useState("");
@@ -616,13 +617,13 @@ function Products() {
     };
 
     const resetForm = () => {
-        setEditId(null); setFormName(""); setFormCat(""); setFormSlug("");
+        setEditId(null); setFormName(""); setFormDesc(""); setFormCat(""); setFormSlug("");
         setFormPrice(""); setFormStock(""); setFormFiles(null);
         setFormActive(true); setFormErr(""); setShowForm(false);
     };
 
     const openEdit = (p: import("@/config/api").Product) => {
-        setEditId(p.id); setFormName(p.name); setFormCat(p.category);
+        setEditId(p.id); setFormName(p.name); setFormDesc(p.description || ""); setFormCat(p.category);
         setFormSlug(p.slug); setFormPrice(String(p.price));
         setFormStock(String(p.stock)); setFormActive(p.active);
         setFormErr(""); setShowForm(true);
@@ -631,12 +632,13 @@ function Products() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formName || !formCat || !formSlug || !formPrice || !formStock) {
-            setFormErr("All fields except images are required."); return;
+            setFormErr("All fields except description and images are required."); return;
         }
         setSaving(true); setFormErr("");
         try {
             const fd = new FormData();
             fd.append("name", formName);
+            fd.append("description", formDesc);
             fd.append("category", formCat);
             fd.append("slug", formSlug);
             fd.append("price", formPrice);
@@ -722,6 +724,18 @@ function Products() {
                                 </select>
                             </div>
                         </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
+                                Description
+                            </label>
+                            <textarea
+                                value={formDesc}
+                                onChange={(e) => setFormDesc(e.target.value)}
+                                placeholder="Enter product description (e.g. Premium 100% Egyptian cotton duvet set with high thread count, ultra soft and durable)..."
+                                rows={3}
+                                className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all resize-none"
+                            />
+                        </div>
                         <div className="grid sm:grid-cols-3 gap-3">
                             <AdminField label="Slug (auto-generated)" value={formSlug} onChange={setFormSlug} placeholder="beddings" />
                             <AdminField label="Price (KES)" value={formPrice} onChange={setFormPrice} placeholder="4800" type="number" />
@@ -794,7 +808,12 @@ function Products() {
                                         <Package className="w-3.5 h-3.5 text-zinc-400" />
                                     </div>
                                 )}
-                                <span className="font-semibold text-zinc-200 truncate">{p.name}</span>
+                                <div className="min-w-0">
+                                    <span className="font-semibold text-zinc-200 truncate block">{p.name}</span>
+                                    {p.description && (
+                                        <span className="text-[11px] text-zinc-500 truncate block">{p.description}</span>
+                                    )}
+                                </div>
                             </div>
                             <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
                             <span className="col-span-2 text-right font-semibold text-zinc-200">{formatKES(p.price)}</span>
