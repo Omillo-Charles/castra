@@ -632,7 +632,10 @@ function Products() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formName || !formCat || !formSlug || !formPrice || !formStock) {
-            setFormErr("All fields except description and images are required."); return;
+            setFormErr("Please fill in all required fields."); return;
+        }
+        if (!editId && (!formFiles || formFiles.length === 0)) {
+            setFormErr("At least one product image is required."); return;
         }
         setSaving(true); setFormErr("");
         try {
@@ -743,7 +746,7 @@ function Products() {
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
-                                Images (up to 5, JPEG/PNG/WebP)
+                                Images <span className="text-[#C6A16A]">*</span> (At least 1 required, up to 5, JPEG/PNG/WebP)
                             </label>
                             <input type="file" accept="image/*" multiple
                                 onChange={e => setFormFiles(e.target.files)}
