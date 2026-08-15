@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, AlertCircle, ShieldCheck, Truck, Star } from "lucide-react";
 import { GoogleIcon } from "@/components/svgicons";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { authApi } from "@/config/api";
 
 type Tab = "login" | "signup" | "forgot" | "verify";
@@ -17,11 +18,20 @@ export function AccountForm() {
     const [prefillEmail, setPrefillEmail]         = useState("");
     const [registeredEmail, setRegisteredEmail]   = useState("");
 
-    // Show error if redirected back from a failed Google OAuth attempt
-    const googleError =
-        typeof window !== "undefined"
-            ? new URLSearchParams(window.location.search).get("error")
-            : null;
+    const searchParams = useSearchParams();
+    const router       = useRouter();
+    const { error: toastError } = useToast();
+
+    const googleError = searchParams.get("error");
+
+    useEffect(() => {
+        if (googleError) {
+            toastError("Google sign-in or sign-up failed. Please try again.");
+            const url = new URL(window.location.href);
+            url.searchParams.delete("error");
+            router.replace(url.pathname + (url.search ? url.search : ""), { scroll: false });
+        }
+    }, [googleError, toastError, router]);
 
     return (
         <div className="w-full max-w-5xl min-h-[600px] flex rounded-3xl overflow-hidden shadow-2xl border border-zinc-800">

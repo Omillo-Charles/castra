@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AccountForm } from "@/components/ui/AccountForm";
 
 export const metadata = {
@@ -18,7 +19,9 @@ export const dynamic = "force-dynamic";
 export default function AccountPage() {
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-10 bg-[#0A0A0A]">
-            <AccountForm />
+            <Suspense fallback={null}>
+                <AccountForm />
+            </Suspense>
         </div>
     );
 }
