@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
-import { ADMIN_CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+import { ADMIN_CATEGORIES_LIST, KICKS_SUBCATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useToast } from "@/context/ToastContext";
 
@@ -571,6 +571,7 @@ function Products() {
     const [formName, setFormName] = useState("");
     const [formDesc, setFormDesc] = useState("");
     const [formCat, setFormCat] = useState("");
+    const [formSubCat, setFormSubCat] = useState("");
     const [formSlug, setFormSlug] = useState("");
     const [formPrice, setFormPrice] = useState("");
     const [formStock, setFormStock] = useState("");
@@ -609,6 +610,9 @@ function Products() {
 
     const handleCategorySelect = (cat: string) => {
         setFormCat(cat);
+        if (cat !== "Kicks") {
+            setFormSubCat("");
+        }
         if (cat) {
             setFormSlug(cat.toLowerCase().replace(/\s+/g, "-"));
         } else {
@@ -617,13 +621,14 @@ function Products() {
     };
 
     const resetForm = () => {
-        setEditId(null); setFormName(""); setFormDesc(""); setFormCat(""); setFormSlug("");
+        setEditId(null); setFormName(""); setFormDesc(""); setFormCat(""); setFormSubCat(""); setFormSlug("");
         setFormPrice(""); setFormStock(""); setFormFiles(null);
         setFormActive(true); setFormErr(""); setShowForm(false);
     };
 
     const openEdit = (p: import("@/config/api").Product) => {
         setEditId(p.id); setFormName(p.name); setFormDesc(p.description || ""); setFormCat(p.category);
+        setFormSubCat(p.subcategory || "");
         setFormSlug(p.slug); setFormPrice(String(p.price));
         setFormStock(String(p.stock)); setFormActive(p.active);
         setFormErr(""); setShowForm(true);
@@ -643,6 +648,9 @@ function Products() {
             fd.append("name", formName);
             fd.append("description", formDesc);
             fd.append("category", formCat);
+            if (formCat === "Kicks" && formSubCat) {
+                fd.append("subcategory", formSubCat);
+            }
             fd.append("slug", formSlug);
             fd.append("price", formPrice);
             fd.append("stock", formStock);
@@ -727,6 +735,27 @@ function Products() {
                                 </select>
                             </div>
                         </div>
+
+                        {/* Subcategory selection — strictly for Kicks */}
+                        {formCat === "Kicks" && (
+                            <div className="space-y-1">
+                                <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
+                                    Kicks Subcategory <span className="text-zinc-500 font-normal">(Optional filter tab for Kicks)</span>
+                                </label>
+                                <select
+                                    value={formSubCat}
+                                    onChange={(e) => setFormSubCat(e.target.value)}
+                                    className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm font-medium text-white focus:outline-none focus:border-[#C6A16A] transition-colors cursor-pointer"
+                                >
+                                    <option value="">Select subcategory...</option>
+                                    {KICKS_SUBCATEGORIES_LIST.filter((sc) => sc !== "All").map((sub) => (
+                                        <option key={sub} value={sub}>
+                                            {sub}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">
                                 Description

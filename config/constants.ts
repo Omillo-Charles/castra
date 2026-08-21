@@ -32,4 +32,16 @@ export const ADMIN_CATEGORIES_LIST = [
     "Kicks",
 ];
 
+// Subcategories strictly for the Kicks footwear collection
+export const KICKS_SUBCATEGORIES_LIST = [
+    "All",
+    "Heels",
+    "Sandals",
+    "Flats",
+    "Men - official",
+    "Ladies - official",
+    "Sneakers",
+    "Boots",
+];
+
 export const PRODUCTS_PER_PAGE = 8;

@@ -233,6 +233,7 @@ export type Product = {
     name: string;
     description: string | null;
     category: string;
+    subcategory?: string | null;
     slug: string;
     price: number;
     deliveryFee: number;
@@ -257,9 +258,10 @@ export type ProductsResponse = {
 };
 
 export const productApi = {
-    /** List products — public. Supports category, page, limit, sort, search. */
+    /** List products — public. Supports category, subcategory, page, limit, sort, search. */
     list: (params?: {
         category?: string;
+        subcategory?: string;
         page?: number;
         limit?: number;
         sort?: "price-asc" | "price-desc";
@@ -267,6 +269,7 @@ export const productApi = {
     }) => {
         const qs = new URLSearchParams();
         if (params?.category) qs.set("category", params.category);
+        if (params?.subcategory) qs.set("subcategory", params.subcategory);
         if (params?.page) qs.set("page", String(params.page));
         if (params?.limit) qs.set("limit", String(params.limit));
         if (params?.sort) qs.set("sort", params.sort);
