@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     LayoutDashboard, ShoppingBag, Package, Users,
-    ChevronRight, ChevronLeft, TrendingUp, Truck, CheckCircle2,
+    ChevronRight, TrendingUp, Truck, CheckCircle2,
     Clock, AlertTriangle, Eye, Edit2, Trash2,
     Plus, Search, X, LogOut, Phone, Mail,
-} from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+} from "lucide-react";import { useAuth } from "@/context/AuthContext";
 import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
 import { ADMIN_CATEGORIES_LIST, KICKS_SUBCATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+import { Pagination } from "@/components/ui/Pagination";
 import { WhatsAppIcon } from "@/components/svgicons";
 import { useToast } from "@/context/ToastContext";
 
@@ -20,12 +20,12 @@ function formatDate(iso: string) {
 }
 
 const ORDER_STATUS = {
-    confirmed:          { label: "Confirmed",       color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-    processing:         { label: "Processing",       color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    dispatched:         { label: "Dispatched",       color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+    confirmed: { label: "Confirmed", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+    processing: { label: "Processing", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+    dispatched: { label: "Dispatched", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
     "out-for-delivery": { label: "Out for Delivery", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
-    delivered:          { label: "Delivered",        color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
-    cancelled:          { label: "Cancelled",        color: "text-red-500 bg-red-500/10 border-red-500/20" },
+    delivered: { label: "Delivered", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+    cancelled: { label: "Cancelled", color: "text-red-500 bg-red-500/10 border-red-500/20" },
 };
 
 const PAYMENT_STATUS: Record<PaymentStatus, { label: string; color: string }> = {
@@ -118,8 +118,8 @@ export default function AdminPage() {
                                     type="button"
                                     onClick={() => setSection(item.key)}
                                     className={`w-full flex items-center gap-3 px-5 py-3 text-sm font-semibold transition-all cursor-pointer text-left ${section === item.key
-                                            ? "text-[#C6A16A] bg-[#C6A16A]/8"
-                                            : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                                        ? "text-[#C6A16A] bg-[#C6A16A]/8"
+                                        : "text-zinc-400 hover:text-white hover:bg-zinc-900"
                                         }`}
                                 >
                                     <span className={section === item.key ? "text-[#C6A16A]" : "text-zinc-400"}>{item.icon}</span>
@@ -168,10 +168,10 @@ function Overview({ setSection }: { setSection: (s: Section) => void }) {
             .then(res => setOrders(res.orders || []))
             .catch(() => error("Could not load orders."))
             .finally(() => setOrdersLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const totalRevenue  = orders.filter(o => o.status !== "CANCELLED").reduce((s, o) => s + o.total, 0);
+    const totalRevenue = orders.filter(o => o.status !== "CANCELLED").reduce((s, o) => s + o.total, 0);
     const pendingOrders = orders.filter(o => o.status !== "DELIVERED" && o.status !== "CANCELLED").length;
     const deliveredCount = orders.filter(o => o.status === "DELIVERED").length;
     const lowStockItems = products.filter(p => p.stock <= 2);
@@ -275,7 +275,7 @@ function Orders() {
     // the admin actually changed something — prevents a spurious payment email
     // firing every time the order status alone is updated.
     const [originalPaymentStatus, setOriginalPaymentStatus] = useState<PaymentStatus>("PENDING");
-    const [originalPaymentRef,    setOriginalPaymentRef]    = useState("");
+    const [originalPaymentRef, setOriginalPaymentRef] = useState("");
     const [updating, setUpdating] = useState(false);
     const [err, setErr] = useState("");
     const { success, error: toastError } = useToast();
@@ -327,7 +327,7 @@ function Orders() {
             const paymentChanged =
                 order?.payment &&
                 (paymentStatus !== originalPaymentStatus ||
-                 paymentRef.trim() !== originalPaymentRef.trim());
+                    paymentRef.trim() !== originalPaymentRef.trim());
 
             if (paymentChanged) {
                 await paymentApi.updateStatus(order!.payment!.id, {
@@ -426,7 +426,7 @@ function Orders() {
                                             setEditing(isEditing ? null : order.id);
                                             setNewStatus(normaliseStatus(order.status) as OrderStatus);
                                             const currentPayStatus = order.payment?.status ?? "PENDING";
-                                            const currentPayRef    = order.payment?.mpesaReceiptNumber ?? "";
+                                            const currentPayRef = order.payment?.mpesaReceiptNumber ?? "";
                                             setPaymentStatus(currentPayStatus);
                                             setPaymentRef(currentPayRef);
                                             // Snapshot originals so we can diff on save
@@ -519,7 +519,7 @@ function Orders() {
                 )}
             </div>
 
-            {/* Pagination Controls */}
+            {/* Pagination */}
             {!loading && totalOrders > 0 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-xs text-zinc-400">
@@ -527,29 +527,11 @@ function Orders() {
                         <span className="font-semibold text-zinc-300">{Math.min(currentPage * ORDERS_PER_PAGE, totalOrders)}</span> of{" "}
                         <span className="font-semibold text-zinc-300">{totalOrders}</span> orders
                     </p>
-                    {totalPages > 1 && (
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                disabled={currentPage === 1}
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                className="px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white disabled:opacity-50 transition-all"
-                            >
-                                Previous
-                            </button>
-                            <span className="text-xs font-semibold text-zinc-400">
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <button
-                                type="button"
-                                disabled={currentPage === totalPages}
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                className="px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-zinc-400 hover:text-white disabled:opacity-50 transition-all"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
                 </div>
             )}
         </div>
@@ -815,75 +797,75 @@ function Products() {
             {/* Table — horizontally scrollable on mobile */}
             <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700">
-                <div className="min-w-[600px]">
-                <div className="grid grid-cols-12 px-5 py-3 bg-zinc-900/60 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-800">
-                    <span className="col-span-5">Product</span>
-                    <span className="col-span-2">Category</span>
-                    <span className="col-span-2 text-right">Price</span>
-                    <span className="col-span-1 text-center">Stock</span>
-                    <span className="col-span-2 text-center">Actions</span>
-                </div>
-                <div className="divide-y divide-zinc-800">
-                    {loading ? (
-                        <div className="text-center py-12 text-zinc-400">
-                            <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
-                            <p className="text-xs font-semibold">Loading products...</p>
+                    <div className="min-w-[600px]">
+                        <div className="grid grid-cols-12 px-5 py-3 bg-zinc-900/60 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-800">
+                            <span className="col-span-5">Product</span>
+                            <span className="col-span-2">Category</span>
+                            <span className="col-span-2 text-right">Price</span>
+                            <span className="col-span-1 text-center">Stock</span>
+                            <span className="col-span-2 text-center">Actions</span>
                         </div>
-                    ) : products.map((p) => (
-                        <div key={p.id} className={`grid grid-cols-12 px-5 py-3.5 items-center text-sm ${!p.active ? "opacity-50" : ""}`}>
-                            <div className="col-span-5 flex items-center gap-3 min-w-0">
-                                {p.images[0] ? (
-                                    <img src={p.images[0]} alt={p.name}
-                                        className="w-8 h-8 rounded-lg object-cover border border-zinc-800 flex-shrink-0" />
-                                ) : (
-                                    <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0">
-                                        <Package className="w-3.5 h-3.5 text-zinc-400" />
-                                    </div>
-                                )}
-                                <div className="min-w-0">
-                                    <span className="font-semibold text-zinc-200 truncate block">{p.name}</span>
-                                    {p.description && (
-                                        <span className="text-[11px] text-zinc-500 truncate block">{p.description}</span>
-                                    )}
+                        <div className="divide-y divide-zinc-800">
+                            {loading ? (
+                                <div className="text-center py-12 text-zinc-400">
+                                    <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
+                                    <p className="text-xs font-semibold">Loading products...</p>
                                 </div>
-                            </div>
-                            <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
-                            <span className="col-span-2 text-right font-semibold text-zinc-200">{formatKES(p.price)}</span>
-                            <span className={`col-span-1 text-center text-xs font-bold ${p.stock === 0 ? "text-red-500" : p.stock <= 2 ? "text-amber-500" : "text-emerald-500"
-                                }`}>
-                                {p.stock === 0 ? "Out" : p.stock}
-                            </span>
-                            <div className="col-span-2 flex items-center justify-center gap-1.5">
-                                <button type="button" onClick={() => openEdit(p)}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors" title="Edit">
-                                    <Edit2 className="w-3.5 h-3.5" />
-                                </button>
-                                <button type="button" onClick={() => handleToggle(p.id)}
-                                    className={`p-1.5 rounded-lg transition-colors ${p.active
-                                            ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10"
-                                            : "text-emerald-500 hover:bg-emerald-500/10"
-                                        }`} title={p.active ? "Deactivate" : "Activate"}>
-                                    {p.active ? <Eye className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                                </button>
-                                <button type="button" onClick={() => handleDelete(p.id)}
-                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors" title="Delete">
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
+                            ) : products.map((p) => (
+                                <div key={p.id} className={`grid grid-cols-12 px-5 py-3.5 items-center text-sm ${!p.active ? "opacity-50" : ""}`}>
+                                    <div className="col-span-5 flex items-center gap-3 min-w-0">
+                                        {p.images[0] ? (
+                                            <img src={p.images[0]} alt={p.name}
+                                                className="w-8 h-8 rounded-lg object-cover border border-zinc-800 flex-shrink-0" />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0">
+                                                <Package className="w-3.5 h-3.5 text-zinc-400" />
+                                            </div>
+                                        )}
+                                        <div className="min-w-0">
+                                            <span className="font-semibold text-zinc-200 truncate block">{p.name}</span>
+                                            {p.description && (
+                                                <span className="text-[11px] text-zinc-500 truncate block">{p.description}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="col-span-2 text-xs text-zinc-400">{p.category}</span>
+                                    <span className="col-span-2 text-right font-semibold text-zinc-200">{formatKES(p.price)}</span>
+                                    <span className={`col-span-1 text-center text-xs font-bold ${p.stock === 0 ? "text-red-500" : p.stock <= 2 ? "text-amber-500" : "text-emerald-500"
+                                        }`}>
+                                        {p.stock === 0 ? "Out" : p.stock}
+                                    </span>
+                                    <div className="col-span-2 flex items-center justify-center gap-1.5">
+                                        <button type="button" onClick={() => openEdit(p)}
+                                            className="p-1.5 rounded-lg text-zinc-400 hover:text-[#C6A16A] hover:bg-[#C6A16A]/10 transition-colors" title="Edit">
+                                            <Edit2 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button type="button" onClick={() => handleToggle(p.id)}
+                                            className={`p-1.5 rounded-lg transition-colors ${p.active
+                                                ? "text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10"
+                                                : "text-emerald-500 hover:bg-emerald-500/10"
+                                                }`} title={p.active ? "Deactivate" : "Activate"}>
+                                            {p.active ? <Eye className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                                        </button>
+                                        <button type="button" onClick={() => handleDelete(p.id)}
+                                            className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors" title="Delete">
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {!loading && products.length === 0 && (
+                                <div className="text-center py-12 text-zinc-400">
+                                    <Package className="w-10 h-10 opacity-20 mx-auto mb-3" />
+                                    <p className="text-sm font-semibold">No products found</p>
+                                </div>
+                            )}
                         </div>
-                    ))}
-                    {!loading && products.length === 0 && (
-                        <div className="text-center py-12 text-zinc-400">
-                            <Package className="w-10 h-10 opacity-20 mx-auto mb-3" />
-                            <p className="text-sm font-semibold">No products found</p>
-                        </div>
-                    )}
-                </div>
-                </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Pagination Controls */}
+            {/* Pagination */}
             {!loading && totalProducts > 0 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-xs text-zinc-400">
@@ -891,43 +873,11 @@ function Products() {
                         <span className="font-semibold text-zinc-300">{Math.min(currentPage * PRODUCTS_PER_PAGE, totalProducts)}</span> of{" "}
                         <span className="font-semibold text-zinc-300">{totalProducts}</span> products
                     </p>
-                    {totalPages > 1 && (
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                disabled={currentPage === 1}
-                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                aria-label="Previous page"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <button
-                                    key={page}
-                                    type="button"
-                                    onClick={() => setCurrentPage(page)}
-                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
-                                            ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                            : "border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
-                                        }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                aria-label="Next page"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
                 </div>
             )}
         </div>
@@ -1075,31 +1025,11 @@ function Customers() {
                         <span className="font-semibold text-zinc-300">{Math.min(currentPage * CUSTOMERS_PER_PAGE, totalCustomers)}</span> of{" "}
                         <span className="font-semibold text-zinc-300">{totalCustomers}</span> customers
                     </p>
-                    {totalPages > 1 && (
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                disabled={currentPage === 1}
-                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                aria-label="Previous page"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <span className="text-xs font-semibold text-zinc-400">
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={currentPage === totalPages}
-                                className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                aria-label="Next page"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
                 </div>
             )}
         </div>

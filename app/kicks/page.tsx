@@ -8,6 +8,7 @@ import { productApi, type Product } from "@/config/api";
 import { KICKS_SUBCATEGORIES_LIST } from "@/config/constants";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { InstagramIcon } from "@/components/svgicons";
+import { Pagination } from "@/components/ui/Pagination";
 
 const PER_PAGE = 8;
 
@@ -167,27 +168,12 @@ function KicksPageContent() {
 
             {/* Pagination */}
             {totalPages > 1 && !loading && (
-                <div className="flex items-center justify-center gap-2 mt-12">
-                    <button type="button" onClick={() => goTo(currentPage - 1)} disabled={currentPage === 1}
-                        className="p-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                        <ChevronLeft className="w-4 h-4" />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button key={page} type="button" onClick={() => goTo(page)}
-                            className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${page === currentPage
-                                ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                : "border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
-                                }`}>
-                            {page}
-                        </button>
-                    ))}
-
-                    <button type="button" onClick={() => goTo(currentPage + 1)} disabled={currentPage === totalPages}
-                        className="p-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={goTo}
+                    className="mt-12"
+                />
             )}
 
             {/* Kicks Instagram Showcase Section */}

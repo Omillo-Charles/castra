@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
+import { Pagination } from "@/components/ui/Pagination";
 
-const GRID_PAGE_SIZE = 12; // product grid shows 12 per page; other pages use PRODUCTS_PER_PAGE (8)
+const GRID_PAGE_SIZE = 20; // product grid shows 20 per page; other pages use PRODUCTS_PER_PAGE (8)
 import { ProductCard } from "@/components/ui/ProductCard";
 import { productApi, type Product } from "@/config/api";
 
@@ -44,7 +45,7 @@ function ProductCardSkeleton() {
 function ProductGridSkeleton() {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-            {Array.from({ length: GRID_PAGE_SIZE }).map((_, i) => (
+            {Array.from({ length: 20 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
             ))}
         </div>
@@ -181,8 +182,8 @@ function ProductGridInner() {
         const slug = cat === "All" ? null : cat.toLowerCase().replace(/\s+/g, "-");
         updateQueryParams({
             category: slug,
-            page:     "1",
-            search:   null, // clear any active search when switching category
+            page: "1",
+            search: null, // clear any active search when switching category
         });
     };
 
@@ -275,41 +276,12 @@ function ProductGridInner() {
 
             {/* ── Pagination ── */}
             {!loading && totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 pt-4">
-                    <button
-                        type="button"
-                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                        disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                        aria-label="Previous page"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            type="button"
-                            onClick={() => handlePageChange(page)}
-                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === currentPage
-                                ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
-                                : "border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A]"
-                                }`}
-                        >
-                            {page}
-                        </button>
-                    ))}
-
-                    <button
-                        type="button"
-                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                        disabled={currentPage === totalPages}
-                        className="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:border-[#C6A16A]/50 hover:text-[#C6A16A] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                        aria-label="Next page"
-                    >
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    className="pt-4"
+                />
             )}
 
         </section>
