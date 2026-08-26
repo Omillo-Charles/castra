@@ -567,8 +567,11 @@ function Products() {
         setLoading(true);
         productApi.list({
             page,
-            limit: PRODUCTS_PER_PAGE,
-            search: query || undefined,
+            limit:    PRODUCTS_PER_PAGE,
+            search:   query || undefined,
+            // Pass "all" so the backend skips the public Kicks exclusion —
+            // the admin panel needs to see every product regardless of category.
+            category: "all",
         })
             .then((res) => {
                 setProducts(res.products || []);

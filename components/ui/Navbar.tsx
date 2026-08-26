@@ -24,20 +24,12 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
-const CATEGORIES = [
-    "All Categories",
-    "Beddings",
-    "Home appliances",
-    "Kitchenware",
-    "Organizers",
-    "Electronics",
-    "Decor",
-    "Office Equipments",
-    "Furniture",
-    "Gifts",
-];
+import { CATEGORIES_LIST } from "@/config/constants";
 
-const PRODUCT_CATEGORIES = CATEGORIES.slice(1);
+// CATEGORIES_LIST starts with "All" from constants — remap to the nav shape.
+// The search bar dropdown needs "All Categories" as the first entry.
+const CATEGORIES        = ["All Categories", ...CATEGORIES_LIST.slice(1)]; // drop "All", prepend "All Categories"
+const PRODUCT_CATEGORIES = CATEGORIES_LIST.slice(1); // everything except "All"
 
 function slugifyCategory(category: string) {
     return category.toLowerCase().replace(/\s+/g, "-");

@@ -15,6 +15,7 @@ export const CATEGORIES_LIST = [
     "Office Equipments",
     "Furniture",
     "Gifts",
+    "Clothing",
 ];
 
 // Full category list used in the admin product form.
@@ -29,6 +30,7 @@ export const ADMIN_CATEGORIES_LIST = [
     "Office Equipments",
     "Furniture",
     "Gifts",
+    "Clothing",
     "Kicks",
 ];
 
