@@ -294,7 +294,7 @@ export function Footer() {
           <p className="flex items-center gap-1">
             <span>Built & maintained by</span>
             <a
-              href="https://omytech.co.ke"
+              href="https://omytechkenya.co.ke"
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-[#C6A16A] hover:underline hover:text-[#b59059] transition-colors"
