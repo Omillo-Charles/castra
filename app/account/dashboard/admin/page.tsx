@@ -40,6 +40,15 @@ type Section = "overview" | "orders" | "products" | "coupons" | "customers";
 
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
+function dateInputToIso(value: string, endOfDay = false) {
+    if (!value) return null;
+    const [year, month, day] = value.split("-").map(Number);
+    const date = endOfDay
+        ? new Date(year, month - 1, day, 23, 59, 59, 999)
+        : new Date(year, month - 1, day);
+    return date.toISOString();
+}
+
 const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
     { key: "overview", label: "Overview", icon: <LayoutDashboard className="w-4 h-4" /> },
     { key: "orders", label: "Orders", icon: <ShoppingBag className="w-4 h-4" /> },
@@ -947,6 +956,22 @@ function Coupons() {
             setErr("Discount amount must be greater than zero.");
             return;
         }
+        if (!minOrderTotal || Number(minOrderTotal) < 0) {
+            setErr("Minimum order total is required.");
+            return;
+        }
+        if (!usageLimit || Number(usageLimit) < 1) {
+            setErr("Usage limit is required and must be at least 1.");
+            return;
+        }
+        if (!validFrom || !validUntil) {
+            setErr("Validity dates are required.");
+            return;
+        }
+        if (validUntil < validFrom) {
+            setErr("Valid until must be on or after valid from.");
+            return;
+        }
 
         setSaving(true);
         setErr("");
@@ -958,8 +983,8 @@ function Coupons() {
                 active,
                 minOrderTotal: Number(minOrderTotal || 0),
                 usageLimit: usageLimit ? Number(usageLimit) : null,
-                validFrom: validFrom || null,
-                validUntil: validUntil || null,
+                validFrom: dateInputToIso(validFrom),
+                validUntil: dateInputToIso(validUntil, true),
             };
 
             if (editingId) {
@@ -1018,8 +1043,8 @@ function Coupons() {
             <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 space-y-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
-                        <AdminField label="Coupon code" value={code} onChange={setCode} placeholder="CASTRA500" />
-                        <AdminField label="Discount amount (KES)" value={amount} onChange={setAmount} placeholder="500" type="number" />
+                        <AdminField label="Coupon code" value={code} onChange={setCode} placeholder="CASTRA500" required />
+                        <AdminField label="Discount amount (KES)" value={amount} onChange={setAmount} placeholder="500" type="number" required />
                     </div>
 
                     <div className="space-y-1.5">
@@ -1030,8 +1055,8 @@ function Coupons() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-4">
-                        <AdminField label="Min order total" value={minOrderTotal} onChange={setMinOrderTotal} placeholder="0" type="number" />
-                        <AdminField label="Usage limit" value={usageLimit} onChange={setUsageLimit} placeholder="100" type="number" />
+                        <AdminField label="Min order total" value={minOrderTotal} onChange={setMinOrderTotal} placeholder="0" type="number" required />
+                        <AdminField label="Usage limit" value={usageLimit} onChange={setUsageLimit} placeholder="100" type="number" required />
                         <label className="flex items-center gap-2.5 pt-7 cursor-pointer">
                             <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="w-4 h-4 accent-[#C6A16A]" />
                             <span className="text-sm text-zinc-300">Active</span>
@@ -1041,11 +1066,11 @@ function Coupons() {
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Valid from</label>
-                            <input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
+                            <input type="date" required value={validFrom} onChange={(e) => setValidFrom(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Valid until</label>
-                            <input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
+                            <input type="date" required value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
                         </div>
                     </div>
 
@@ -1108,13 +1133,13 @@ function Coupons() {
     );
 }
 
-function AdminField({ label, value, onChange, placeholder, type = "text" }: {
-    label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string;
+function AdminField({ label, value, onChange, placeholder, type = "text", required = false }: {
+    label: string; value: string; onChange: (v: string) => void; placeholder: string; type?: string; required?: boolean;
 }) {
     return (
         <div className="space-y-1.5">
             <label className="text-xs font-semibold text-zinc-400 tracking-wide block">{label}</label>
-            <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+            <input type={type} required={required} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
                 className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
         </div>
     );
