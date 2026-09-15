@@ -20,7 +20,6 @@ export function CartView() {
     const router = useRouter();
 
     const [coupon, setCoupon] = useState("");
-    const [couponMsg, setCouponMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
     const [applyingCoupon, setApplyingCoupon] = useState(false);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -56,10 +55,16 @@ export function CartView() {
     const handleApplyCoupon = async () => {
         if (!coupon.trim()) return;
         setApplyingCoupon(true);
-        setCouponMsg(null);
-        const res = await applyCoupon(coupon.trim());
-        setCouponMsg({ type: res.success ? "ok" : "err", text: res.message });
-        setApplyingCoupon(false);
+        try {
+            const res = await applyCoupon(coupon.trim());
+            if (res.success) {
+                success(res.message || "Coupon applied successfully.");
+            }
+        } catch (err: unknown) {
+            error(err instanceof Error ? err.message : "Could not apply coupon.");
+        } finally {
+            setApplyingCoupon(false);
+        }
     };
 
     const waOrderSummary = items
@@ -194,7 +199,7 @@ export function CartView() {
                                         <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 focus-within:border-[#C6A16A] transition-colors">
                                             <Tag className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
                                             <input type="text" value={coupon}
-                                                onChange={(e) => { setCoupon(e.target.value); setCouponMsg(null); }}
+                                                onChange={(e) => setCoupon(e.target.value)}
                                                 placeholder="Coupon code"
                                                 className="flex-1 bg-transparent text-xs text-zinc-100 placeholder-zinc-400 focus:outline-none" />
                                         </div>
@@ -203,11 +208,6 @@ export function CartView() {
                                             {applyingCoupon ? "..." : "Apply"}
                                         </button>
                                     </div>
-                                    {couponMsg && (
-                                        <p className={`text-xs font-semibold ${couponMsg.type === "ok" ? "text-emerald-500" : "text-red-500"}`}>
-                                            {couponMsg.text}
-                                        </p>
-                                    )}
                                 </div>
 
                                 {/* Line items */}
