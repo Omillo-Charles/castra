@@ -7,9 +7,10 @@ import {
     LayoutDashboard, ShoppingBag, Package, Users,
     ChevronRight, TrendingUp, Truck, CheckCircle2,
     Clock, AlertTriangle, Eye, Edit2, Trash2,
-    Plus, Search, X, LogOut, Phone, Mail,
-} from "lucide-react";import { useAuth } from "@/context/AuthContext";
-import { productApi, orderApi, paymentApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus } from "@/config/api";
+    Plus, Search, X, LogOut, Phone, Mail, Tag,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { productApi, orderApi, paymentApi, couponApi, normaliseStatus, type Order, type OrderStatus as ApiOrderStatus, type PaymentStatus, type Coupon } from "@/config/api";
 import { ADMIN_CATEGORIES_LIST, KICKS_SUBCATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { Pagination } from "@/components/ui/Pagination";
 import { WhatsAppIcon } from "@/components/svgicons";
@@ -35,7 +36,7 @@ const PAYMENT_STATUS: Record<PaymentStatus, { label: string; color: string }> = 
 };
 
 type OrderStatus = keyof typeof ORDER_STATUS;
-type Section = "overview" | "orders" | "products" | "customers";
+type Section = "overview" | "orders" | "products" | "coupons" | "customers";
 
 function formatKES(n: number) { return `KSh ${n.toLocaleString("en-KE")}`; }
 
@@ -43,6 +44,7 @@ const NAV: { key: Section; label: string; icon: React.ReactNode }[] = [
     { key: "overview", label: "Overview", icon: <LayoutDashboard className="w-4 h-4" /> },
     { key: "orders", label: "Orders", icon: <ShoppingBag className="w-4 h-4" /> },
     { key: "products", label: "Products", icon: <Package className="w-4 h-4" /> },
+    { key: "coupons", label: "Coupons", icon: <Tag className="w-4 h-4" /> },
     { key: "customers", label: "Customers", icon: <Users className="w-4 h-4" /> },
 ];
 
@@ -146,6 +148,7 @@ export default function AdminPage() {
                     {section === "overview" && <Overview setSection={setSection} />}
                     {section === "orders" && <Orders />}
                     {section === "products" && <Products />}
+                    {section === "coupons" && <Coupons />}
                     {section === "customers" && <Customers />}
                 </div>
             </div>
@@ -883,6 +886,224 @@ function Products() {
                     />
                 </div>
             )}
+        </div>
+    );
+}
+
+function Coupons() {
+    const [coupons, setCoupons] = useState<Coupon[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [code, setCode] = useState("");
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState("500");
+    const [minOrderTotal, setMinOrderTotal] = useState("0");
+    const [usageLimit, setUsageLimit] = useState("");
+    const [active, setActive] = useState(true);
+    const [validFrom, setValidFrom] = useState("");
+    const [validUntil, setValidUntil] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [err, setErr] = useState("");
+    const { success, error: toastError } = useToast();
+
+    const loadCoupons = async () => {
+        setLoading(true);
+        try {
+            const res = await couponApi.list();
+            setCoupons(res.coupons || []);
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Could not load coupons.";
+            setErr(msg);
+            toastError(msg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadCoupons();
+    }, []);
+
+    const resetForm = () => {
+        setEditingId(null);
+        setCode("");
+        setDescription("");
+        setAmount("500");
+        setMinOrderTotal("0");
+        setUsageLimit("");
+        setActive(true);
+        setValidFrom("");
+        setValidUntil("");
+        setErr("");
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!code.trim()) {
+            setErr("Coupon code is required.");
+            return;
+        }
+        if (!amount || Number(amount) <= 0) {
+            setErr("Discount amount must be greater than zero.");
+            return;
+        }
+
+        setSaving(true);
+        setErr("");
+        try {
+            const payload = {
+                code: code.trim(),
+                description: description.trim() || null,
+                amount: Number(amount),
+                active,
+                minOrderTotal: Number(minOrderTotal || 0),
+                usageLimit: usageLimit ? Number(usageLimit) : null,
+                validFrom: validFrom || null,
+                validUntil: validUntil || null,
+            };
+
+            if (editingId) {
+                await couponApi.update(editingId, payload);
+                success("Coupon updated successfully.");
+            } else {
+                await couponApi.create(payload);
+                success("Coupon created successfully.");
+            }
+            resetForm();
+            await loadCoupons();
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Failed to save coupon.";
+            setErr(msg);
+            toastError(msg);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleEdit = (coupon: Coupon) => {
+        setEditingId(coupon.id);
+        setCode(coupon.code);
+        setDescription(coupon.description || "");
+        setAmount(String(coupon.amount));
+        setMinOrderTotal(String(coupon.minOrderTotal));
+        setUsageLimit(coupon.usageLimit ? String(coupon.usageLimit) : "");
+        setActive(coupon.active);
+        setValidFrom(coupon.validFrom ? coupon.validFrom.slice(0, 10) : "");
+        setValidUntil(coupon.validUntil ? coupon.validUntil.slice(0, 10) : "");
+        setErr("");
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Delete this coupon?")) return;
+        try {
+            await couponApi.delete(id);
+            success("Coupon deleted.");
+            await loadCoupons();
+            if (editingId === id) resetForm();
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Failed to delete coupon.";
+            toastError(msg);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold font-glacial text-white">Coupons</h2>
+                <button type="button" onClick={resetForm} className="text-xs font-semibold text-[#C6A16A] hover:underline">
+                    {editingId ? "Cancel edit" : "New coupon"}
+                </button>
+            </div>
+
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 p-5 space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <AdminField label="Coupon code" value={code} onChange={setCode} placeholder="CASTRA500" />
+                        <AdminField label="Discount amount (KES)" value={amount} onChange={setAmount} placeholder="500" type="number" />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Description</label>
+                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
+                            className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all resize-none"
+                            placeholder="Seasonal discount for first-time shoppers" />
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <AdminField label="Min order total" value={minOrderTotal} onChange={setMinOrderTotal} placeholder="0" type="number" />
+                        <AdminField label="Usage limit" value={usageLimit} onChange={setUsageLimit} placeholder="100" type="number" />
+                        <label className="flex items-center gap-2.5 pt-7 cursor-pointer">
+                            <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="w-4 h-4 accent-[#C6A16A]" />
+                            <span className="text-sm text-zinc-300">Active</span>
+                        </label>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Valid from</label>
+                            <input type="date" value={validFrom} onChange={(e) => setValidFrom(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-zinc-400 tracking-wide block">Valid until</label>
+                            <input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-sm text-zinc-100 focus:outline-none focus:border-[#C6A16A] focus:ring-2 focus:ring-[#C6A16A]/10 transition-all" />
+                        </div>
+                    </div>
+
+                    {err && <p className="text-xs text-red-500 font-semibold">{err}</p>}
+
+                    <div className="flex items-center gap-3">
+                        <button type="submit" disabled={saving} className="px-5 py-2.5 rounded-xl bg-[#C6A16A] hover:bg-[#b59059] disabled:opacity-50 text-zinc-950 font-bold text-sm transition-all shadow-sm">
+                            {saving ? "Saving..." : editingId ? "Update coupon" : "Create coupon"}
+                        </button>
+                        {editingId && (
+                            <button type="button" onClick={resetForm} className="px-4 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-500 hover:text-white transition-all">
+                                Cancel
+                            </button>
+                        )}
+                    </div>
+                </form>
+            </div>
+
+            <div className="bg-[#171717] rounded-2xl border border-zinc-800 overflow-hidden">
+                <div className="px-5 py-4 border-b border-zinc-800">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Existing coupons</h3>
+                </div>
+
+                {loading ? (
+                    <div className="text-center py-12 text-zinc-400">
+                        <span className="w-6 h-6 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin inline-block mb-2" />
+                        <p className="text-xs font-semibold">Loading coupons...</p>
+                    </div>
+                ) : coupons.length === 0 ? (
+                    <p className="text-sm text-zinc-400 text-center py-10">No coupons yet.</p>
+                ) : (
+                    <div className="divide-y divide-zinc-800">
+                        {coupons.map((coupon) => (
+                            <div key={coupon.id} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <p className="text-sm font-bold text-white">{coupon.code}</p>
+                                        <span className={`text-[10px] px-2 py-1 rounded-full border ${coupon.active ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/10" : "text-zinc-500 border-zinc-700 bg-zinc-900"}`}>
+                                            {coupon.active ? "Active" : "Inactive"}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-zinc-400 mt-1">{coupon.description || "No description"}</p>
+                                    <div className="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-zinc-400">
+                                        <span>Discount: KSh {coupon.amount.toLocaleString("en-KE")}</span>
+                                        <span>Min order: KSh {coupon.minOrderTotal.toLocaleString("en-KE")}</span>
+                                        <span>Uses: {coupon.usedCount}{coupon.usageLimit ? ` / ${coupon.usageLimit}` : ""}</span>
+                                        {coupon.validUntil && <span>Valid until: {new Date(coupon.validUntil).toLocaleDateString("en-KE")}</span>}
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button type="button" onClick={() => handleEdit(coupon)} className="px-3 py-1.5 rounded-lg border border-zinc-700 text-xs font-semibold text-zinc-300 hover:border-[#C6A16A] hover:text-[#C6A16A] transition-colors">Edit</button>
+                                    <button type="button" onClick={() => handleDelete(coupon.id)} className="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors">Delete</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

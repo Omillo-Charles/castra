@@ -379,6 +379,72 @@ export const cartApi = {
         }),
 };
 
+export type Coupon = {
+    id: string;
+    code: string;
+    description: string | null;
+    amount: number;
+    active: boolean;
+    minOrderTotal: number;
+    usageLimit: number | null;
+    usedCount: number;
+    validFrom: string | null;
+    validUntil: string | null;
+    createdBy: string | null;
+    createdAt: string;
+    updatedAt: string;
+    remainingUses: number | null;
+};
+
+export const couponApi = {
+    list: () =>
+        request<{ success: boolean; coupons: Coupon[] }> ("/coupons"),
+
+    get: (id: string) =>
+        request<{ success: boolean; coupon: Coupon }>(`/coupons/${id}`),
+
+    create: (data: {
+        code: string;
+        description?: string | null;
+        amount: number;
+        active?: boolean;
+        minOrderTotal?: number;
+        usageLimit?: number | null;
+        validFrom?: string | null;
+        validUntil?: string | null;
+    }) =>
+        request<{ success: boolean; coupon: Coupon }>("/coupons", {
+            method: "POST",
+            body: JSON.stringify(data),
+        }),
+
+    update: (id: string, data: Partial<{
+        code: string;
+        description: string | null;
+        amount: number;
+        active: boolean;
+        minOrderTotal: number;
+        usageLimit: number | null;
+        validFrom: string | null;
+        validUntil: string | null;
+    }>) =>
+        request<{ success: boolean; coupon: Coupon }>(`/coupons/${id}`, {
+            method: "PATCH",
+            body: JSON.stringify(data),
+        }),
+
+    delete: (id: string) =>
+        request<{ success: boolean; message: string }>(`/coupons/${id}`, {
+            method: "DELETE",
+        }),
+
+    apply: (code: string) =>
+        request<{ success: boolean; message: string; discount?: number; cart?: Cart }>("/coupons/apply", {
+            method: "POST",
+            body: JSON.stringify({ code }),
+        }),
+};
+
 // Wishlist API
 
 export type WishlistItem = {
