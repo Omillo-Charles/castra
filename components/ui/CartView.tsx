@@ -23,10 +23,10 @@ export function CartView() {
     const [applyingCoupon, setApplyingCoupon] = useState(false);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    const items       = cart?.items ?? [];
-    const subtotal    = cart?.subtotal ?? 0;
-    const discount    = cart?.discount ?? 0;
-    const total       = cart?.total ?? 0;
+    const items = cart?.items ?? [];
+    const subtotal = cart?.subtotal ?? 0;
+    const discount = cart?.discount ?? 0;
+    const total = cart?.total ?? 0;
 
     const handleQtyChange = async (productId: string, delta: number, currentQty: number) => {
         const newQty = currentQty + delta;

@@ -35,7 +35,7 @@ let _refreshPromise: Promise<AuthResponse> | null = null;
 async function attemptRefresh(): Promise<AuthResponse> {
     if (!_refreshPromise) {
         _refreshPromise = fetch(`${BASE_URL}/auth/refresh`, {
-            method:      "POST",
+            method: "POST",
             credentials: "include",
         })
             .then(async (res) => {
@@ -398,7 +398,7 @@ export type Coupon = {
 
 export const couponApi = {
     list: () =>
-        request<{ success: boolean; coupons: Coupon[] }> ("/coupons"),
+        request<{ success: boolean; coupons: Coupon[] }>("/coupons"),
 
     get: (id: string) =>
         request<{ success: boolean; coupon: Coupon }>(`/coupons/${id}`),
