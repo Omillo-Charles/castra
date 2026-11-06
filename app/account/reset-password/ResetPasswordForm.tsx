@@ -152,7 +152,7 @@ function ResetPasswordContent() {
                             {strengthLabel}
                             {strength < 4 && (
                                 <span className="text-zinc-500 font-normal ml-1">
-                                    — try adding {strength < 2 ? "uppercase & numbers" : strength < 3 ? "a special character" : "a symbol"}
+                                    - try adding {strength < 2 ? "uppercase & numbers" : strength < 3 ? "a special character" : "a symbol"}
                                 </span>
                             )}
                         </p>

@@ -317,7 +317,7 @@ export default function CheckoutPage() {
 
     const waMsg = encodeURIComponent(
         `Hi, I'd like to confirm my order:\n\nRef: ${placedOrderRef}\n` +
-        items.map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`).join("\n") +
+        items.map((i) => `• ${i.product.name} x${i.qty} - ${formatKES(i.product.price * i.qty)}`).join("\n") +
         `\n\nTotal: ${formatKES(total)} (Delivery fee excluded)\nDelivery to: ${address}, ${city}, ${county}` +
         (payMethod === "mpesa-stk"
             ? `\nPayment: M-Pesa STK Push to ${stkPhone}`

@@ -68,7 +68,7 @@ export function CartView() {
     };
 
     const waOrderSummary = items
-        .map((i) => `• ${i.product.name} x${i.qty} — ${formatKES(i.product.price * i.qty)}`)
+        .map((i) => `• ${i.product.name} x${i.qty} - ${formatKES(i.product.price * i.qty)}`)
         .join("\n");
     const waMsg = encodeURIComponent(
         `Hi, I'd like to place an order:\n\n${waOrderSummary}\n\nSubtotal: ${formatKES(subtotal)}\n*Total (Items): ${formatKES(total)}*\n*(Delivery charges excluded - will be communicated via email/WhatsApp)*\n\nPlease confirm availability.`

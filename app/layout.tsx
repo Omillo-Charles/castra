@@ -105,9 +105,9 @@ export const metadata: Metadata = {
 
   // Icons
   icons: {
-    icon: "/branding/icon.png",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
     apple: "/branding/icon.png",
-    shortcut: "/branding/icon.png",
   },
 
   // Crawler directives
