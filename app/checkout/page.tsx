@@ -321,7 +321,7 @@ export default function CheckoutPage() {
         `\n\nTotal: ${formatKES(total)} (Delivery fee excluded)\nDelivery to: ${address}, ${city}, ${county}` +
         (payMethod === "mpesa-stk"
             ? `\nPayment: M-Pesa STK Push to ${stkPhone}`
-            : `\nPayment: M-Pesa Manual — Paybill 542542 / Send Money 0704147774`)
+            : `\nPayment: M-Pesa Manual - Paybill 542542 / Send Money 0704147774`)
     );
 
     // Loading spinner while cart loads
@@ -620,10 +620,10 @@ export default function CheckoutPage() {
                                         <div className="flex-1 space-y-3">
                                             <div>
                                                 <p className="text-sm font-bold text-white">M-Pesa STK Push Prompt</p>
-                                                <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt on your phone — just enter your PIN.</p>
+                                                <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt on your phone - just enter your PIN.</p>
                                             </div>
                                             <div className="space-y-3">
-                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="Coming soon — not available yet" icon={<Phone className="w-4 h-4" />} autoComplete="tel" disabled />
+                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="Coming soon - not available yet" icon={<Phone className="w-4 h-4" />} autoComplete="tel" disabled />
                                                 <p className="text-[11px] text-amber-400/80 flex items-center gap-1.5">
                                                     <Info className="w-3.5 h-3.5 flex-shrink-0" />
                                                     STK Push is not yet active. Please use Manual M-Pesa payment above.

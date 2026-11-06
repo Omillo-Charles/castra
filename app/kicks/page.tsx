@@ -183,7 +183,7 @@ function KicksPageContent() {
               ? "No kicks available right now"
               : `No kicks found in "${activeSubcategory}"`}
           </p>
-          <p className="text-xs text-zinc-500">Check back soon — new styles drop regularly.</p>
+          <p className="text-xs text-zinc-500">Check back soon, new styles drop regularly.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

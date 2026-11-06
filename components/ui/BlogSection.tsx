@@ -33,7 +33,7 @@ Finally, don't underestimate the power of plants, mirrors, and artwork. These fi
     title: "The Ultimate Guide to Outfitting Your Kitchen in Kenya",
     excerpt:
       "Whether you're setting up a new home or upgrading an existing kitchen, choosing the right cookware and accessories makes all the difference for every Kenyan household.",
-    body: `Setting up a kitchen in Kenya involves a unique set of considerations — from cooking on gas to preparing meals for extended family. Getting your tools right from the start saves money and frustration in the long run.
+    body: `Setting up a kitchen in Kenya involves a unique set of considerations , from cooking on gas to preparing meals for extended family. Getting your tools right from the start saves money and frustration in the long run.
 
 Begin with your core cookware. A quality set of pots and pans that distributes heat evenly is the single most important investment. Look for heavy-bottomed stainless steel or hard-anodised options that work well on both gas and electric cookers. Castra Households stocks a curated range of cookware sets that strike the right balance between quality and value.
 
@@ -49,16 +49,16 @@ Finally, consider small appliances. A blender, electric kettle, and toaster are 
     date: "05 September 2026",
     category: "Furniture & Décor",
     readTime: "5 min read",
-    title: "How to Choose Furniture That Lasts — A Buyer's Guide",
+    title: "How to Choose Furniture That Lasts , A Buyer's Guide",
     excerpt:
       "Investing in quality furniture means thinking beyond aesthetics. Learn what materials and construction styles will keep your Castra pieces looking great for years to come.",
-    body: `Furniture is one of the biggest investments you'll make in your home, so it pays to get it right the first time. The wrong choice doesn't just cost money — it costs space, time, and the frustration of replacing pieces that wear out too quickly.
+    body: `Furniture is one of the biggest investments you'll make in your home, so it pays to get it right the first time. The wrong choice doesn't just cost money , it costs space, time, and the frustration of replacing pieces that wear out too quickly.
 
-The most important factor is the frame. Solid hardwood frames are the gold standard for longevity. They resist warping, handle weight well, and can be repaired if damaged. Avoid particleboard frames for anything load-bearing — they look fine at first but deteriorate quickly, especially in humid climates.
+The most important factor is the frame. Solid hardwood frames are the gold standard for longevity. They resist warping, handle weight well, and can be repaired if damaged. Avoid particleboard frames for anything load-bearing , they look fine at first but deteriorate quickly, especially in humid climates.
 
 Joints matter just as much as materials. Dovetail and mortise-and-tenon joints are signs of quality construction. If a piece is assembled with staples or glue alone, it won't hold up to daily use.
 
-For upholstered pieces, pay attention to the fill and fabric. High-density foam holds its shape far longer than low-density alternatives. For fabric, look for tightly woven options with a high rub count — anything above 15,000 is considered durable for home use.
+For upholstered pieces, pay attention to the fill and fabric. High-density foam holds its shape far longer than low-density alternatives. For fabric, look for tightly woven options with a high rub count , anything above 15,000 is considered durable for home use.
 
 Finally, think about scale. Furniture that's too large makes a room feel cramped; too small and it feels incomplete. Measure your space carefully before purchasing, and don't forget to account for walkways and door clearances. The pieces in the Castra Households Furniture collection are designed with Kenyan home proportions in mind.`,
   },
@@ -71,13 +71,13 @@ Finally, think about scale. Furniture that's too large makes a room feel cramped
     title: "Must-Have Home Appliances for Every Modern Kenyan Home",
     excerpt:
       "From energy-efficient cookers to smart blenders, we round up the essential home appliances changing how Kenyan families cook, clean, and live every day.",
-    body: `The right home appliances don't just make life more convenient — they genuinely change how you live. Here are the essentials that every modern Kenyan home should consider.
+    body: `The right home appliances don't just make life more convenient , they genuinely change how you live. Here are the essentials that every modern Kenyan home should consider.
 
-A reliable cooker or oven is the foundation of any well-equipped kitchen. Whether you cook for two or for a large family, having consistent, controllable heat makes a real difference to the quality of your meals. Look for models with energy-saving features — with electricity costs in Kenya, efficiency matters.
+A reliable cooker or oven is the foundation of any well-equipped kitchen. Whether you cook for two or for a large family, having consistent, controllable heat makes a real difference to the quality of your meals. Look for models with energy-saving features , with electricity costs in Kenya, efficiency matters.
 
 A blender or food processor is another must-have. From smoothies to sauces to batters, a quality blender saves time every single day. The difference between a KSh 800 blender and a quality KSh 3,500 one is enormous in terms of motor life and blending power.
 
-For laundry, a washing machine is increasingly accessible and practical, especially in urban apartments where hand-washing large items is impractical. Front-loaders use significantly less water than top-loaders — an important consideration in Nairobi.
+For laundry, a washing machine is increasingly accessible and practical, especially in urban apartments where hand-washing large items is impractical. Front-loaders use significantly less water than top-loaders , an important consideration in Nairobi.
 
 Smaller appliances that punch above their weight include the electric kettle, the rice cooker, and the sandwich maker. Each one reduces cooking time and energy use compared to stovetop alternatives.
 
@@ -91,16 +91,16 @@ Browse the full range of home appliances at Castra Households, where we stock re
     readTime: "3 min read",
     title: "Style Meets Comfort: The Castra Kicks Story",
     excerpt:
-      "Castra Kicks started with a simple idea — premium footwear shouldn't cost a premium. Discover how our curated collection is redefining everyday style for Kenyans.",
+      "Castra Kicks started with a simple idea , premium footwear shouldn't cost a premium. Discover how our curated collection is redefining everyday style for Kenyans.",
     body: `Castra Kicks was born from a simple observation: most Kenyans wanted access to premium, stylish footwear without paying the inflated prices that came with imported retail markup.
 
-The collection started small — a handful of carefully selected sneaker styles and a few formal options for men and women. The response was immediate. Customers appreciated the curation, the quality, and the honest pricing. Word spread quickly.
+The collection started small , a handful of carefully selected sneaker styles and a few formal options for men and women. The response was immediate. Customers appreciated the curation, the quality, and the honest pricing. Word spread quickly.
 
-Today, Castra Kicks stocks heels, sandals, flats, sneakers, boots, and formal options for both men and women — all sourced from quality suppliers and offered at prices that reflect the value, not the brand tax.
+Today, Castra Kicks stocks heels, sandals, flats, sneakers, boots, and formal options for both men and women , all sourced from quality suppliers and offered at prices that reflect the value, not the brand tax.
 
 What sets Castra Kicks apart isn't just the price. It's the attention to comfort. Every style in the collection is assessed not just for how it looks, but for how it feels after eight hours. We believe you shouldn't have to choose between looking good and feeling good.
 
-The Instagram page @castra_kicks has become a community of its own — regular style drops, customer features, and exclusive previews for followers. If you haven't followed yet, it's worth a visit.
+The Instagram page @castra_kicks has become a community of its own , regular style drops, customer features, and exclusive previews for followers. If you haven't followed yet, it's worth a visit.
 
 Browse the full Castra Kicks collection on our dedicated footwear page and find your next favourite pair.`,
   },
@@ -112,10 +112,10 @@ Browse the full Castra Kicks collection on our dedicated footwear page and find 
     readTime: "3 min read",
     title: "Creating a Welcoming Home: Small Changes, Big Impact",
     excerpt:
-      "The secret to a beautiful home isn't a full renovation — it's the thoughtful details. Beddings, décor accents, and smart organizers can completely change how a room feels.",
-    body: `There's a version of home improvement that doesn't require a contractor, a large budget, or a weekend of hard labour. It starts with paying attention to the small things — the things you stop noticing because they've always been there.
+      "The secret to a beautiful home isn't a full renovation , it's the thoughtful details. Beddings, décor accents, and smart organizers can completely change how a room feels.",
+    body: `There's a version of home improvement that doesn't require a contractor, a large budget, or a weekend of hard labour. It starts with paying attention to the small things , the things you stop noticing because they've always been there.
 
-Start with your bedding. The bedroom is the room you begin and end every day in, and the quality of your bedding has a direct effect on how well you rest. Fresh, soft bedsheets with a high thread count don't just feel better — they signal to your mind that this is a place of comfort and rest. Castra Households stocks premium beddings in a range of sizes, colours, and fabrics.
+Start with your bedding. The bedroom is the room you begin and end every day in, and the quality of your bedding has a direct effect on how well you rest. Fresh, soft bedsheets with a high thread count don't just feel better , they signal to your mind that this is a place of comfort and rest. Castra Households stocks premium beddings in a range of sizes, colours, and fabrics.
 
 Move to your entryway. The first thing you and your guests see when entering your home sets the tone for everything else. A clean doormat, a small shelf or hook for keys, and a single decorative piece can transform an afterthought into a welcoming statement.
 

@@ -48,7 +48,7 @@ export default function ReturnsPage() {
                     <div className="flex items-center gap-3 px-6 py-4 border-b border-red-500/20 bg-red-500/10">
                         <X className="w-5 h-5 text-red-500 flex-shrink-0" />
                         <h2 className="text-sm font-bold text-red-400 uppercase tracking-wide">
-                            No Returns — Castra Households
+                            No Returns - Castra Households
                         </h2>
                     </div>
                     <div className="px-6 py-5 space-y-4">
@@ -75,7 +75,7 @@ export default function ReturnsPage() {
                     <div className="flex items-center gap-3 px-6 py-4 border-b border-emerald-500/20 bg-emerald-500/10">
                         <ArrowLeftRight className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                         <h2 className="text-sm font-bold text-emerald-400 uppercase tracking-wide">
-                            Exchanges Only — Castra Kicks
+                            Exchanges Only - Castra Kicks
                         </h2>
                     </div>
                     <div className="px-6 py-5 space-y-5">

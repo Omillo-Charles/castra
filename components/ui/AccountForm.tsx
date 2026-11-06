@@ -73,7 +73,7 @@ export function AccountForm() {
                                 : tab === "forgot"
                                 ? "Enter the email address linked to your account and we\u2019ll send you a reset link."
                                 : tab === "verify"
-                                ? "One quick step left — confirm your email address and your Castra account will be fully active."
+                                ? "One quick step left, confirm your email address and your Castra account will be fully active."
                                 : "Join thousands of Kenyans who trust Castra for premium household essentials delivered countrywide."}
                         </p>
                     </div>
@@ -529,7 +529,7 @@ function VerifyEmailPanel({ email, onSkip }: { email: string; onSkip: () => void
                 onClick={onSkip}
                 className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
             >
-                I&apos;ll verify later — back to sign in
+                I&apos;ll verify later - back to sign in
             </button>
         </div>
     );
