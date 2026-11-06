@@ -79,7 +79,7 @@ export function Navbar() {
 
             {/*  LAYER 1: TOP ANNOUNCEMENT & SOCIAL BAR (VISIBLE ON ALL SCREENS)  */}
             <div className="w-full bg-black text-zinc-400 border-b border-zinc-800/80 text-xs py-2">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 
                     {/* EXTREME LEFT: Delivery Notice */}
                     <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export function Navbar() {
             </div>
 
             {/*  LAYER 2: MAIN BRANDING & ACTIONS NAVBAR  */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4 lg:gap-8">
 
                     {/* LEFT: Logo Section */}
@@ -385,7 +385,7 @@ export function Navbar() {
 
             {/*  LAYER 3: CATEGORY NAVIGATION BAR (HIDDEN ON MOBILE, VISIBLE ON DESKTOP ONLY)  */}
             <div className="hidden md:block w-full bg-zinc-950/90 border-t border-zinc-800/80">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-4 py-2">
 
                         {/* Category Items starting from Left */}

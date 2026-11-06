@@ -110,7 +110,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
             onClick={onClose}
         >
             <div
-                className="relative w-full max-w-3xl bg-[#141414] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl my-auto animate-in zoom-in-95 duration-200"
+                className="relative w-full max-w-3xl bg-[#141414] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl my-auto animate-in zoom-in-95 duration-200"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
