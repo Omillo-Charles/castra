@@ -33,7 +33,7 @@ const faqSchema = {
             name: "What payment methods does Castra Households accept?",
             acceptedAnswer: {
                 "@type": "Answer",
-                text: "We accept M-Pesa STK Push. At checkout, enter your phone number and you will receive a payment prompt on your phone to complete the payment.",
+                text: "We accept Paystack M-Pesa Prompt and manual Paybill payments. Continue to Paystack's secure checkout to complete a prompt payment.",
             },
         },
         {

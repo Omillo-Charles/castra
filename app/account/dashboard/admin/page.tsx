@@ -407,8 +407,10 @@ function Orders() {
                     const uiKey = normaliseStatus(order.status) as OrderStatus;
                     const s = ORDER_STATUS[uiKey] ?? ORDER_STATUS["confirmed"];
                     const isEditing = editing === order.id;
-                    const paymentMethodLabel = order.payment?.method === "MPESA_STK"
-                        ? "M-Pesa STK"
+                    const paymentMethodLabel = order.payment?.method === "PAYSTACK_MPESA_STK"
+                        ? "M-Pesa Prompt (Paystack)"
+                        : order.payment?.method === "MPESA_MANUAL"
+                        ? "M-Pesa Paybill"
                         : "No Payment Details";
                     const paymentStatusMeta = order.payment ? PAYMENT_STATUS[order.payment.status] : null;
                     return (

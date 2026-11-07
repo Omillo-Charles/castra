@@ -494,7 +494,7 @@ export type OrderStatus =
     | "DELIVERED"
     | "CANCELLED";
 
-export type PaymentMethod = "MPESA_STK" | "MPESA_MANUAL";
+export type PaymentMethod = "MPESA_MANUAL" | "PAYSTACK_MPESA_STK";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 
 export type OrderItem = {
@@ -512,9 +512,9 @@ export interface Payment {
     method: PaymentMethod;
     status: PaymentStatus;
     amount: number;
-    stkPhone: string | null;
-    checkoutRequestId: string | null;
     mpesaReceiptNumber: string | null;
+    paystackReference: string | null;
+    paystackAuthorizationUrl: string | null;
     createdAt: string;
 }
 
@@ -586,8 +586,7 @@ export type PlaceOrderBody = {
         notes?: string;
     };
     payment: {
-        method: "manual" | "mpesa-stk";
-        stkPhone?: string; // required when method = "mpesa-stk"
+        method: "manual" | "paystack-mpesa";
     };
 };
 
@@ -600,8 +599,18 @@ export type PlaceOrderResponse = {
         status: string;
         items: { name: string; qty: number; price: number }[];
     };
-    payment: { id: string; method: string; status: string } | null;
-    stk: { checkoutRequestId: string; customerMessage: string } | null;
+    payment: {
+        id: string;
+        method: PaymentMethod;
+        status: PaymentStatus;
+        reference?: string | null;
+        authorizationUrl?: string | null;
+    } | null;
+    paystack: {
+        reference: string;
+        authorizationUrl: string;
+        accessCode: string | null;
+    } | null;
 };
 
 /**
@@ -676,11 +685,16 @@ export const orderApi = {
 // Payment API
 
 export const paymentApi = {
-    // Poll STK Push status
-    stkQuery: (checkoutRequestId: string) =>
-        request<{ success: boolean; payment: Payment }>(`/payments/status/${checkoutRequestId}`, {
+    // Verify a Paystack reference server-side after the customer returns from checkout.
+    verifyPaystack: (reference: string) =>
+        request<{
+            success: boolean;
+            paid: boolean;
+            status?: string;
+            payment?: Payment;
+        }>(`/payments/paystack/verify/${encodeURIComponent(reference)}`, {
             method: "GET",
-        }).then((res) => res.payment),
+        }),
 
     // Admin only — manually update payment status after confirming payment.
     updateStatus: (id: string, body: { status: PaymentStatus; mpesaReceiptNumber?: string }) =>

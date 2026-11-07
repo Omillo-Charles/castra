@@ -17,7 +17,7 @@ const FAQ_GROUPS = [
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We currently accept M-Pesa STK Push. At checkout, enter your phone number and you will receive a payment prompt on your phone to complete the payment.",
+                a: "We currently accept Paystack M-Pesa Prompt and manual Paybill payments. For the prompt option, continue to Paystack's secure checkout to complete payment.",
             },
             {
                 q: "Can I modify or cancel my order?",

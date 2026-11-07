@@ -59,7 +59,7 @@ const SECTIONS = [
             },
             {
                 subtitle: "Payment methods",
-                body: "We currently accept M-Pesa STK Push at checkout. Payment must be completed before your order is dispatched.",
+                body: "We currently accept Paystack M-Pesa Prompt and manual Paybill payments at checkout. Payment must be completed before your order is dispatched.",
             },
             {
                 subtitle: "Order cancellation",

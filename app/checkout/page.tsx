@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     ChevronRight, Package, MapPin, CreditCard,
     CheckCircle2, ArrowRight, ChevronDown, Truck,
@@ -141,6 +141,7 @@ export default function CheckoutPage() {
     const { user } = useAuth();
     const { cart, loading, refresh: refreshCart } = useCart();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { error: toastError } = useToast();
 
     const [step, setStep] = useState<Step>("details");
@@ -151,11 +152,6 @@ export default function CheckoutPage() {
 
     // Stored after a successful placeOrder call
     const [placedOrderRef, setPlacedOrderRef] = useState("");
-    // placedOrderId kept for future use (e.g. deep-link to order page)
-    const [placedOrderId,  setPlacedOrderId]  = useState("");
-    // STK polling state — only populated when customer chose mpesa-stk
-    const [stkRequestId,   setStkRequestId]   = useState<string | null>(null);
-    const [stkPayStatus,   setStkPayStatus]   = useState<"PENDING" | "PAID" | "FAILED" | null>(null);
 
     // ── Contact — pre-fill from logged-in user ──
     const [firstName, setFirstName] = useState(user?.firstName ?? "");
@@ -172,9 +168,10 @@ export default function CheckoutPage() {
     const [savedAddresses, setSavedAddresses] = useState<import("@/config/api").Address[]>([]);
 
     // Payment
-    const [payMethod, setPayMethod] = useState<"manual" | "mpesa-stk">("manual");
-    const [stkPhone, setStkPhone]   = useState("");
+    const [payMethod, setPayMethod] = useState<"paystack-mpesa" | "manual">("paystack-mpesa");
     const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [paystackCallbackPending, setPaystackCallbackPending] = useState(false);
+    const paystackCallbackHandled = useRef(false);
 
     const handleCopy = (text: string, label: string) => {
         navigator.clipboard.writeText(text);
@@ -189,6 +186,8 @@ export default function CheckoutPage() {
     const total = cart?.total ?? 0;
 
     const currentIndex = STEP_KEYS.indexOf(step);
+    const paystackReference = searchParams.get("reference");
+    const isPaystackCallback = searchParams.get("payment") === "paystack" && !!paystackReference;
 
     // Pre-fill contact from auth user
     useEffect(() => {
@@ -222,10 +221,29 @@ export default function CheckoutPage() {
     // Redirect to cart if cart is empty and not yet placed.
     // Works for both guests and authenticated users.
     useEffect(() => {
-        if (!loading && !placed && items.length === 0) {
+        if (!loading && !placed && !isPaystackCallback && items.length === 0) {
             router.replace("/cart");
         }
-    }, [loading, placed, items.length, router]);
+    }, [loading, placed, isPaystackCallback, items.length, router]);
+
+    useEffect(() => {
+        if (!isPaystackCallback || !paystackReference || paystackCallbackHandled.current) return;
+
+        paystackCallbackHandled.current = true;
+        setPaystackCallbackPending(true);
+        paymentApi.verifyPaystack(paystackReference)
+            .then((result) => {
+                if (result.paid) {
+                    router.replace("/");
+                    return;
+                }
+                setPlaceErr("Paystack payment was not confirmed. Please contact us if your account was debited.");
+            })
+            .catch((error: unknown) => {
+                setPlaceErr(error instanceof Error ? error.message : "Could not verify the Paystack payment.");
+            })
+            .finally(() => setPaystackCallbackPending(false));
+    }, [isPaystackCallback, paystackReference, router]);
 
     const goNext = () => {
         const errors: Record<string, string> = {};
@@ -233,6 +251,7 @@ export default function CheckoutPage() {
         if (step === "details") {
             if (!firstName.trim()) errors.firstName = "First name is required.";
             if (!lastName.trim())  errors.lastName  = "Last name is required.";
+            if (!email.trim())     errors.email     = "Email is required for payment and order updates.";
             if (!phone.trim())     errors.phone     = "Phone number is required for delivery coordination.";
         }
 
@@ -261,9 +280,8 @@ export default function CheckoutPage() {
     const placeOrder = async () => {
         setPlaceErr("");
 
-        // Validate STK phone before submitting
-        if (payMethod === "mpesa-stk" && !stkPhone.trim()) {
-            setPlaceErr("Please enter your M-Pesa phone number for the STK prompt.");
+        if (payMethod === "paystack-mpesa" && !email.trim()) {
+            setPlaceErr("Please enter your email address to continue with the payment prompt.");
             return;
         }
 
@@ -272,42 +290,20 @@ export default function CheckoutPage() {
             const res = await orderApi.place({
                 contact:  { firstName, lastName, email: email || undefined, phone },
                 delivery: { street: address, city, county, notes: notes || undefined },
-                payment: payMethod === "mpesa-stk"
-                    ? { method: "mpesa-stk", stkPhone: stkPhone.trim() }
-                    : { method: "manual" },
+                payment: { method: payMethod },
             });
 
+            if (payMethod === "paystack-mpesa") {
+                if (!res.paystack?.authorizationUrl) {
+                    throw new Error("Paystack checkout was not initialized. Please try again.");
+                }
+                window.location.assign(res.paystack.authorizationUrl);
+                return;
+            }
+
             setPlacedOrderRef(res.order.ref);
-            setPlacedOrderId(res.order.id);
             setPlaced(true);
             refreshCart();
-
-            // STK Push: start polling only when the server actually triggered a push
-            if (payMethod === "mpesa-stk" && res.stk?.checkoutRequestId) {
-                const reqId = res.stk.checkoutRequestId;
-                setStkRequestId(reqId);
-                setStkPayStatus("PENDING");
-
-                let attempts = 0;
-                const MAX_ATTEMPTS = 12; // 12 × 5s = 60s total
-
-                const poll = async () => {
-                    if (attempts >= MAX_ATTEMPTS) {
-                        setStkPayStatus("FAILED");
-                        return;
-                    }
-                    attempts++;
-                    try {
-                        const qRes = await paymentApi.stkQuery(reqId);
-                        if (qRes.status === "PAID")   { setStkPayStatus("PAID");   return; }
-                        if (qRes.status === "FAILED") { setStkPayStatus("FAILED"); return; }
-                        setTimeout(poll, 5000);
-                    } catch {
-                        setTimeout(poll, 5000);
-                    }
-                };
-                setTimeout(poll, 5000);
-            }
         } catch (err: unknown) {
             setPlaceErr(err instanceof Error ? err.message : "Failed to place order. Please try again.");
         } finally {
@@ -319,8 +315,8 @@ export default function CheckoutPage() {
         `Hi, I'd like to confirm my order:\n\nRef: ${placedOrderRef}\n` +
         items.map((i) => `• ${i.product.name} x${i.qty} - ${formatKES(i.product.price * i.qty)}`).join("\n") +
         `\n\nTotal: ${formatKES(total)} (Delivery fee excluded)\nDelivery to: ${address}, ${city}, ${county}` +
-        (payMethod === "mpesa-stk"
-            ? `\nPayment: M-Pesa STK Push to ${stkPhone}`
+        (payMethod === "paystack-mpesa"
+            ? "\nPayment: Paystack M-Pesa Prompt"
             : `\nPayment: M-Pesa Manual - Paybill 542542 / Send Money 0704147774`)
     );
 
@@ -328,6 +324,13 @@ export default function CheckoutPage() {
     if (loading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
             <span className="w-7 h-7 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+        </div>
+    );
+
+    if (isPaystackCallback && paystackCallbackPending) return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
+            <span className="w-8 h-8 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+            <p className="text-sm font-semibold text-zinc-300">Confirming your Paystack payment…</p>
         </div>
     );
 
@@ -351,26 +354,7 @@ export default function CheckoutPage() {
                     </p>
                 </div>
 
-                {/* STK payment status — only shown for STK orders */}
-                {payMethod === "mpesa-stk" && stkRequestId && (
-                    <div className={`flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-semibold mx-auto max-w-xs ${
-                        stkPayStatus === "PAID"
-                            ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
-                            : stkPayStatus === "FAILED"
-                            ? "bg-red-500/10 border-red-500/25 text-red-400"
-                            : "bg-amber-500/10 border-amber-500/25 text-amber-400"
-                    }`}>
-                        {stkPayStatus === "PAID" ? (
-                            <><CheckCircle2 className="w-4 h-4" /> M-Pesa payment confirmed!</>
-                        ) : stkPayStatus === "FAILED" ? (
-                            <>Payment not completed. Please contact us on WhatsApp to retry.</>
-                        ) : (
-                            <><span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin flex-shrink-0" /> Waiting for M-Pesa confirmation…</>
-                        )}
-                    </div>
-                )}
-
-                {/* Manual payment instructions — only shown for manual orders */}
+                {/* Manual payment instructions */}
                 {payMethod === "manual" && (
                 <div className="bg-[#171717] rounded-2xl border border-[#C6A16A]/30 p-5 space-y-3 text-left max-w-md mx-auto">
                     <p className="text-xs font-bold uppercase tracking-wider text-[#C6A16A] flex items-center gap-1.5">
@@ -474,7 +458,7 @@ export default function CheckoutPage() {
                                 <Field label="First name" value={firstName} onChange={(v) => { setFirstName(v); setStepErrors(e => ({ ...e, firstName: "" })); }} placeholder="Jane" icon={<User className="w-4 h-4" />} autoComplete="given-name" error={stepErrors.firstName} />
                                 <Field label="Last name" value={lastName} onChange={(v) => { setLastName(v); setStepErrors(e => ({ ...e, lastName: "" })); }} placeholder="Wanjiku" autoComplete="family-name" error={stepErrors.lastName} />
                             </div>
-                            <Field label="Email address" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" required={false} />
+                            <Field label="Email address" type="email" value={email} onChange={(v) => { setEmail(v); setStepErrors(e => ({ ...e, email: "" })); }} placeholder="jane@example.com" icon={<Mail className="w-4 h-4" />} autoComplete="email" error={stepErrors.email} />
                             <Field label="Phone number" type="tel" value={phone} onChange={(v) => { setPhone(v); setStepErrors(e => ({ ...e, phone: "" })); }} placeholder="+254 7XX XXX XXX" icon={<Phone className="w-4 h-4" />} autoComplete="tel" error={stepErrors.phone} />
                         </div>
                     )}
@@ -539,7 +523,16 @@ export default function CheckoutPage() {
                             </h2>
 
                             {/* Payment mode selector tabs */}
-                            <div className="flex gap-2 p-1 bg-zinc-900 rounded-xl w-fit">
+                            <div className="grid grid-cols-2 gap-1 p-1 bg-zinc-900 rounded-xl w-full max-w-md">
+                                <button
+                                    type="button"
+                                    onClick={() => setPayMethod("paystack-mpesa")}
+                                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                                        payMethod === "paystack-mpesa" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
+                                    }`}
+                                >
+                                    PROMPT
+                                </button>
                                 <button
                                     type="button"
                                     onClick={() => setPayMethod("manual")}
@@ -547,21 +540,25 @@ export default function CheckoutPage() {
                                         payMethod === "manual" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
                                     }`}
                                 >
-                                    Paybill / Send Money (Manual)
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setPayMethod("mpesa-stk")}
-                                    disabled
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all opacity-40 cursor-not-allowed ${
-                                        payMethod === "mpesa-stk" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400"
-                                    }`}
-                                >
-                                    M-Pesa STK Prompt <span className="text-[10px] font-normal">(coming soon)</span>
+                                    PAYBILL
                                 </button>
                             </div>
 
-                            {payMethod === "manual" ? (
+                            {payMethod === "paystack-mpesa" ? (
+                                <div className="p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#C6A16A]" />
+                                        <p className="text-sm font-bold text-white">M-Pesa Prompt</p>
+                                    </div>
+                                    <p className="text-xs text-zinc-400 leading-relaxed">
+                                        Continue to Paystack&apos;s secure checkout to receive an M-Pesa prompt on your phone. You will not be asked for your M-Pesa PIN here.
+                                    </p>
+                                    <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20 text-xs text-zinc-400">
+                                        <Lock className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                        <span>Your email and phone number are required so Paystack can initialize and identify the payment.</span>
+                                    </div>
+                                </div>
+                            ) : (
                                 <div className="space-y-4">
                                     <div className="p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 space-y-4">
                                         <div className="flex items-center gap-2">
@@ -614,26 +611,7 @@ export default function CheckoutPage() {
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-[#C6A16A] bg-[#C6A16A]/5 transition-all">
-                                        <div className="flex-1 space-y-3">
-                                            <div>
-                                                <p className="text-sm font-bold text-white">M-Pesa STK Push Prompt</p>
-                                                <p className="text-xs text-zinc-400 mt-0.5">Enter your M-Pesa number. You will receive a prompt on your phone - just enter your PIN.</p>
-                                            </div>
-                                            <div className="space-y-3">
-                                                <Field label="M-Pesa phone number" type="tel" value={stkPhone} onChange={setStkPhone} placeholder="Coming soon - not available yet" icon={<Phone className="w-4 h-4" />} autoComplete="tel" disabled />
-                                                <p className="text-[11px] text-amber-400/80 flex items-center gap-1.5">
-                                                    <Info className="w-3.5 h-3.5 flex-shrink-0" />
-                                                    STK Push is not yet active. Please use Manual M-Pesa payment above.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             )}
-
                             <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-400">
                                 <Lock className="w-3.5 h-3.5 text-[#C6A16A] flex-shrink-0" />
                                 Your payment details are safe. We do not store your M-Pesa PIN or personal credentials.
@@ -668,9 +646,10 @@ export default function CheckoutPage() {
                                     <button type="button" onClick={() => setStep("payment")} className="text-xs text-[#C6A16A] font-semibold hover:underline">Edit</button>
                                 </div>
                                 <p className="text-sm font-semibold text-zinc-300">
-                                    {payMethod === "manual" ? "Manual M-Pesa (Paybill 542542 / Send Money 0704147774)" : "M-Pesa STK Prompt"}
+                                    {payMethod === "paystack-mpesa"
+                                        ? "M-Pesa Prompt (Paystack)"
+                                        : "M-Pesa Paybill"}
                                 </p>
-                                {payMethod === "mpesa-stk" && stkPhone && <p className="text-xs text-zinc-400 mt-1">Prompt to: <span className="font-semibold">{stkPhone}</span></p>}
                             </div>
                         </div>
                     )}
