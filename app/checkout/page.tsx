@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -137,7 +137,7 @@ function OrderSummary({ compact = false }: { compact?: boolean }) {
 }
 
 /*Main checkout page*/
-export default function CheckoutPage() {
+function CheckoutPageContent() {
     const { user } = useAuth();
     const { cart, loading, refresh: refreshCart } = useCart();
     const router = useRouter();
@@ -197,6 +197,7 @@ export default function CheckoutPage() {
             if (!email) setEmail(user.email);
             if (user.phone && !phone) setPhone(user.phone);
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
@@ -702,5 +703,17 @@ export default function CheckoutPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <span className="w-7 h-7 border-2 border-zinc-200 border-t-[#C6A16A] rounded-full animate-spin" />
+            </div>
+        }>
+            <CheckoutPageContent />
+        </Suspense>
     );
 }
