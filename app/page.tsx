@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { HeroBanner } from "@/components/ui/heroBanner";
 import { FeaturedSection } from "@/components/ui/FeaturedSection";
 import { ProductGrid } from "@/components/ui/ProductGrid";
+import { CategoriesGrid } from "@/components/ui/CategoriesGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,8 @@ export default function Home() {
           </Suspense>
         </div>
       </section>
+
+      <CategoriesGrid />
 
     </div>
   );
