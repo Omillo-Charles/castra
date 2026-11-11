@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LayoutGrid, SlidersHorizontal } from "lucide-react";
 import { CATEGORIES_LIST, PRODUCTS_PER_PAGE } from "@/config/constants";
 import { Pagination } from "@/components/ui/Pagination";
+import { CategoryIcon } from "@/config/categoryIcons";
 
 const GRID_PAGE_SIZE = 20; // product grid shows 20 per page; other pages use PRODUCTS_PER_PAGE (8)
 import { ProductCard } from "@/components/ui/ProductCard";
@@ -236,7 +237,6 @@ function ProductGridInner() {
 
             {/* ── Category tabs ── */}
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-                <LayoutGrid className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                 {CATEGORIES_LIST.map((cat) => {
                     const isActive = cat === activeCategory;
                     return (
@@ -244,11 +244,12 @@ function ProductGridInner() {
                             key={cat}
                             type="button"
                             onClick={() => handleCategory(cat)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${isActive
+                            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all duration-200 cursor-pointer ${isActive
                                 ? "bg-[#C6A16A] text-zinc-950 shadow-sm"
                                 : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800"
                                 }`}
                         >
+                            <CategoryIcon category={cat} className="w-3.5 h-3.5 flex-shrink-0" />
                             {cat}
                         </button>
                     );

@@ -3,6 +3,7 @@ import { HeroBanner } from "@/components/ui/heroBanner";
 import { FeaturedSection } from "@/components/ui/FeaturedSection";
 import { ProductGrid } from "@/components/ui/ProductGrid";
 import { CategoriesGrid } from "@/components/ui/CategoriesGrid";
+import { HomeSchema } from "@/components/seo/HomeSchema";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function Home({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col flex-1">
+      <HomeSchema />
       {!isFiltering && <HeroBanner />}
       {!isFiltering && <FeaturedSection />}
 

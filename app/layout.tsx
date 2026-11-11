@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Castra Households",
   },
   description:
-    "Shop premium beddings, kitchenware, electronics, furniture, décor and more. Countrywide delivery across Kenya. Castra Households — elevating Kenyan living.",
+    "Shop premium beddings, kitchenware, electronics, furniture, décor and more. Countrywide delivery across Kenya. Castra Households;What i elevating Kenyan living.",
   keywords: [
     // Brand
     "Castra Households",
@@ -41,6 +41,8 @@ export const metadata: Metadata = {
     "household items online Kenya",
     "home goods delivery Kenya",
     "household items Nairobi delivery",
+    "best household websites in Kenya",
+    "Household sellers in Kenya",
     // Product categories
     "household essentials Kenya",
     "beddings Kenya",
@@ -135,72 +137,134 @@ export const metadata: Metadata = {
 
 const BASE_URL = "https://castrahouseholds.co.ke";
 
-// JSON-LD: Organization
-// Establishes the brand entity in Google's Knowledge Graph.
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${BASE_URL}/#organization`,
   name: "Castra Households",
+  alternateName: ["Castra", "Castra Kicks"],
   url: BASE_URL,
-  logo: `${BASE_URL}/branding/logo.png`,
-  description: "Premium household essentials, footwear, and décor with countrywide delivery across Kenya.",
-  contactPoint: {
-    "@type": "ContactPoint",
-    telephone: "+254704147774",
-    contactType: "customer service",
-    areaServed: "KE",
-    availableLanguage: "English",
+  logo: {
+    "@type": "ImageObject",
+    url: `${BASE_URL}/branding/logo.png`,
+    width: 200,
+    height: 200,
   },
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Accra Towers B10",
-    addressLocality: "Nairobi",
-    addressCountry: "KE",
-  },
-  sameAs: [
-    "https://www.instagram.com/_castrahouseholds",
-    "https://www.facebook.com/castrahouseholds",
-    "https://www.tiktok.com/@castrahouseholds",
-  ],
-};
-
-// JSON-LD: WebSite
-// Enables Google's Sitelinks Searchbox in search results.
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "Castra Households",
-  url: BASE_URL,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${BASE_URL}/?search={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
-};
-
-// JSON-LD: LocalBusiness + Store
-// Critical for local Kenyan search rankings. Tells Google this is a
-// physical/local business serving Kenya, which surfaces it in
-// "best household stores in Kenya" and map-adjacent queries.
-const localBusinessSchema = {
-  "@context": "https://schema.org",
-  "@type": ["LocalBusiness", "Store"],
-  "@id": `${BASE_URL}/#localbusiness`,
-  name: "Castra Households",
-  description: "Kenya's premier online household store offering premium beddings, kitchenware, electronics, furniture, décor, organizers, and footwear with countrywide delivery.",
-  url: BASE_URL,
-  logo: `${BASE_URL}/branding/logo.png`,
   image: `${BASE_URL}/branding/og-image.png`,
-  telephone: "+254704147774",
-  email: "info@castrahouseholds.co.ke",
-  priceRange: "KES",
-  currenciesAccepted: "KES",
-  paymentAccepted: "Cash, M-Pesa",
+  description: "Kenya's premier online household store offering premium beddings, kitchenware, home appliances, electronics, furniture, home décor, organizers, and footwear (Castra Kicks) with countrywide delivery across all 47 counties of Kenya. Payments accepted via M-Pesa.",
+  foundingDate: "2024",
+  foundingLocation: {
+    "@type": "Place",
+    name: "Nairobi, Kenya",
+  },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+254704147774",
+      contactType: "customer service",
+      contactOption: "TollFree",
+      areaServed: "KE",
+      availableLanguage: ["English", "Swahili"],
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: "+254704147774",
+      contactType: "sales",
+      areaServed: "KE",
+      availableLanguage: ["English", "Swahili"],
+    },
+  ],
   address: {
     "@type": "PostalAddress",
     streetAddress: "Accra Towers B10",
     addressLocality: "Nairobi",
     addressRegion: "Nairobi County",
+    postalCode: "00100",
+    addressCountry: "KE",
+  },
+  knowsAbout: [
+    "Household essentials Kenya",
+    "Online shopping Kenya",
+    "M-Pesa payments",
+    "Beddings and linens",
+    "Kitchenware Kenya",
+    "Home appliances Kenya",
+    "Furniture Kenya",
+    "Home décor Kenya",
+    "Premium footwear Kenya",
+    "Countrywide delivery Kenya",
+    "E-commerce Kenya",
+    "Ramtons appliances",
+    "Bruhm appliances",
+    "Nike shoes Kenya",
+    "Adidas shoes Kenya",
+  ],
+  sameAs: [
+    "https://www.instagram.com/_castrahouseholds",
+    "https://www.facebook.com/castrahouseholds",
+    "https://www.tiktok.com/@castrahouseholds",
+    "https://www.instagram.com/castra_kicks",
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Castra Households Product Catalogue",
+    itemListElement: [
+      { "@type": "OfferCatalog", name: "Beddings & Linens", url: `${BASE_URL}/?category=beddings` },
+      { "@type": "OfferCatalog", name: "Kitchenware", url: `${BASE_URL}/?category=kitchenware` },
+      { "@type": "OfferCatalog", name: "Home Appliances", url: `${BASE_URL}/?category=home-appliances` },
+      { "@type": "OfferCatalog", name: "Electronics", url: `${BASE_URL}/?category=electronics` },
+      { "@type": "OfferCatalog", name: "Furniture", url: `${BASE_URL}/?category=furniture` },
+      { "@type": "OfferCatalog", name: "Home Décor", url: `${BASE_URL}/?category=decor` },
+      { "@type": "OfferCatalog", name: "Organizers", url: `${BASE_URL}/?category=organizers` },
+      { "@type": "OfferCatalog", name: "Office Equipment", url: `${BASE_URL}/?category=office-equipments` },
+      { "@type": "OfferCatalog", name: "Clothing", url: `${BASE_URL}/?category=clothing` },
+      { "@type": "OfferCatalog", name: "Gifts", url: `${BASE_URL}/?category=gifts` },
+      { "@type": "OfferCatalog", name: "Premium Footwear (Castra Kicks)", url: `${BASE_URL}/kicks` },
+    ],
+  },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${BASE_URL}/#website`,
+  name: "Castra Households",
+  alternateName: "castrahouseholds.co.ke",
+  url: BASE_URL,
+  description: "Kenya's leading online household store. Shop beddings, kitchenware, appliances, furniture, electronics, décor, organizers, and footwear. Countrywide delivery. Pay via M-Pesa.",
+  inLanguage: "en-KE",
+  publisher: { "@id": `${BASE_URL}/#organization` },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${BASE_URL}/?search={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": ["LocalBusiness", "Store", "OnlineStore"],
+  "@id": `${BASE_URL}/#localbusiness`,
+  name: "Castra Households",
+  alternateName: "Castra Households Kenya",
+  description: "Kenya's premier online household store offering premium beddings, kitchenware, electronics, furniture, décor, organizers, and footwear with countrywide delivery. Pay via M-Pesa.",
+  url: BASE_URL,
+  logo: `${BASE_URL}/branding/logo.png`,
+  image: `${BASE_URL}/branding/og-image.png`,
+  telephone: "+254704147774",
+  email: "info@castrahouseholds.co.ke",
+  priceRange: "KES 500 - KES 150,000",
+  currenciesAccepted: "KES",
+  paymentAccepted: "M-Pesa, M-Pesa Paybill, M-Pesa STK Push",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Accra Towers B10",
+    addressLocality: "Nairobi",
+    addressRegion: "Nairobi County",
+    postalCode: "00100",
     addressCountry: "KE",
   },
   geo: {
@@ -216,6 +280,9 @@ const localBusinessSchema = {
     { "@type": "City", name: "Nakuru" },
     { "@type": "City", name: "Eldoret" },
     { "@type": "City", name: "Thika" },
+    { "@type": "City", name: "Nyeri" },
+    { "@type": "City", name: "Meru" },
+    { "@type": "City", name: "Kitale" },
   ],
   openingHoursSpecification: [
     {
@@ -231,23 +298,57 @@ const localBusinessSchema = {
       closes: "18:00",
     },
   ],
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "Castra Households Product Catalogue",
-    itemListElement: [
-      { "@type": "OfferCatalog", name: "Beddings & Linens" },
-      { "@type": "OfferCatalog", name: "Kitchenware" },
-      { "@type": "OfferCatalog", name: "Electronics" },
-      { "@type": "OfferCatalog", name: "Furniture" },
-      { "@type": "OfferCatalog", name: "Home Décor" },
-      { "@type": "OfferCatalog", name: "Organizers" },
-      { "@type": "OfferCatalog", name: "Footwear" },
-    ],
-  },
   sameAs: [
     "https://www.instagram.com/_castrahouseholds",
     "https://www.facebook.com/castrahouseholds",
     "https://www.tiktok.com/@castrahouseholds",
+  ],
+};
+
+const speakableSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${BASE_URL}/#webpage`,
+  url: BASE_URL,
+  name: "Castra Households | Premium Household Essentials in Kenya",
+  description: "Kenya's premier online household store. Shop beddings, kitchenware, appliances, furniture, electronics, décor, and footwear. Countrywide delivery. Pay via M-Pesa.",
+  inLanguage: "en-KE",
+  isPartOf: { "@id": `${BASE_URL}/#website` },
+  about: { "@id": `${BASE_URL}/#organization` },
+  speakable: {
+    "@type": "SpeakableSpecification",
+    xPath: [
+      "/html/head/title",
+      "/html/head/meta[@name='description']/@content",
+    ],
+    cssSelector: [
+      "h1",
+      "h2",
+      ".speakable",
+    ],
+  },
+};
+
+const categoryItemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": `${BASE_URL}/#categories`,
+  name: "Castra Households Product Categories",
+  description: "Browse all product categories available at Castra Households Kenya",
+  url: BASE_URL,
+  numberOfItems: 11,
+  itemListElement: [
+    { "@type": "ListItem", position: 1,  name: "Beddings & Linens",          url: `${BASE_URL}/?category=beddings` },
+    { "@type": "ListItem", position: 2,  name: "Kitchenware",                url: `${BASE_URL}/?category=kitchenware` },
+    { "@type": "ListItem", position: 3,  name: "Home Appliances",            url: `${BASE_URL}/?category=home-appliances` },
+    { "@type": "ListItem", position: 4,  name: "Electronics",                url: `${BASE_URL}/?category=electronics` },
+    { "@type": "ListItem", position: 5,  name: "Furniture",                  url: `${BASE_URL}/?category=furniture` },
+    { "@type": "ListItem", position: 6,  name: "Home Décor",                 url: `${BASE_URL}/?category=decor` },
+    { "@type": "ListItem", position: 7,  name: "Organizers",                 url: `${BASE_URL}/?category=organizers` },
+    { "@type": "ListItem", position: 8,  name: "Office Equipment",           url: `${BASE_URL}/?category=office-equipments` },
+    { "@type": "ListItem", position: 9,  name: "Clothing",                   url: `${BASE_URL}/?category=clothing` },
+    { "@type": "ListItem", position: 10, name: "Gifts",                      url: `${BASE_URL}/?category=gifts` },
+    { "@type": "ListItem", position: 11, name: "Castra Kicks — Footwear",    url: `${BASE_URL}/kicks` },
   ],
 };
 
@@ -265,6 +366,8 @@ export default function RootLayout({
         <JsonLd schema={organizationSchema} />
         <JsonLd schema={websiteSchema} />
         <JsonLd schema={localBusinessSchema} />
+        <JsonLd schema={speakableSchema} />
+        <JsonLd schema={categoryItemListSchema} />
         <ToastProvider>
           <AuthProvider>
             <CartProvider>

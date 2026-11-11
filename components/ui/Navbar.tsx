@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CategoryIcon } from "@/config/categoryIcons";
 import {
     Search,
     User,
@@ -426,6 +427,7 @@ export function Navbar() {
                                             : "text-zinc-300 hover:text-[#C6A16A] hover:bg-zinc-800/60"
                                             }`}
                                     >
+                                        <CategoryIcon category={cat} className="w-3 h-3 flex-shrink-0" />
                                         {cat}
                                     </button>
                                 );
@@ -502,7 +504,10 @@ export function Navbar() {
                                         }}
                                         className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-zinc-200 hover:bg-zinc-900 hover:text-[#C6A16A] transition-colors group cursor-pointer"
                                     >
-                                        <span>{cat}</span>
+                                        <span className="flex items-center gap-3">
+                                            <CategoryIcon category={cat} className="w-4 h-4 text-zinc-400 group-hover:text-[#C6A16A] transition-colors flex-shrink-0" />
+                                            {cat}
+                                        </span>
                                         <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-[#C6A16A] transition-colors" />
                                     </button>
                                 );

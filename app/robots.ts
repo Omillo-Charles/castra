@@ -2,16 +2,10 @@ import type { MetadataRoute } from "next";
 
 const BASE_URL = "https://castrahouseholds.co.ke";
 
-// robots.txt — served at /robots.txt
-// Allows all crawlers on public pages.
-// Blocks crawlers on authenticated/admin routes, checkout, and API paths
-// since those have no SEO value and should not be indexed.
-
 export default function robots(): MetadataRoute.Robots {
     return {
         rules: [
             {
-                // All crawlers
                 userAgent: "*",
                 allow: [
                     "/",
@@ -26,37 +20,57 @@ export default function robots(): MetadataRoute.Robots {
                     "/account",
                 ],
                 disallow: [
-                    "/account/dashboard",       // authenticated — no indexing
+                    "/account/dashboard",
                     "/account/dashboard/",
-                    "/account/reset-password",  // token-gated
-                    "/account/verify-email",    // token-gated
-                    "/cart",                    // session-specific
-                    "/checkout",                // session-specific
-                    "/wishlist",                // authenticated
-                    "/api/",                    // backend API proxy
+                    "/account/reset-password",
+                    "/account/verify-email",
+                    "/cart",
+                    "/checkout",
+                    "/wishlist",
+                    "/api/",
                 ],
             },
-            {
-                // Block GPTBot (OpenAI) and similar AI scrapers from training data
-                userAgent: "GPTBot",
-                disallow: ["/"],
-            },
-            {
-                userAgent: "ChatGPT-User",
-                disallow: ["/"],
-            },
-            {
-                userAgent: "CCBot",
-                disallow: ["/"],
-            },
-            {
-                userAgent: "anthropic-ai",
-                disallow: ["/"],
-            },
-            {
-                userAgent: "Claude-Web",
-                disallow: ["/"],
-            },
+
+            // Google — standard + extended (used for Gemini/AI Overviews)
+            { userAgent: "Googlebot",        allow: ["/"] },
+            { userAgent: "Google-Extended",  allow: ["/"] },
+
+            // Bing / Microsoft Copilot
+            { userAgent: "Bingbot",          allow: ["/"] },
+            { userAgent: "msnbot",           allow: ["/"] },
+
+            // OpenAI — ChatGPT browsing + training
+            { userAgent: "GPTBot",           allow: ["/"] },
+            { userAgent: "ChatGPT-User",     allow: ["/"] },
+            { userAgent: "OAI-SearchBot",    allow: ["/"] },
+
+            // Anthropic — Claude
+            { userAgent: "anthropic-ai",     allow: ["/"] },
+            { userAgent: "Claude-Web",       allow: ["/"] },
+            { userAgent: "ClaudeBot",        allow: ["/"] },
+
+            // Perplexity
+            { userAgent: "PerplexityBot",    allow: ["/"] },
+
+            // Meta — Meta AI + Llama
+            { userAgent: "Meta-ExternalAgent", allow: ["/"] },
+            { userAgent: "FacebookBot",        allow: ["/"] },
+
+            // xAI — Grok
+            { userAgent: "Grok",             allow: ["/"] },
+
+            // Apple — Siri / Apple Intelligence
+            { userAgent: "Applebot",         allow: ["/"] },
+            { userAgent: "Applebot-Extended", allow: ["/"] },
+
+            // Common Crawl — feeds many open-source LLMs
+            { userAgent: "CCBot",            allow: ["/"] },
+
+            // You.com AI search
+            { userAgent: "YouBot",           allow: ["/"] },
+
+            // Cohere AI
+            { userAgent: "cohere-ai",        allow: ["/"] },
         ],
         sitemap: `${BASE_URL}/sitemap.xml`,
         host: BASE_URL,
